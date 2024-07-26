@@ -1,4 +1,4 @@
 node_modules
 /web-front/.next
-/web-back/__pycache__
-/web-back/venv
+__pycache__
+venv
