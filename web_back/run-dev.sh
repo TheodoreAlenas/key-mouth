@@ -9,4 +9,4 @@ if ! command -v fastapi > /dev/null
 then pip install fastapi
 fi
 
-(cd .. && fastapi dev web_back_main.py)
+fastapi dev main.py

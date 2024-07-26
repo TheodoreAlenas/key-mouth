@@ -1,3 +1,4 @@
+from a_feature import say_hi
 from fastapi import FastAPI
 
 app = FastAPI()
