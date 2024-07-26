@@ -2,11 +2,19 @@
 
 set -e
 
-if [ -d venv ]
-then . venv/bin/activate
+echo_and_run() {
+    printf ">"; printf " %s" "$@"; printf "\n"
+    "$@"
+    printf "done\n"
+}
+
+if ! [ -d venv ]
+then echo_and_run python -m venv venv
 fi
+. venv/bin/activate
+
 if ! command -v fastapi > /dev/null
-then pip install fastapi
+then echo_and_run pip install fastapi
 fi
 
-fastapi dev main.py
+echo_and_run fastapi dev main.py
