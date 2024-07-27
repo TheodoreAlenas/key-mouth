@@ -7,7 +7,3 @@ app = FastAPI()
 @app.get("/message")
 async def root():
     return {"message": say_hi()}
-
-app.mount("/pages",
-          StaticFiles(directory="../web_front/.next/server/pages"),
-          name="pages")
