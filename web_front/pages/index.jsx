@@ -1,20 +1,40 @@
 import sayHi from '../../a_feature/say_hi.mjs'
-import { useState } from "react"
+import Socket from '../sockets.mjs'
+import { useEffect, useState } from "react"
 
 export default function Home() {
     let [messages, setMessages] = useState(
-        [{name: "Sotiris", msg: "Hi Mark"},
-         {name: "Sotiris", msg: "Are you there?"}])
+        [{name: "Sotiris", message: "Hi Mark"},
+         {name: "Sotiris", message: "Are you there?"}])
+    const messageInputID = "message-input"
+    useEffect(function() {
+        console.log("start")
+        const s = new Socket(
+            function() {
+                return document.getElementById(messageInputID).value
+            },
+            function(newOutput) {
+                setMessages(newOutput)
+            }
+        )
+        return function() {
+            console.log("end")
+            s.close()
+        }
+    }, [])
     return (
         <>
             <h1>{sayHi()}</h1>
             <table>
                 <tbody>
-                    { messages.map(e =>
-                        <tr><td>{e.name}</td><td>{e.msg}</td></tr>) }
+                    { messages.map((e, i) =>
+                        <tr key={i}>
+                            <td key="name">{e.name}</td>
+                            <td key="message">{e.message}</td>
+                        </tr>) }
                 </tbody>
             </table>
-            <input type="text" />
+            <input id={ messageInputID } type="text" />
             <button onClick={ function() {setMessages([])} }
             >Send and clear</button>
         </>)
