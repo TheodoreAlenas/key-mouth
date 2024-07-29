@@ -1,16 +1,16 @@
 import sayHi from '../../a_feature/say_hi.mjs'
+import { useState } from "react"
 
 export default function Home() {
+    let [s, ss] = useState(
+        [{name: "Sotiris", msg: "Hi Mark"},
+         {name: "Sotiris", msg: "Are you there?"}])
     return (
         <>
             <h1>{sayHi()}</h1>
             <table>
-                <thead>
-                    <tr><td>Name</td><td>Message</td></tr>
-                </thead>
                 <tbody>
-                    <tr><td>Sotiris</td><td>Hi Mark</td></tr>
-                    <tr><td>Sotiris</td><td>Are you there?</td></tr>
+                  {s.map(e => <tr><td>{e.name}</td><td>{e.msg}</td></tr>)}
                 </tbody>
             </table>
             <section>
@@ -20,6 +20,6 @@ export default function Home() {
                 </ul>
             </section>
             <input type="text" />
-            <button>Send and clear</button>
+            <button onClick={function() {ss([])}}>Send and clear</button>
         </>)
 }
