@@ -18,9 +18,8 @@ export default function Home() {
             else console.log("different")
         })
 
-        keyScan("")
+        prevInputBoxValue = document.getElementById(messageInputID).value
         return function() {
-            keyScannerStop = true
             console.log("end")
             s.close()
         }
@@ -30,31 +29,34 @@ export default function Home() {
             <h1>{sayHi()}</h1>
             <table>
                 <tbody>
-                    { messages.map((e, i) =>
-                        <tr key={i}>
-                            <td key="name">{e.name}</td>
-                            <td key="message">{e.message}</td>
-                        </tr>) }
+                    {
+                        messages.map((e, i) =>
+                            <tr key={i}>
+                                <td key="name">{e.name}</td>
+                                <td key="message">{e.message}</td>
+                            </tr>
+                        )
+                    }
                 </tbody>
             </table>
-            <input id={ messageInputID } type="text" />
-            <button onClick={ function() { setMessages([]); keyScannerStop = true } }
+            <input id={ messageInputID } type="text" onChange={ function() {
+                       const v = document.getElementById(messageInputID).value
+                       console.log(diff(prevInputBoxValue, v))
+                       prevInputBoxValue = v
+                   } } />
+            <button onClick={ function() { setMessages([]) } }
             >Send and clear</button>
         </>)
 }
 
-let keyScannerStop = false
+let prevInputBoxValue = ""
 
-function keyScan(prev) {
-    if (keyScannerStop) {
-        keyScannerStop = false
+function diff(a, b) {
+    if (b.startsWith(a)) {
+        return b.substr(a.length)
     }
-    else {
-        setTimeout(function() { keyScan(keyScanPure(prev)) }, 1000)
+    if (a.startsWith(b)) {
+        return a.length - b.length
     }
-}
-
-function keyScanPure(prev) {
-    console.log(prev)
-    return prev + "."
+    return { a, b }
 }
