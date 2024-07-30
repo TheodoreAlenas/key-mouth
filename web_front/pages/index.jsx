@@ -17,7 +17,10 @@ export default function Home() {
             if (event.data === "Message was " + d) console.log("same")
             else console.log("different")
         })
+
+        keyScan("")
         return function() {
+            keyScannerStop = true
             console.log("end")
             s.close()
         }
@@ -35,7 +38,23 @@ export default function Home() {
                 </tbody>
             </table>
             <input id={ messageInputID } type="text" />
-            <button onClick={ function() {setMessages([])} }
+            <button onClick={ function() { setMessages([]); keyScannerStop = true } }
             >Send and clear</button>
         </>)
+}
+
+let keyScannerStop = false
+
+function keyScan(prev) {
+    if (keyScannerStop) {
+        keyScannerStop = false
+    }
+    else {
+        setTimeout(function() { keyScan(keyScanPure(prev)) }, 1000)
+    }
+}
+
+function keyScanPure(prev) {
+    console.log(prev)
+    return prev + "."
 }
