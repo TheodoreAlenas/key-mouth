@@ -10,6 +10,6 @@ async def root(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            await websocket.send_text(f"Message was {data}")
+            await websocket.send_json([{"name": "Sotiris", "message": data}])
     except WebSocketDisconnect as e:
         pass
