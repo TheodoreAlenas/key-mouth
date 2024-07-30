@@ -14,8 +14,8 @@ export default function Home() {
         socketRef.current.send(v)
     }
     let [messages, setMessages] = useState(
-        [{name: "Sotiris", message: "Hi Mark"},
-         {name: "Sotiris", message: "Are you there?"}])
+        [{name: "Sotiris", message: ["Hi Mark"]},
+         {name: "Sotiris", message: ["Are you there?"]}])
     const socketRef = useRef(null)
     useEffect(function() {
         console.log("start")
@@ -38,7 +38,9 @@ export default function Home() {
                         messages.map((e, i) =>
                             <tr key={i}>
                                 <td key="name">{e.name}</td>
-                                <td key="message">{e.message}</td>
+                                <td key="message">
+                                    {e.message.map((m, i) => <span key={i}>{m}</span>)}
+                                </td>
                             </tr>
                         )
                     }
