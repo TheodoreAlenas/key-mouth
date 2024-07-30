@@ -3,20 +3,18 @@ import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
     const [inputValue, setInputValue] = useState('')
+    let [messages, setMessages] = useState(example)
+    const socketRef = useRef(null)
     const preventDefClearInp = function(event) {
         event.preventDefault()
         setInputValue("")
-        socketRef.current.send("cleared")
+        socketRef.current.send("clear")
     }
-    const f = function(event) {
+    const setInpSockSend = function(event) {
         const v = event.target.value
         setInputValue(v)
-        socketRef.current.send(v)
+        socketRef.current.send("=" + v)
     }
-    let [messages, setMessages] = useState(
-        [{name: "Sotiris", message: ["Hi Mark"]},
-         {name: "Sotiris", message: ["Are you there?"]}])
-    const socketRef = useRef(null)
     useEffect(function() {
         console.log("start")
         socketRef.current = new WebSocket("ws://localhost:8000")
@@ -33,26 +31,71 @@ export default function Home() {
         <>
             <h1>{sayHi()}</h1>
             <table>
-                <tbody>
-                    {
-                        messages.map((e, i) =>
-                            <tr key={i}>
-                                <td key="name">{e.name}</td>
-                                <td key="message">
-                                    {e.message.map((m, i) => <span key={i}>{m}</span>)}
-                                </td>
-                            </tr>
-                        )
-                    }
-                </tbody>
+                <tbody>{messages.map(postToRow)}</tbody>
             </table>
             <form onSubmit={preventDefClearInp}>
                 <input
                     type="text"
                     value={inputValue}
-                    onChange={f}
+                    onChange={setInpSockSend}
                 />
                 <button type="submit">Clear</button>
             </form>
         </>)
 }
+
+function postToRow(e, i) {
+    return <tr id={e.id} key={i}>
+               <td key="name">{e.name}</td>
+               <td key="message">{e.message.map(messageToSpan)}</td>
+           </tr>
+ }
+
+function messageToSpan(m, i) {
+    if (m.type === "wrote")
+        return <span key={i}>{m.body}</span>
+    if (m.type === "deleted")
+        return <s key={i}>{m.body}</s>
+    if (m.type === "old left")
+        return <a href={m.ref} key={i}>{m.body}</a>
+    if (m.type === "old right")
+        return <a href={m.ref} key={i}>{m.body}</a>
+}
+
+const example = [
+    {
+        name: "Sotiris",
+        message: [
+            {type: "wrote", body: "Hi M"},
+            {type: "deleted", body: "st"},
+            {type: "wrote", body: "ark"},
+        ]
+    },
+    {
+        name: "Sotiris",
+        message: [
+            {type: "wrote", body: "Are you there?"}
+        ]
+    },
+    {
+        name: "Mark",
+        id: "edited-123",
+        message: [
+            {type: "wrote", body: "I thought I'd find you"}
+        ]
+    },
+    {
+        name: "Mark",
+        message: [
+            {type: "old left", body: "I ", ref: "#edited-123"},
+            {type: "wrote", body: "knew"},
+            {type: "old right", body: " I'd find you", ref: "#edited-123"},
+        ]
+    },
+    {
+        name: "Mark",
+        message: [
+            {type: "wrote", body: "in the park"},
+        ]
+    }
+]
