@@ -1,6 +1,6 @@
-from back_main import AfterSocketLogic
+from back_main.AfterSocketLogic import AfterSocketLogic
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.staticfiles import StaticFiles
+from time import time
 
 app = FastAPI()
 
@@ -11,7 +11,7 @@ async def root(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            json = after_socket_logic.get_json_from_data(data)
+            json = after_socket_logic.get_json(data, time())
             await websocket.send_json(json)
     except WebSocketDisconnect as e:
         pass
