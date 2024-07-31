@@ -6,12 +6,12 @@ class AfterSocketLogic:
     input_field_diff_generator = InputFieldDiffGenerator()
 
     def get_json(self, data, time):
-        actions = self.input_field_diff_generator.get(data, time)
+        actions = self.input_field_diff_generator.get(data, "Sotiris", time)
         return actions_to_json(actions)
 
 
 def actions_to_json(actions):
-    message = [{"type": "wrote", "body": ""}]
+    message = [{"type": "wrote", "body": "", "time": 0}]
     last_action = "wrote"
     del_n = 0
     for action in actions:
@@ -41,7 +41,7 @@ def actions_to_json(actions):
                 "body": "<unhandled>"
             })
         last_action = action["action"]
-    return [{
+    return [[{
         "name": "Sotiris",
         "message": message
-    }]
+    }]]

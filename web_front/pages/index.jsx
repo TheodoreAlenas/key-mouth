@@ -30,9 +30,12 @@ export default function Home() {
     return (
         <>
             <h1>{sayHi()}</h1>
-            <table>
-                <tbody>{messages.map(postToRow)}</tbody>
-            </table>
+            <ul>
+                {
+                    messages.map((m, i) =>
+                        <li key={i}><ul>{m.map(postToLi)}</ul></li>)
+                }
+            </ul>
             <form onSubmit={preventDefClearInp}>
                 <input
                     type="text"
@@ -44,11 +47,12 @@ export default function Home() {
         </>)
 }
 
-function postToRow(e, i) {
-    return <tr id={e.id} key={i}>
-               <td key="name">{e.name}</td>
-               <td key="message">{e.message.map(messageToSpan)}</td>
-           </tr>
+function postToLi(e, i) {
+    return <li id={e.id} key={i}>
+               <span key="name">{e.name}</span>
+               {': '}
+               {e.message.map(messageToSpan)}
+           </li>
  }
 
 function messageToSpan(m, i) {
@@ -63,39 +67,43 @@ function messageToSpan(m, i) {
 }
 
 const example = [
-    {
-        name: "Sotiris",
-        message: [
-            {type: "wrote", body: "Hi M"},
-            {type: "deleted", body: "st"},
-            {type: "wrote", body: "ark"},
-        ]
-    },
-    {
-        name: "Sotiris",
-        message: [
-            {type: "wrote", body: "Are you there?"}
-        ]
-    },
-    {
-        name: "Mark",
-        id: "edited-123",
-        message: [
-            {type: "wrote", body: "I thought I'd find you"}
-        ]
-    },
-    {
-        name: "Mark",
-        message: [
-            {type: "old left", body: "I ", ref: "#edited-123"},
-            {type: "wrote", body: "knew"},
-            {type: "old right", body: " I'd find you", ref: "#edited-123"},
-        ]
-    },
-    {
-        name: "Mark",
-        message: [
-            {type: "wrote", body: "in the park"},
-        ]
-    }
+    [
+        {
+            name: "Sotiris",
+            message: [
+                {type: "wrote", body: "Hi M"},
+                {type: "deleted", body: "st"},
+                {type: "wrote", body: "ark"},
+            ]
+        }
+    ],
+    [
+        {
+            name: "Sotiris",
+            message: [
+                {type: "wrote", body: "Are you there?"}
+            ]
+        },
+        {
+            name: "Mark",
+            id: "edited-123",
+            message: [
+                {type: "wrote", body: "I thought I'd find you"}
+            ]
+        },
+        {
+            name: "Mark",
+            message: [
+                {type: "old left", body: "I ", ref: "#edited-123"},
+                {type: "wrote", body: "knew"},
+                {type: "old right", body: " I'd find you", ref: "#edited-123"},
+            ]
+        },
+        {
+            name: "Mark",
+            message: [
+                {type: "wrote", body: "in the park"},
+            ]
+        }
+    ]
 ]
