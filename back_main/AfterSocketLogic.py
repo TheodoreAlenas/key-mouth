@@ -10,6 +10,23 @@ class AfterSocketLogic:
         return actions_to_json(actions)
 
 
+def actions_to_timestamps(actions, dt):
+    if len(actions) == 0:
+        return []
+    timestamps = []
+    last = {"Sotiris": (0.0, -1), "Vaggas": (0.0, -1)}
+    for i in range(1, len(actions)):
+        t2 = actions[i]["time"]
+        u2 = actions[i]["user"]
+        if t - last[u] > dt:
+            timestamps.append((actions[last[u]]["time"], "start", last[actions[i]["user"]]))
+            timestamps.append((actions[i]["time"], "start", last[actions[i]["user"]]))
+        else:
+            timestamps[-1]["actions"].append(actions[i])
+        last[actions[i]["user"]] = actions[i]["time"]
+    return timestamps
+
+
 def actions_to_json(actions):
     message_start = {"type": "wrote", "body": ""}
     message_groups = [[{"name": "Sotiris", "message": [message_start.copy()]}]]
@@ -21,6 +38,7 @@ def actions_to_json(actions):
         if prev_time is not None and action["time"] - prev_time > 1.0:
             message_groups.append([{"name": "Sotiris", "message": [message_start.copy()]}])
             message = message_groups[-1][0]["message"]
+            last_action = "wrote"
         prev_time = action["time"]
         if action["action"] == "wrote":
             if last_action == "wrote":

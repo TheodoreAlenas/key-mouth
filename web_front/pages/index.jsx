@@ -18,6 +18,9 @@ export default function Home() {
     useEffect(function() {
         console.log("start")
         socketRef.current = new WebSocket("ws://localhost:8000")
+        socketRef.current.addEventListener("open", function() {
+            socketRef.current.send('{"version": 0}')
+        })
         socketRef.current.addEventListener("message", function(event) {
             setMessages(JSON.parse(event.data))
             console.log(event.data)
