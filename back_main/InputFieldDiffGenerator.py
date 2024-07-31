@@ -14,21 +14,24 @@ class InputFieldDiffGenerator:
         new_input = input_field_text[1:]
         if str.startswith(new_input, self.prev_input):
             self.actions.append({
+                "user": user,
+                "time": time,
                 "action": "wrote",
                 "body": new_input[len(self.prev_input):],
-                "time": time
             })
         elif str.startswith(self.prev_input, new_input):
             self.actions.append({
+                "user": user,
+                "time": time,
                 "action": "deleted",
                 "n": len(self.prev_input) - len(new_input) + 1,
-                "time": time
             })
         else:
             self.actions.append({
+                "user": user,
+                "time": time,
                 "action": "changed",
                 "prev": self.prev_input,
                 "new": new_input,
-                "time": time
             })
         self.prev_input = new_input

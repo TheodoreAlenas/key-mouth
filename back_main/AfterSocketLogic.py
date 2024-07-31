@@ -11,10 +11,17 @@ class AfterSocketLogic:
 
 
 def actions_to_json(actions):
-    message = [{"type": "wrote", "body": "", "time": 0}]
+    message_start = {"type": "wrote", "body": ""}
+    message_groups = [[{"name": "Sotiris", "message": [message_start.copy()]}]]
+    message = message_groups[0][0]["message"]
     last_action = "wrote"
     del_n = 0
+    prev_time = None
     for action in actions:
+        if prev_time is not None and action["time"] - prev_time > 1.0:
+            message_groups.append([{"name": "Sotiris", "message": [message_start.copy()]}])
+            message = message_groups[-1][0]["message"]
+        prev_time = action["time"]
         if action["action"] == "wrote":
             if last_action == "wrote":
                 message[-1]["body"] += action["body"]
@@ -41,7 +48,4 @@ def actions_to_json(actions):
                 "body": "<unhandled>"
             })
         last_action = action["action"]
-    return [[{
-        "name": "Sotiris",
-        "message": message
-    }]]
+    return message_groups
