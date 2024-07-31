@@ -28,29 +28,29 @@ class AfterSocketLogicSingleUser:
             self.prev_input = ''
             return
         new_input = input_field_text[1:]
-        if str.startswith(new_input, self.prev_input):
-            self.actions.append({
-                "user": self.socket_id,
-                "time": time,
-                "action": "wrote",
-                "body": new_input[len(self.prev_input):],
-            })
-        elif str.startswith(self.prev_input, new_input):
-            self.actions.append({
-                "user": self.socket_id,
-                "time": time,
-                "action": "deleted",
-                "n": len(self.prev_input) - len(new_input) + 1,
-            })
-        else:
-            self.actions.append({
-                "user": self.socket_id,
-                "time": time,
-                "action": "changed",
-                "prev": self.prev_input,
-                "new": new_input,
-            })
+        to_append = get_diff(self.prev_input, new_input)
+        to_append["user"] = self.socket_id
+        to_append["time"] = time
+        self.actions.append(to_append)
         self.prev_input = new_input
+
+
+def get_diff(a, b):
+    if str.startswith(b, a):
+        return {
+            "action": "wrote",
+            "body": b[len(a):],
+        }
+    if str.startswith(a, b):
+        return {
+            "action": "deleted",
+            "n": len(a) - len(b) + 1,
+        }
+    return {
+        "action": "changed",
+        "prev": a,
+        "next": b,
+    }
 
 
 def actions_to_json(actions):
