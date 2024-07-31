@@ -6,36 +6,48 @@ app = FastAPI()
 
 @app.websocket("/")
 async def root(websocket: WebSocket):
+    after_socket_logic = AfterSocketLogic()
     await websocket.accept()
     try:
-        actions = []
-        prev_input = ''
         while True:
             data = await websocket.receive_text()
-            if data == "clear":
-                prev_input = ''
-            else:
-                new_input = data[1:]
-                if str.startswith(new_input, prev_input):
-                    actions.append({
-                        "action": "wrote",
-                        "body": new_input[len(prev_input):]
-                    })
-                elif str.startswith(prev_input, new_input):
-                    actions.append({
-                        "action": "deleted",
-                        "n": len(prev_input) - len(new_input) + 1
-                    })
-                else:
-                    actions.append({
-                        "action": "changed",
-                        "prev": prev_input,
-                        "new": new_input
-                    })
-                prev_input = new_input
-            await websocket.send_json(actions_to_json(actions))
+            json = after_socket_logic.get_json_from_data(data)
+            await websocket.send_json(json)
     except WebSocketDisconnect as e:
         pass
+
+
+class AfterSocketLogic:
+
+    actions = []
+    prev_input = ''
+
+    def get_json_from_data(self, data):
+        self.diff_new_data(data)
+        return actions_to_json(self.actions)
+
+    def diff_new_data(self, data):
+        if data == "clear":
+            self.prev_input = ''
+            return
+        new_input = data[1:]
+        if str.startswith(new_input, self.prev_input):
+            self.actions.append({
+                "action": "wrote",
+                "body": new_input[len(self.prev_input):]
+            })
+        elif str.startswith(self.prev_input, new_input):
+            self.actions.append({
+                "action": "deleted",
+                "n": len(self.prev_input) - len(new_input) + 1
+            })
+        else:
+            self.actions.append({
+                "action": "changed",
+                "prev": self.prev_input,
+                "new": new_input
+            })
+        self.prev_input = new_input
 
 
 def actions_to_json(actions):
