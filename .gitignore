@@ -1,4 +1,5 @@
 node_modules
+git_ignores
 .next
 __pycache__
 venv

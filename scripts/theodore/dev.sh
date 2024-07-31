@@ -9,15 +9,15 @@ tmux new-session -d -t key-mouth
 
 tmux new-window -t key-mouth:1
 tmux send-keys  -t key-mouth:1 \
-     "cd web_front && npm run dev" C-m
+     "cd js && npm run dev" C-m
 
 tmux new-window -t key-mouth:2
 tmux send-keys  -t key-mouth:2 \
-     "cd web_back && . venv/bin/activate && fastapi dev main.py" C-m
+     "cd python && . venv/bin/activate && fastapi dev main.py" C-m
 
 tmux new-window -t key-mouth:3
 tmux send-keys  -t key-mouth:3 \
-     "cd web_back && . venv/bin/activate && cd .. && emacs" C-m
+     "cd python && . venv/bin/activate && cd .. && emacs" C-m
 
 (firefox localhost:3000 2>&1 \
      | grep --line-buffered -v mesa_glthread \

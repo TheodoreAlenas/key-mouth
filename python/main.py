@@ -1,4 +1,4 @@
-from back_main.AfterSocketLogic import AfterSocketLogicSingleUser, AfterSocketLogicAllUsers
+from AfterSocketLogic import AfterSocketLogicSingleUser, AfterSocketLogicAllUsers
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from time import time
 

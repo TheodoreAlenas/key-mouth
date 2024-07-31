@@ -1,4 +1,3 @@
-import sayHi from '../../a_feature/say_hi.mjs'
 import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
@@ -32,7 +31,6 @@ export default function Home() {
     }, [])
     return (
         <>
-            <h1>{sayHi()}</h1>
             <ul>
                 {
                     messages.map((m, i) =>
