@@ -1,0 +1,7 @@
+Scripts put in users' directories
+should be runnable from the root directory of the project.
+That way they can be added to the PATH.
+
+They should also be in GIT,
+since they do explain what happened during development.
+One's scripts can be used as another's README/guide.
