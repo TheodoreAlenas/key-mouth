@@ -1,13 +1,56 @@
-from back_main.InputFieldDiffGenerator import InputFieldDiffGenerator
+class AfterSocketLogicAllUsers:
+
+    last_id = -1
+    per_socket_objects = {}
+
+    def register(self, socket_object):
+        self.last_id += 1
+        self.per_socket_objects[self.last_id] = socket_object
+        return self.last_id
 
 
-class AfterSocketLogic:
+class AfterSocketLogicSingleUser:
 
-    input_field_diff_generator = InputFieldDiffGenerator()
+    timestamps = []
+    actions = []
+    prev_input = ''
+
+    def __init__(self, all_users):
+        self.all_users = all_users
+        self.socket_id = all_users.register(self)
 
     def get_json(self, data, time):
-        actions = self.input_field_diff_generator.get(data, "Sotiris", time)
-        return actions_to_json(actions)
+        self.append_diff_to_actions(data, time)
+        return actions_to_json(self.actions)
+
+    def append_diff_to_actions(self, input_field_text, time):
+        if input_field_text == "clear":
+            self.prev_input = ''
+            return
+        new_input = input_field_text[1:]
+        if str.startswith(new_input, self.prev_input):
+            self.actions.append({
+                "user": self.socket_id,
+                "time": time,
+                "action": "wrote",
+                "body": new_input[len(self.prev_input):],
+            })
+        elif str.startswith(self.prev_input, new_input):
+            self.actions.append({
+                "user": self.socket_id,
+                "time": time,
+                "action": "deleted",
+                "n": len(self.prev_input) - len(new_input) + 1,
+            })
+        else:
+            self.actions.append({
+                "user": self.socket_id,
+                "time": time,
+                "action": "changed",
+                "prev": self.prev_input,
+                "new": new_input,
+            })
+        self.prev_input = new_input
 
 
 def actions_to_json(actions):
