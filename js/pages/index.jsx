@@ -16,6 +16,28 @@ function getDiff(a, b) {
     throw Exception("can't handle diff, a: " + a + ", b: " + b)
 }
 
+function setUpSocket(socket, setMessages, setLatest) {
+    const connNames = {4: "Sotiris", 5: "Vaggas"}
+    fetch("http://localhost:8000/last")
+        .then(res => res.json())
+        .then(function(res) {
+            const p = res.map(r => presentMoment(connNames, r))
+            setMessages(p)
+        })
+    socket.addEventListener("open", function() {
+        socket.send('{"version": 0}')
+    })
+    socket.addEventListener("message", function(event) {
+        console.log(event.data)
+        const diffs = JSON.parse(event.data)
+        const p = [presentMoment(connNames, diffs)]
+        setLatest(p)
+    })
+    return function() {
+        socket.close()
+    }
+}
+
 export default function Home() {
     const [inputValue, setInputValue] = useState('')
     const [messages, setMessages] = useState([])
@@ -34,29 +56,8 @@ export default function Home() {
         d.forEach(function(e) {socketRef.current.send(e)})
     }
     useEffect(function() {
-        const connNames = {4: "Sotiris", 5: "Vaggas"}
-        fetch("http://localhost:8000/last")
-            .then(res => res.json())
-            .then(function(res) {
-                const p = [
-                    presentMoment(connNames, res[0]),
-                    presentMoment(connNames, res[1])
-                ]
-                setMessages(p)
-            })
         socketRef.current = new WebSocket("ws://localhost:8000")
-        socketRef.current.addEventListener("open", function() {
-            socketRef.current.send('{"version": 0}')
-        })
-        socketRef.current.addEventListener("message", function(event) {
-            console.log(event.data)
-            const diffs = JSON.parse(event.data)
-            const p = [presentMoment(connNames, diffs)]
-            setLatest(p)
-        })
-        return function() {
-            socketRef.current.close()
-        }
+        return setUpSocket(socketRef.current, setMessages, setLatest)
     }, [])
     return (
         <>
