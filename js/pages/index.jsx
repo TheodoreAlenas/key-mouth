@@ -42,7 +42,6 @@ export default function Home() {
                     presentMoment(connNames, res[0]),
                     presentMoment(connNames, res[1])
                 ]
-                console.log(JSON.stringify(p))
                 setMessages(p)
             })
         socketRef.current = new WebSocket("ws://localhost:8000")
@@ -53,7 +52,6 @@ export default function Home() {
             console.log(event.data)
             const diffs = JSON.parse(event.data)
             const p = [presentMoment(connNames, diffs)]
-            console.log(JSON.stringify(p))
             setLatest(p)
         })
         return function() {
