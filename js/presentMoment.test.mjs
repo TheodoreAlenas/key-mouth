@@ -27,6 +27,14 @@ assertEqual(
          {connId: 4, type: "write", body: "llo"}]))
 
 assertEqual(
+    "two deletes",
+    [{name: "Sotiris", message: [{type: "delete", body: "hello"}]}],
+    presentMoment(
+        names,
+        [{connId: 4, type: "delete", body: "llo"},
+         {connId: 4, type: "delete", body: "he"}]))
+
+assertEqual(
     "write delete",
     [{name: "Sotiris", message: [{type: "write", body: "he"},
                                  {type: "delete", body: "he"}]}],
@@ -34,13 +42,6 @@ assertEqual(
         names,
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "delete", body: "he"}]))
-
-assertEqual(
-    "one deletion",
-    [{name: "Sotiris", message: [{type: "delete", body: "hello"}]}],
-    presentMoment(
-        names,
-        [{connId: 4, type: "delete", body: "hello"}]))
 
 assertEqual(
     "a writes, b writes",
