@@ -1,9 +1,25 @@
 import presentMoment from '../presentMoment.mjs'
 import { useEffect, useRef, useState } from "react"
 
+function getDiff(a, b) {
+    if (a.startsWith(b)) {
+        return ["-", a.substr(b.length)]
+    }
+    if (b.startsWith(a)) {
+        return ["+", b.substr(a.length)]
+    }
+    for (let i = 0; i < a.length && i < b.length; i++) {
+        if (a[i] !== b[i]) {
+            return [":", a.substr(i), b.substr(i)]
+        }
+    }
+    throw Exception("can't handle diff, a: " + a + ", b: " + b)
+}
+
 export default function Home() {
     const [inputValue, setInputValue] = useState('')
-    let [messages, setMessages] = useState(example)
+    const [messages, setMessages] = useState([])
+    const [latest, setLatest] = useState([])
     const socketRef = useRef(null)
     const preventDefClearInp = function(event) {
         event.preventDefault()
@@ -11,31 +27,42 @@ export default function Home() {
         socketRef.current.send("clear")
     }
     const setInpSockSend = function(event) {
-        const v = event.target.value
-        setInputValue(v)
-        socketRef.current.send("=" + v)
+        const newValue = event.target.value
+        if (newValue === inputValue) return
+        const d = getDiff(inputValue, newValue)
+        setInputValue(newValue)
+        d.forEach(function(e) {socketRef.current.send(e)})
     }
     useEffect(function() {
-        console.log("start")
+        const connNames = {4: "Sotiris", 5: "Vaggas"}
+        fetch("http://localhost:8000/last")
+            .then(res => res.json())
+            .then(function(res) {
+                const p = [
+                    presentMoment(connNames, res[0]),
+                    presentMoment(connNames, res[1])
+                ]
+                console.log(JSON.stringify(p))
+                setMessages(p)
+            })
         socketRef.current = new WebSocket("ws://localhost:8000")
         socketRef.current.addEventListener("open", function() {
             socketRef.current.send('{"version": 0}')
         })
         socketRef.current.addEventListener("message", function(event) {
             console.log(event.data)
-            const {state, diffs} = JSON.parse(event.data)
-            const names = {4: "Sotiris", 5: "Vaggas"}
-            const p = [presentMoment(state, names, diffs)]
-            setMessages(p)
+            const diffs = JSON.parse(event.data)
+            const p = [presentMoment(connNames, diffs)]
+            console.log(JSON.stringify(p))
+            setLatest(p)
         })
         return function() {
-            console.log("end")
             socketRef.current.close()
         }
     }, [])
     return (
         <>
-            <ul> {messages.map(messageToInnerUl)} </ul>
+            <ul>{messages.concat(latest).map(messageToInnerUl)}</ul>
             <form onSubmit={preventDefClearInp}>
                 <input
                     type="text"
@@ -60,54 +87,10 @@ function postToLi(e, i) {
  }
 
 function messageToSpan(m, i) {
-    if (m.type === "wrote")
+    if (m.type === "write")
         return <span key={i}>{m.body}</span>
-    if (m.type === "deleted")
+    if (m.type === "delete")
         return <s key={i}>{m.body}</s>
-    if (m.type === "old left")
-        return <a href={m.ref} key={i}>{m.body}</a>
-    if (m.type === "old right")
-        return <a href={m.ref} key={i}>{m.body}</a>
+    else
+        return <span key={i}>ERROR</span>
 }
-
-const example = [
-    [
-        {
-            name: "Sotiris",
-            message: [
-                {type: "wrote", body: "Hi M"},
-                {type: "deleted", body: "st"},
-                {type: "wrote", body: "ark"},
-            ]
-        }
-    ],
-    [
-        {
-            name: "Sotiris",
-            message: [
-                {type: "wrote", body: "Are you there?"}
-            ]
-        },
-        {
-            name: "Mark",
-            id: "edited-123",
-            message: [
-                {type: "wrote", body: "I thought I'd find you"}
-            ]
-        },
-        {
-            name: "Mark",
-            message: [
-                {type: "old left", body: "I ", ref: "#edited-123"},
-                {type: "wrote", body: "knew"},
-                {type: "old right", body: " I'd find you", ref: "#edited-123"},
-            ]
-        },
-        {
-            name: "Mark",
-            message: [
-                {type: "wrote", body: "in the park"},
-            ]
-        }
-    ]
-]

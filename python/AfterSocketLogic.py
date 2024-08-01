@@ -56,8 +56,10 @@ def diff_accumulate(state, diffs):
 class AfterSocketLogic:
 
     last_id = -1
-    moments = Moments()
     conns = {}
+
+    def __init__(self, moments_db):
+        self.moments = moments_db
 
     def register(self, socket_object):
         self.last_id += 1
@@ -66,10 +68,7 @@ class AfterSocketLogic:
         return i
 
     def get_json(self, data, time):
-        return {
-            "states": [],
-            "diffs": [{"connId": 4, "type": "write", "body": "hello"}]
-        }
+        return [{"connId": 4, "type": "write", "body": "hello"}]
 
     def get_last_n_moments(self, n):
         pass

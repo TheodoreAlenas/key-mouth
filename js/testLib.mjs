@@ -4,8 +4,8 @@ export default function assertEqual(message, a, b) {
     }
     else {
         console.log("Failed: " + message)
-        console.log(a)
-        console.log(b)
+        console.log(JSON.stringify(a))
+        console.log(JSON.stringify(b))
     }
 }
 
