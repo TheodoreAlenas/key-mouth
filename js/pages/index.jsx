@@ -1,3 +1,4 @@
+import presentMoment from '../presentMoment.mjs'
 import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
@@ -21,8 +22,11 @@ export default function Home() {
             socketRef.current.send('{"version": 0}')
         })
         socketRef.current.addEventListener("message", function(event) {
-            setMessages(JSON.parse(event.data))
             console.log(event.data)
+            const {state, diffs} = JSON.parse(event.data)
+            const names = {4: "Sotiris", 5: "Vaggas"}
+            const p = [presentMoment(state, names, diffs)]
+            setMessages(p)
         })
         return function() {
             console.log("end")
@@ -31,12 +35,7 @@ export default function Home() {
     }, [])
     return (
         <>
-            <ul>
-                {
-                    messages.map((m, i) =>
-                        <li key={i}><ul>{m.map(postToLi)}</ul></li>)
-                }
-            </ul>
+            <ul> {messages.map(messageToInnerUl)} </ul>
             <form onSubmit={preventDefClearInp}>
                 <input
                     type="text"
@@ -46,6 +45,10 @@ export default function Home() {
                 <button type="submit">Clear</button>
             </form>
         </>)
+}
+
+function messageToInnerUl(m, i) {
+    return <li key={i}><ul>{m.map(postToLi)}</ul></li>
 }
 
 function postToLi(e, i) {
