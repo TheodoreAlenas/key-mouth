@@ -6,16 +6,17 @@ class AfterSocketLogicTest(unittest.TestCase):
 
     def setUp(self):
         self.logic = AfterSocketLogic(
-            10.0, Moments(), min_silence=3.0)
+            10.0, Moments(10.0), min_silence=3.0, min_moment=0.5)
 
     def tearDown(self):
         self.logic.cleanup()
+        self.logic.moments.m.clear()
 
     def test_one_conn_one_msg(self):
         _, conn_id = self.logic.register(10.0)
-        res = self.logic.handle_input(11.0, conn_id, "+")
+        res = self.logic.handle_input(10.1, conn_id, "+")
         self.assertEqual([], res)
-        res = self.logic.handle_input(12.0, conn_id, "hello")
+        res = self.logic.handle_input(10.2, conn_id, "hello")
         self.assertEqual(
             [(
                 conn_id,
@@ -63,19 +64,16 @@ class AfterSocketLogicTest(unittest.TestCase):
             res[0][1]["curMoment"])
         self.assertEqual(res[0][1], res[1][1])
 
-    def test_send_wait_call_update_get_1_moment(self):
+    def test_register_get_no_moments(self):
         _, conn_1 = self.logic.register(10.0)
-        self.logic.handle_input(11.0, conn_1, "+")
-        self.logic.handle_input(12.0, conn_1, "hello")
-        res = self.logic.update(15.1)
+        res = self.logic.update(10.1)
+        self.assertEqual(-1, res[0][1]["lastMoment"])
+
+    def test_register_wait_get_1_moment(self):
+        _, conn_1 = self.logic.register(10.0)
+        res = self.logic.update(13.1)
         self.assertEqual(0, res[0][1]["lastMoment"])
 
-    def test_send_dont_wait_call_update_get_no_moments(self):
-        _, conn_1 = self.logic.register(10.0)
-        self.logic.handle_input(11.0, conn_1, "+")
-        self.logic.handle_input(12.0, conn_1, "hello")
-        res = self.logic.update(14.9)
-        self.assertEqual(-1, res[0][1]["lastMoment"])
 
 
 if __name__ == "__main__":

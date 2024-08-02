@@ -2,6 +2,7 @@ from AfterSocketLogic import AfterSocketLogic, Moments
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
+import threading
 
 app = FastAPI()
 
@@ -35,11 +36,13 @@ async def root():
     return fake_items
 
 
-logic = AfterSocketLogic(Moments())
+logic = AfterSocketLogic(time(), Moments(time()), 1.0, 0.5)
+mutex = threading.Lock()
 id_to_sock = {}
 async def send_jsons(to_send):
     for conn, json in to_send:
         await id_to_sock[conn].send_json(json)
+
 
 @app.websocket("/")
 async def root(websocket: WebSocket):
@@ -57,7 +60,9 @@ async def root(websocket: WebSocket):
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
+            mutex.acquire()
             to_send = logic.handle_input(time(), conn_id, data)
+            mutex.release()
             await send_jsons(to_send)
     except WebSocketDisconnect as e:
         id_to_sock.pop(conn_id)
