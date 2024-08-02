@@ -34,11 +34,15 @@ class AfterSocketLogic:
     def cleanup(self):
         self.conns.clear()
 
-    def register(self, socket_object):
+    def register(self, time):
         self.last_id += 1
         i = self.last_id
         self.conns.append(i)
-        return i
+        return ([], i)
+
+    def disconnect(self, conn_id, time):
+        self.conns.remove(conn_id)
+        return []
 
     def handle_input(self, conn_id, data, time):
         if data == "+":
