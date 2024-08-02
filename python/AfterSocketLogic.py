@@ -16,7 +16,7 @@ class Moments:
 class DiffDivider:
 
     def new_diff(self, time, conn_id):
-        return 1
+        return None
 
     def update(self, time):
         return None
@@ -25,6 +25,7 @@ class DiffDivider:
 class AfterSocketLogic:
 
     last_id = -1
+    divider = DiffDivider()
 
     def __init__(self, moments_db):
         self.moments = moments_db
@@ -34,8 +35,9 @@ class AfterSocketLogic:
         i = self.last_id
         return i
 
-    def get_json(self, data, time):
-        return [{"connId": 4, "type": "write", "body": "hello"}]
-
-    def get_last_n_moments(self, n):
-        pass
+    def handle_input(self, conn_id, data, time):
+        res = self.divider.new_diff(time, conn_id)
+        if res is not None:
+            print("new moment packaged")
+        return [(conn_id,
+                 [{"connId": 4, "type": "write", "body": "hello"}])]

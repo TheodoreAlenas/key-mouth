@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from time import time
 
 app = FastAPI()
-logic = AfterSocketLogic(Moments())
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,8 +35,12 @@ async def root():
     return fake_items
 
 
+logic = AfterSocketLogic(Moments())
+id_to_sock = {}
+
 @app.websocket("/")
 async def root(websocket: WebSocket):
+    conn_id = None
     try:
         await websocket.accept()
         metadata = await websocket.receive_json()
@@ -47,9 +50,11 @@ async def root(websocket: WebSocket):
             websocket.close(code=1002, reason="only v0 is supported")
             return
         conn_id = logic.register(time())
+        id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
-            json = logic.get_json(data, time())
-            await websocket.send_json(json)
+            to_send = logic.handle_input(conn_id, data, time())
+            for conn, json in to_send:
+                await id_to_sock[conn].send_json(json)
     except WebSocketDisconnect as e:
-        pass
+        id_to_sock.pop(conn_id)
