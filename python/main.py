@@ -37,6 +37,9 @@ async def root():
 
 logic = AfterSocketLogic(Moments())
 id_to_sock = {}
+async def send_jsons(to_send):
+    for conn, json in to_send:
+        await id_to_sock[conn].send_json(json)
 
 @app.websocket("/")
 async def root(websocket: WebSocket):
@@ -49,12 +52,12 @@ async def root(websocket: WebSocket):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        conn_id = logic.register(time())
+        _, conn_id = logic.register(time())
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
-            to_send = logic.handle_input(conn_id, data, time())
-            for conn, json in to_send:
-                await id_to_sock[conn].send_json(json)
+            to_send = logic.handle_input(time(), conn_id, data)
+            await send_jsons(to_send)
     except WebSocketDisconnect as e:
         id_to_sock.pop(conn_id)
+        logic.disconnect(time(), conn_id)
