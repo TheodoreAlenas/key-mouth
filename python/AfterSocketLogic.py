@@ -1,69 +1,55 @@
 
 class Moments:
-
-    m = []
-
-    def push(self, moment):
-        self.m.append(moment)
-
-    def get(self, i):
-        return self.m[i]
-
-    def size(self):
-        return len(self.m)
+    pass
 
 
-class DiffDivider:
+class Conn:
 
-    def new_diff(self, time, conn_id):
-        return None
-
-    def update(self, time):
-        return None
+    def __init__(self, time):
+        self.last_spoke = time
 
 
 class AfterSocketLogic:
 
     last_id = -1
-    divider = DiffDivider()
-    conns = []
+    last_moment = -1
+    conns = {}
     recent_ungrouped = []
 
-    def __init__(self, moments_db):
+    def __init__(self, _, moments_db, min_silence):
+        self.min_silence = min_silence
         self.moments = moments_db
 
     def cleanup(self):
         self.conns.clear()
         self.recent_ungrouped.clear()
 
-    def register(self, _):
+    def register(self, time):
         self.last_id += 1
         i = self.last_id
-        self.conns.append(i)
+        self.conns[i] = Conn(time)
         return ([], i)
 
     def disconnect(self, _, conn_id):
-        self.conns.remove(conn_id)
+        self.conns.pop(conn_id)
         return []
 
     def handle_input(self, time, conn_id, data):
         if data == "+":
             return []
-        res = self.divider.new_diff(time, conn_id)
-        if res is not None:
-            print("new moment packaged")
         self.recent_ungrouped.append({
             "connId": conn_id,
             "type": "write",
             "body": data
         })
-        return self._to_send()
+        s = self.update(time)
+        self.conns[conn_id].last_spoke = time
+        return s
 
-    def update(self, _):
-        return self._to_send()
-
-    def _to_send(self):
-        return [(
-            conn,
-            {"lastMoment": -1, "curMoment": self.recent_ungrouped}
-        ) for conn in self.conns]
+    def update(self, time):
+        for conn in self.conns:
+            if time - self.conns[conn].last_spoke > self.min_silence:
+                self.last_moment += 1
+        s = {"lastMoment": self.last_moment,
+             "curMoment": self.recent_ungrouped}
+        return [(conn, s) for conn in self.conns]
