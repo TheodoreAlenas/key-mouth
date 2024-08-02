@@ -52,7 +52,8 @@ async def root(websocket: WebSocket):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        _, conn_id = logic.register(time())
+        to_send, conn_id = logic.register(time())
+        await send_jsons(to_send)
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
@@ -60,4 +61,5 @@ async def root(websocket: WebSocket):
             await send_jsons(to_send)
     except WebSocketDisconnect as e:
         id_to_sock.pop(conn_id)
-        logic.disconnect(time(), conn_id)
+        to_send = logic.disconnect(time(), conn_id)
+        await send_jsons(to_send)

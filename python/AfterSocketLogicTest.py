@@ -61,5 +61,6 @@ class AfterSocketLogicTest(unittest.TestCase):
         ], res[0][1])
         self.assertEqual(res[0][1], res[1][1])
 
+
 if __name__ == "__main__":
     unittest.main()

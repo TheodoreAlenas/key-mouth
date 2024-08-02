@@ -36,13 +36,13 @@ class AfterSocketLogic:
         self.conns.clear()
         self.recent_ungrouped.clear()
 
-    def register(self, time):
+    def register(self, _):
         self.last_id += 1
         i = self.last_id
         self.conns.append(i)
         return ([], i)
 
-    def disconnect(self, time, conn_id):
+    def disconnect(self, _, conn_id):
         self.conns.remove(conn_id)
         return []
 
@@ -57,4 +57,7 @@ class AfterSocketLogic:
             "type": "write",
             "body": data
         })
+        return [(conn, self.recent_ungrouped) for conn in self.conns]
+
+    def update(self, _):
         return [(conn, self.recent_ungrouped) for conn in self.conns]
