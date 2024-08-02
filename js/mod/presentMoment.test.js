@@ -1,28 +1,29 @@
-import presentMoment from './presentMoment.mjs'
-import assertEqual from './testLib.mjs'
+import presentMoment from './presentMoment.js'
+import assertEqual from './testLib.js'
 
 assertEqual(
     "none is none",
     [],
     presentMoment([], []))
 
-const names = {
-    4: "Sotiris",
-    5: "Mark"
+function getNames(conn) {
+    if (conn === 4) return "Sotiris"
+    if (conn === 5) return "Mark"
+    return "...But there's only conn 4 and conn 5"
 }
 
 assertEqual(
     "one writing",
     [{name: "Sotiris", message: [{type: "write", body: "hello"}]}],
     presentMoment(
-        names,
+        getNames,
         [{connId: 4, type: "write", body: "hello"}]))
 
 assertEqual(
     "two writings",
     [{name: "Sotiris", message: [{type: "write", body: "hello"}]}],
     presentMoment(
-        names,
+        getNames,
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "write", body: "llo"}]))
 
@@ -30,7 +31,7 @@ assertEqual(
     "two deletes",
     [{name: "Sotiris", message: [{type: "delete", body: "hello"}]}],
     presentMoment(
-        names,
+        getNames,
         [{connId: 4, type: "delete", body: "llo"},
          {connId: 4, type: "delete", body: "he"}]))
 
@@ -39,7 +40,7 @@ assertEqual(
     [{name: "Sotiris", message: [{type: "write", body: "he"},
                                  {type: "delete", body: "he"}]}],
     presentMoment(
-        names,
+        getNames,
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "delete", body: "he"}]))
 
@@ -48,7 +49,7 @@ assertEqual(
     [{name: "Sotiris", message: [{type: "write", body: "hi"}]},
      {name: "Mark", message: [{type: "write", body: "HELLO"}]}],
     presentMoment(
-        names,
+        getNames,
         [{connId: 4, type: "write", body: "hi"},
          {connId: 5, type: "write", body: "HELLO"}]))
 
@@ -57,7 +58,7 @@ assertEqual(
     [{name: "Sotiris", message: [{type: "write", body: "hi"}]},
      {name: "Mark", message: [{type: "write", body: "HELLO"}]}],
     presentMoment(
-        names,
+        getNames,
         [{connId: 4, type: "write", body: "h"},
          {connId: 5, type: "write", body: "HELLO"},
          {connId: 4, type: "write", body: "i"}]))

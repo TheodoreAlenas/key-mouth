@@ -1,5 +1,5 @@
 
-export default function presentMoment(names, diffs) {
+export default function presentMoment(getNames, diffs) {
     let conns = {}
     let order = []
     for (let i = 0; i < diffs.length; i++) {
@@ -28,7 +28,7 @@ export default function presentMoment(names, diffs) {
     }
     let result = []
     order.forEach(function(e) {result.push({
-        name: names[e],
+        name: getNames(e),
         message: conns[e].message
     })})
     return result

@@ -36,8 +36,10 @@ class AfterSocketLogic:
         return i
 
     def handle_input(self, conn_id, data, time):
+        if data == "+":
+            return []
         res = self.divider.new_diff(time, conn_id)
         if res is not None:
             print("new moment packaged")
         return [(conn_id,
-                 [{"connId": 4, "type": "write", "body": "hello"}])]
+                 [{"connId": conn_id, "type": "write", "body": "hello"}])]

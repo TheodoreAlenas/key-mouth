@@ -1,4 +1,4 @@
-import presentMoment from '../presentMoment.mjs'
+import presentMoment from '../mod/presentMoment.js'
 import { useEffect, useRef, useState } from "react"
 
 function getDiff(a, b) {
@@ -16,12 +16,16 @@ function getDiff(a, b) {
     throw Exception("can't handle diff, a: " + a + ", b: " + b)
 }
 
+function getConnName(conn) {
+    if (conn % 2) return "Vaggas" + conn
+    return "Sotiris" + conn
+}
+
 function setUpSocket(socket, setMessages, setLatest) {
-    const connNames = {4: "Sotiris", 5: "Vaggas"}
     fetch("http://localhost:8000/last")
         .then(res => res.json())
         .then(function(res) {
-            const p = res.map(r => presentMoment(connNames, r))
+            const p = res.map(r => presentMoment(getConnName, r))
             setMessages(p)
         })
     socket.addEventListener("open", function() {
@@ -30,7 +34,7 @@ function setUpSocket(socket, setMessages, setLatest) {
     socket.addEventListener("message", function(event) {
         console.log(event.data)
         const diffs = JSON.parse(event.data)
-        const p = [presentMoment(connNames, diffs)]
+        const p = [presentMoment(getConnName, diffs)]
         setLatest(p)
     })
     return function() {
