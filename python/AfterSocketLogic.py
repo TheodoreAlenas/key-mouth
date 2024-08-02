@@ -57,7 +57,13 @@ class AfterSocketLogic:
             "type": "write",
             "body": data
         })
-        return [(conn, self.recent_ungrouped) for conn in self.conns]
+        return self._to_send()
 
     def update(self, _):
-        return [(conn, self.recent_ungrouped) for conn in self.conns]
+        return self._to_send()
+
+    def _to_send(self):
+        return [(
+            conn,
+            {"lastMoment": -1, "curMoment": self.recent_ungrouped}
+        ) for conn in self.conns]

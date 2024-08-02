@@ -33,7 +33,8 @@ function setUpSocket(socket, setMessages, setLatest) {
     })
     socket.addEventListener("message", function(event) {
         console.log(event.data)
-        const diffs = JSON.parse(event.data)
+        const diffsAndMore = JSON.parse(event.data)
+        const diffs = diffsAndMore.curMoment
         const p = [presentMoment(getConnName, diffs)]
         setLatest(p)
     })

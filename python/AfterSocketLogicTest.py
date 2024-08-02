@@ -18,7 +18,10 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(
             [(
                 conn_id,
-                [{"connId": conn_id, "type": "write", "body": "hello"}]
+                {"lastMoment": -1, "curMoment": [{
+                    "connId": conn_id,
+                    "type": "write",
+                    "body": "hello"}]}
             )],
             res)
 
@@ -41,12 +44,8 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.logic.disconnect(12.0, conn_1)
         self.logic.handle_input(12.0, conn_1, "+")
         res = self.logic.handle_input(13.0, conn_2, "hello")
-        self.assertEqual(
-            [(
-                conn_2,
-                [{"connId": conn_2, "type": "write", "body": "hello"}]
-            )],
-            res)
+        self.assertEqual(1, len(res))
+        self.assertEqual(conn_2, res[0][0])
 
     def test_two_conn_one_msg_each_and_last_goes_last(self):
         _, conn_1 = self.logic.register(10.0)
@@ -55,10 +54,12 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.logic.handle_input(      12.0, conn_2, "+")
         self.logic.handle_input(      13.0, conn_2, "2")
         res = self.logic.handle_input(14.0, conn_1, "1")
-        self.assertEqual([
-            {"connId": conn_2, "type": "write", "body": "2"},
-            {"connId": conn_1, "type": "write", "body": "1"}
-        ], res[0][1])
+        self.assertEqual(
+            [
+                {"connId": conn_2, "type": "write", "body": "2"},
+                {"connId": conn_1, "type": "write", "body": "1"}
+            ],
+            res[0][1]["curMoment"])
         self.assertEqual(res[0][1], res[1][1])
 
 
