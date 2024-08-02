@@ -36,12 +36,19 @@ async def root():
     return fake_items
 
 
+id_to_sock = {}
+
 logic = AfterSocketLogic(time(), Moments(time()), 1.0, 0.5)
 mutex = threading.Lock()
-id_to_sock = {}
-async def send_jsons(to_send):
+
+
+async def wrap(f, args):
+    mutex.acquire()
+    to_send, to_return = f(time(), args)
+    mutex.release()
     for conn, json in to_send:
         await id_to_sock[conn].send_json(json)
+    return to_return
 
 
 @app.websocket("/")
@@ -55,16 +62,11 @@ async def root(websocket: WebSocket):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        to_send, conn_id = logic.register(time())
-        await send_jsons(to_send)
+        conn_id = await wrap(logic.register, None)
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
-            mutex.acquire()
-            to_send = logic.handle_input(time(), conn_id, data)
-            mutex.release()
-            await send_jsons(to_send)
+            await wrap(logic.handle_input, (conn_id, data))
     except WebSocketDisconnect as e:
         id_to_sock.pop(conn_id)
-        to_send = logic.disconnect(time(), conn_id)
-        await send_jsons(to_send)
+        await wrap(logic.disconnect, conn_id)

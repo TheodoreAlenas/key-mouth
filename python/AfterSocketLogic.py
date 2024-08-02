@@ -39,7 +39,7 @@ class AfterSocketLogic:
         self.conns.clear()
         self.recent_ungrouped.clear()
 
-    def register(self, time):
+    def register(self, time, _):
         self.last_id += 1
         i = self.last_id
         self.conns[i] = Conn(time)
@@ -48,28 +48,29 @@ class AfterSocketLogic:
 
     def disconnect(self, _, conn_id):
         self.conns.pop(conn_id)
-        return []
+        return ([], None)
 
-    def handle_input(self, time, conn_id, data):
+    def handle_input(self, time, conn_id_and_data):
+        conn_id, data = conn_id_and_data
         if data == "+":
-            return []
+            return ([], None)
         self.recent_ungrouped.append((time, {
             "connId": conn_id,
             "type": "write",
             "body": data
         }))
-        s = self.update(time)
+        s = self.update(time, None)
         self.conns[conn_id].last_spoke = time
         return s
 
-    def update(self, time):
+    def update(self, time, _):
         for conn in self.conns:
             l = self.conns[conn].last_spoke
             if time - l > self.min_silence:
                 self._maybe_inc_last_moment(l)
         s = {"lastMoment": self.moments.get_len() - 1,
              "curMoment": [e for _, e in self.recent_ungrouped]}
-        return [(conn, s) for conn in self.conns]
+        return ([(conn, s) for conn in self.conns], None)
 
     def _maybe_inc_last_moment(self, time):
         if time - self.moments.get_last_time() < self.min_moment:
