@@ -26,13 +26,18 @@ class AfterSocketLogic:
 
     last_id = -1
     divider = DiffDivider()
+    conns = []
 
     def __init__(self, moments_db):
         self.moments = moments_db
 
+    def cleanup(self):
+        self.conns.clear()
+
     def register(self, socket_object):
         self.last_id += 1
         i = self.last_id
+        self.conns.append(i)
         return i
 
     def handle_input(self, conn_id, data, time):
@@ -41,5 +46,6 @@ class AfterSocketLogic:
         res = self.divider.new_diff(time, conn_id)
         if res is not None:
             print("new moment packaged")
-        return [(conn_id,
-                 [{"connId": conn_id, "type": "write", "body": "hello"}])]
+        return [(conn,
+                 [{"connId": conn_id, "type": "write", "body": "hello"}])
+                for conn in self.conns]

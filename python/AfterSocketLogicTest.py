@@ -7,6 +7,9 @@ class AfterSocketLogicTest(unittest.TestCase):
     def setUp(self):
         self.logic = AfterSocketLogic(Moments())
 
+    def tearDown(self):
+        self.logic.cleanup()
+
     def test_one_conn_one_msg(self):
         conn_id = self.logic.register(10.0)
         res = self.logic.handle_input(conn_id, "+", 11.0)
@@ -18,6 +21,19 @@ class AfterSocketLogicTest(unittest.TestCase):
                 [{"connId": conn_id, "type": "write", "body": "hello"}]
             )],
             res)
+
+    def test_two_conn_one_msg(self):
+        conn_1 = self.logic.register(10.0)
+        conn_2 = self.logic.register(11.0)
+        self.logic.handle_input(conn_1, "+", 12.0)
+        res = self.logic.handle_input(conn_1, "hello", 13.0)
+        self.assertEqual(2, len(res))
+        self.assertEqual(res[0][1], res[1][1])
+        a = [conn_1, conn_2]
+        b = [res[0][0], res[1][0]]
+        a.sort()
+        b.sort()
+        self.assertEqual(a, b)
 
 if __name__ == "__main__":
     unittest.main()
