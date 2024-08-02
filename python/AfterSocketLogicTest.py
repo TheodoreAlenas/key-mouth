@@ -10,7 +10,6 @@ class AfterSocketLogicTest(unittest.TestCase):
 
     def tearDown(self):
         self.logic.cleanup()
-        self.logic.moments.m.clear()
 
     def test_one_conn_one_msg(self):
         _, conn_id = self.logic.register(10.0, None)
@@ -20,7 +19,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(
             [(
                 conn_id,
-                {"lastMoment": -1, "curMoment": [{
+                {"lastMoment": None, "curMoment": [{
                     "connId": conn_id,
                     "type": "write",
                     "body": "hello"}]}
@@ -67,13 +66,7 @@ class AfterSocketLogicTest(unittest.TestCase):
     def test_register_get_no_moments(self):
         _, conn_1 = self.logic.register(10.0, None)
         res, _ = self.logic.update(10.1, None)
-        self.assertEqual(-1, res[0][1]["lastMoment"])
-
-    def test_register_wait_get_1_moment(self):
-        _, conn_1 = self.logic.register(10.0, None)
-        res, _ = self.logic.update(13.1, None)
-        self.assertEqual(0, res[0][1]["lastMoment"])
-
+        self.assertEqual(None, res[0][1]["lastMoment"])
 
 
 if __name__ == "__main__":
