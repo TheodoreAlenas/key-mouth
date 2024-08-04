@@ -1,52 +1,57 @@
-import SocketInteractor from '../mod/SocketInteractor.js'
+import initSocketReturnTeardown from '../mod/socket.js'
 import { useEffect, useRef, useState } from "react"
 
 export default function Home({env}) {
     const [inputValue, setInputValue] = useState('')
     const [oldMoments, setOldMoments] = useState([])
     const [lastMoment, setLastMoment] = useState([])
-    const interactorRef = useRef(null)
+    const defaultHooks = {
+        onSubmit: function(e) {e.preventDefault},
+        onChange: function() {}
+    }
+    const [hooks, setHooks] = useState(defaultHooks)
     useEffect(function() {
-        interactorRef.current = new SocketInteractor(
-            env, inputValue, setInputValue,
-            setOldMoments, setLastMoment)
-        return interactorRef.current.getFunctionThatClosesSocket()
+        return initSocketReturnTeardown(
+            {env, setInputValue, setOldMoments, setLastMoment},
+            function(unlocked) {
+                setHooks({
+                    onClear: function(event) {
+                        event.preventDefault()
+                        unlocked.onClear()
+                    },
+                    onChange: function(event) {
+                        unlocked.onInputChange(event.target.value)
+                    }
+                })
+            })
     }, [])
-    const preventDefClearInp = function(event) {
-        event.preventDefault()
-        interactorRef.current.onClear()
-    }
-    const setInpSockSend = function(event) {
-        const newValue = event.target.value
-        interactorRef.current.onInputChange(newValue)
-    }
     return (
         <>
-            <ul>{oldMoments.concat(lastMoment).map(messageToInnerUl)}</ul>
-            <form onSubmit={preventDefClearInp}>
+            <ul>{oldMoments.concat(lastMoment).map(momentToLiUl)}</ul>
+            <form onSubmit={hooks.onClear}>
                 <input
                     type="text"
                     value={inputValue}
-                    onChange={setInpSockSend}
+                    onChange={hooks.onChange}
                 />
                 <button type="submit">Clear</button>
             </form>
         </>)
 }
 
-function messageToInnerUl(m, i) {
-    return <li key={i}><ul>{m.map(postToLi)}</ul></li>
+function momentToLiUl(m, i) {
+    return <li key={i}><ul>{m.map(personToLi)}</ul></li>
 }
 
-function postToLi(e, i) {
+function personToLi(e, i) {
     return <li id={e.id} key={i}>
                <span key="name">{e.name}</span>
                {': '}
-               {e.message.map(messageToSpan)}
+               {e.message.map(pieceToSpan)}
            </li>
  }
 
-function messageToSpan(m, i) {
+function pieceToSpan(m, i) {
     if (m.type === "write")
         return <span key={i}>{m.body}</span>
     if (m.type === "delete")

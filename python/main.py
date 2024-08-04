@@ -5,7 +5,6 @@ from time import time
 import threading
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -13,8 +12,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 id_to_sock = {}
 mutex = threading.Lock()
 logic = AfterSocketLogic(time=time(),
