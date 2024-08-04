@@ -1,13 +1,13 @@
 import presentMoment from './presentMoment.js'
 
 export default class SocketInteractor {
-    constructor(setMessages, setLatest, setInputValue) {
+    constructor(inputValue, setOldMoments, setLastMoment, setInputValue) {
         this.s = new WebSocket("ws://localhost:8000")
-        this.inp = ""
+        this.inp = inputValue
         this.setInputValue = setInputValue
-        setMomentsOnceFetched(setMessages, setLatest)
+        setMomentsOnceFetched(setOldMoments, setLastMoment)
         onOpenSendVersion(this.s)
-        onMessageSetLatest(this.s, setLatest)
+        onMessageSetLatest(this.s, setLastMoment)
     }
     getFunctionThatClosesSocket() {
         const s = this.s
@@ -28,15 +28,15 @@ export default class SocketInteractor {
     }
 }
 
-function setMomentsOnceFetched(setMessages, setLatest) {
+function setMomentsOnceFetched(setOldMoments, setLastMoment) {
     fetch("http://localhost:8000/last")
         .then(res => res.json())
         .then(function(res) {
             if (res.length == 0) return
             const p = res.map(r => presentMoment(getConnName, r))
-            setMessages(p.slice(0, -1))
+            setOldMoments(p.slice(0, -1))
             const last = p[p.length - 1]
-            if (last.length !== 0) setLatest([last])
+            if (last.length !== 0) setLastMoment([last])
         })
 }
 
@@ -46,12 +46,12 @@ function onOpenSendVersion(socket) {
     })
 }
 
-function onMessageSetLatest(socket, setLatest) {
+function onMessageSetLatest(socket, setLastMoment) {
     socket.addEventListener("message", function(event) {
         const diffsAndMore = JSON.parse(event.data)
         const diffs = diffsAndMore.curMoment
         const p = [presentMoment(getConnName, diffs)]
-        setLatest(p)
+        setLastMoment(p)
     })
 }
 

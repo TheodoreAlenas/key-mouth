@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
     const [inputValue, setInputValue] = useState('')
-    const [messages, setMessages] = useState([])
-    const [latest, setLatest] = useState([])
+    const [oldMoments, setOldMoments] = useState([])
+    const [lastMoment, setLastMoment] = useState([])
     const interactorRef = useRef(null)
     const preventDefClearInp = function(event) {
         event.preventDefault()
@@ -15,13 +15,13 @@ export default function Home() {
         interactorRef.current.onInputChange(newValue)
     }
     useEffect(function() {
-        interactorRef.current =
-            new SocketInteractor(setMessages, setLatest, setInputValue)
+        interactorRef.current = new SocketInteractor(
+            inputValue, setOldMoments, setLastMoment, setInputValue)
         return interactorRef.current.getFunctionThatClosesSocket()
     }, [])
     return (
         <>
-            <ul>{messages.concat(latest).map(messageToInnerUl)}</ul>
+            <ul>{oldMoments.concat(lastMoment).map(messageToInnerUl)}</ul>
             <form onSubmit={preventDefClearInp}>
                 <input
                     type="text"
