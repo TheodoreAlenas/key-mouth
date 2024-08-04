@@ -68,17 +68,17 @@ function getConnName(conn) {
 
 class Unlocked {
     constructor(socket, setInputValue) {
-        this.s = socket
-        this.inp = ""
+        this.socket = socket
+        this.inputValue = ""
         this.setInputValue = setInputValue
     }
     onClear() {
-        this.inp = ""
+        this.inputValue = ""
         this.setInputValue("")
-        this.s.send("clear")
+        this.socket.send("clear")
     }
     onInputChange(newValue) {
-        const oldValue = this.inp
+        const oldValue = this.inputValue
         try {
             this.onInputChangeUnhandled(newValue)
         }
@@ -89,11 +89,11 @@ class Unlocked {
         }
     }
     onInputChangeUnhandled(newValue) {
-        if (newValue === this.inp) return
-        const d = getDiff(this.inp, newValue)
-        this.inp = newValue
+        if (newValue === this.inputValue) return
+        const d = getDiff(this.inputValue, newValue)
+        this.inputValue = newValue
         this.setInputValue(newValue)
-        const s = this.s
+        const s = this.socket
         d.forEach(function(e) { trySending(s, e, d) })
     }
 }

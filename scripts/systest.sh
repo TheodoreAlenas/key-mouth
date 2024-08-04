@@ -6,7 +6,7 @@ set -e
     cd ./python
     . venv/bin/activate
     export KEY_MOUTH_SHOW_WHO_TO=yes
-    timeout 1.5s uvicorn                        \
+    timeout 2s uvicorn                          \
             --host localhost                    \
             --port 8001                         \
             --log-config systest-log-config.ini \
@@ -20,3 +20,5 @@ sleep 1
 ) &
 
 wait
+
+python systest-check.py

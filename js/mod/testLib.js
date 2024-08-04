@@ -18,4 +18,5 @@ function isEqual(a, b) {
         const missing = Object.keys(a).find(k => !isEqual(a[k], b[k]))
         return missing === undefined
     }
+    throw new Error("unhandled type: " + t)
 }
