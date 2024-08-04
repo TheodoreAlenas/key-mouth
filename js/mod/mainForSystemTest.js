@@ -5,9 +5,9 @@ function run() {
         {env, setInputValue, setOldMoments, setLastMoment},
         function(unlocked) {
             unlocked.onInputChange("hi")
-            unlocked.onInputChange(" there")
+            unlocked.onInputChange("hi there")
             unlocked.onClear()
-            close()
+            setTimeout(close, 200)
         })
 }
 
