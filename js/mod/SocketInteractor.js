@@ -18,7 +18,7 @@ export default class SocketInteractor {
         this.setInputValue("")
         this.s.send("clear")
     }
-    onInputChange(newValue, setInputValue) {
+    onInputChange(newValue) {
         if (newValue === this.inp) return
         const d = getDiff(this.inp, newValue)
         this.inp = newValue
@@ -35,7 +35,8 @@ function setMomentsOnceFetched(setMessages, setLatest) {
             if (res.length == 0) return
             const p = res.map(r => presentMoment(getConnName, r))
             setMessages(p.slice(0, -1))
-            setLatest([p[p.length - 1]])
+            const last = p[p.length - 1]
+            if (last.length !== 0) setLatest([last])
         })
 }
 

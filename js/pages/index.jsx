@@ -12,7 +12,7 @@ export default function Home() {
     }
     const setInpSockSend = function(event) {
         const newValue = event.target.value
-        interactorRef.current.onInputChange(newValue, setInputValue)
+        interactorRef.current.onInputChange(newValue)
     }
     useEffect(function() {
         interactorRef.current =
