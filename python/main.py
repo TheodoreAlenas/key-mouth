@@ -14,32 +14,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-fake_items = [
-    [
-        {"connId": 4, "type": "write", "body": "H"},
-        {"connId": 4, "type": "write", "body": "i"},
-        {"connId": 4, "type": "write", "body": " Mst"},
-        {"connId": 4, "type": "delete", "body": "s"},
-        {"connId": 4, "type": "delete", "body": "t"},
-        {"connId": 4, "type": "write", "body": "ark"}
-    ],
-    [
-        {"connId": 4, "type": "write", "body": "Are you there?"},
-        {"connId": 5, "type": "write",
-         "body": "I thought I'd find you here"}
-    ]
-]
-
 
 @app.get("/last")
 async def root():
-    return fake_items
+    return [
+        [
+            {"connId": 4, "type": "write", "body": "H"},
+            {"connId": 4, "type": "write", "body": "i"},
+            {"connId": 4, "type": "write", "body": " Mst"},
+            {"connId": 4, "type": "delete", "body": "s"},
+            {"connId": 4, "type": "delete", "body": "t"},
+            {"connId": 4, "type": "write", "body": "ark"}
+        ],
+        [
+            {"connId": 4, "type": "write", "body": "Are you there?"},
+            {"connId": 5, "type": "write",
+             "body": "I thought I'd find you here"}
+        ]
+    ]
 
 
 id_to_sock = {}
-
-logic = AfterSocketLogic(time(), Moments(time()), 1.0, 0.5)
 mutex = threading.Lock()
+logic = AfterSocketLogic(time=time(),
+                         moments_db=Moments(time()),
+                         min_silence=1.0,
+                         min_moment=0.5)
 
 
 async def wrap(f, args):
