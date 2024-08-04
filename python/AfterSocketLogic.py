@@ -44,7 +44,7 @@ class AfterSocketLogic:
         self.conns.clear()
         self.recent_ungrouped.clear()
 
-    def get_last_few(self):
+    def get_last_few(self):  # NO TEST COVERAGE
         last = [e for _, e in self.recent_ungrouped]
         return self.moments.get_last_few() + [last]
 
