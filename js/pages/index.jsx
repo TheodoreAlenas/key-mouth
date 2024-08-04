@@ -1,68 +1,23 @@
-import presentMoment from '../mod/presentMoment.js'
+import SocketInteractor from '../mod/SocketInteractor.js'
 import { useEffect, useRef, useState } from "react"
-
-function getDiff(a, b) {
-    if (a.startsWith(b)) {
-        return ["-", a.substr(b.length)]
-    }
-    if (b.startsWith(a)) {
-        return ["+", b.substr(a.length)]
-    }
-    for (let i = 0; i < a.length && i < b.length; i++) {
-        if (a[i] !== b[i]) {
-            return [":", a.substr(i), b.substr(i)]
-        }
-    }
-    throw Exception("can't handle diff, a: " + a + ", b: " + b)
-}
-
-function getConnName(conn) {
-    if (conn % 2) return "Vaggas" + conn
-    return "Sotiris" + conn
-}
-
-function setUpSocket(socket, setMessages, setLatest) {
-    fetch("http://localhost:8000/last")
-        .then(res => res.json())
-        .then(function(res) {
-            const p = res.map(r => presentMoment(getConnName, r))
-            setMessages(p)
-        })
-    socket.addEventListener("open", function() {
-        socket.send('{"version": 0}')
-    })
-    socket.addEventListener("message", function(event) {
-        console.log(event.data)
-        const diffsAndMore = JSON.parse(event.data)
-        const diffs = diffsAndMore.curMoment
-        const p = [presentMoment(getConnName, diffs)]
-        setLatest(p)
-    })
-    return function() {
-        socket.close()
-    }
-}
 
 export default function Home() {
     const [inputValue, setInputValue] = useState('')
     const [messages, setMessages] = useState([])
     const [latest, setLatest] = useState([])
-    const socketRef = useRef(null)
+    const interactorRef = useRef(null)
     const preventDefClearInp = function(event) {
         event.preventDefault()
-        setInputValue("")
-        socketRef.current.send("clear")
+        interactorRef.current.onClear()
     }
     const setInpSockSend = function(event) {
         const newValue = event.target.value
-        if (newValue === inputValue) return
-        const d = getDiff(inputValue, newValue)
-        setInputValue(newValue)
-        d.forEach(function(e) {socketRef.current.send(e)})
+        interactorRef.current.onInputChange(newValue, setInputValue)
     }
     useEffect(function() {
-        socketRef.current = new WebSocket("ws://localhost:8000")
-        return setUpSocket(socketRef.current, setMessages, setLatest)
+        interactorRef.current =
+            new SocketInteractor(setMessages, setLatest, setInputValue)
+        return interactorRef.current.getFunctionThatClosesSocket()
     }, [])
     return (
         <>
