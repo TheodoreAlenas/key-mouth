@@ -1,11 +1,13 @@
 import presentMoment from './presentMoment.js'
 
 export default class SocketInteractor {
-    constructor(inputValue, setOldMoments, setLastMoment, setInputValue) {
-        this.s = new WebSocket("ws://localhost:8000")
+    constructor(env, inputValue, setInputValue,
+                setOldMoments, setLastMoment) {
+        this.env = env
+        this.s = new WebSocket(env.webSocketUri)
         this.inp = inputValue
         this.setInputValue = setInputValue
-        setMomentsOnceFetched(setOldMoments, setLastMoment)
+        setMomentsOnceFetched(env, setOldMoments, setLastMoment)
         onOpenSendVersion(this.s)
         onMessageSetLatest(this.s, setLastMoment)
     }
@@ -28,8 +30,8 @@ export default class SocketInteractor {
     }
 }
 
-function setMomentsOnceFetched(setOldMoments, setLastMoment) {
-    fetch("http://localhost:8000/last")
+function setMomentsOnceFetched(env, setOldMoments, setLastMoment) {
+    fetch(env.lastMomentsUri)
         .then(res => res.json())
         .then(function(res) {
             if (res.length == 0) return
