@@ -5,7 +5,7 @@ export default class SocketInteractor {
         this.s = new WebSocket("ws://localhost:8000")
         this.inp = ""
         this.setInputValue = setInputValue
-        setOldMomentsOnceFetched(setMessages)
+        setMomentsOnceFetched(setMessages, setLatest)
         onOpenSendVersion(this.s)
         onMessageSetLatest(this.s, setLatest)
     }
@@ -28,12 +28,14 @@ export default class SocketInteractor {
     }
 }
 
-function setOldMomentsOnceFetched(setMessages) {
+function setMomentsOnceFetched(setMessages, setLatest) {
     fetch("http://localhost:8000/last")
         .then(res => res.json())
         .then(function(res) {
+            if (res.length == 0) return
             const p = res.map(r => presentMoment(getConnName, r))
-            setMessages(p)
+            setMessages(p.slice(0, -1))
+            setLatest([p[p.length - 1]])
         })
 }
 

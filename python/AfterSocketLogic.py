@@ -4,6 +4,23 @@ class Moments:
     def __init__(self, time):
         self.last_time = time
 
+    def get_last_few(self):
+        return [
+            [
+                {"connId": 4, "type": "write", "body": "H"},
+                {"connId": 4, "type": "write", "body": "i"},
+                {"connId": 4, "type": "write", "body": " Mst"},
+                {"connId": 4, "type": "delete", "body": "s"},
+                {"connId": 4, "type": "delete", "body": "t"},
+                {"connId": 4, "type": "write", "body": "ark"}
+            ],
+            [
+                {"connId": 4, "type": "write", "body": "r u there?"},
+                {"connId": 5, "type": "write",
+                 "body": "I thought I'd find you here"}
+            ]
+        ]
+
 
 class Conn:
 
@@ -26,6 +43,10 @@ class AfterSocketLogic:
     def cleanup(self):
         self.conns.clear()
         self.recent_ungrouped.clear()
+
+    def get_last_few(self):
+        last = [e for _, e in self.recent_ungrouped]
+        return self.moments.get_last_few() + [last]
 
     def register(self, time, _):
         self.last_id += 1

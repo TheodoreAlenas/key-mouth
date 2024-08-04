@@ -15,31 +15,17 @@ app.add_middleware(
 )
 
 
-@app.get("/last")
-async def root():
-    return [
-        [
-            {"connId": 4, "type": "write", "body": "H"},
-            {"connId": 4, "type": "write", "body": "i"},
-            {"connId": 4, "type": "write", "body": " Mst"},
-            {"connId": 4, "type": "delete", "body": "s"},
-            {"connId": 4, "type": "delete", "body": "t"},
-            {"connId": 4, "type": "write", "body": "ark"}
-        ],
-        [
-            {"connId": 4, "type": "write", "body": "Are you there?"},
-            {"connId": 5, "type": "write",
-             "body": "I thought I'd find you here"}
-        ]
-    ]
-
-
 id_to_sock = {}
 mutex = threading.Lock()
 logic = AfterSocketLogic(time=time(),
                          moments_db=Moments(time()),
                          min_silence=1.0,
                          min_moment=0.5)
+
+
+@app.get("/last")
+async def last():
+    return logic.get_last_few()
 
 
 async def wrap(f, args):
