@@ -16,7 +16,8 @@ set -e
 sleep 1
 
 (
-    node js/mod/mainForSystemTest.js > git-ignores/systest-logs-front
+    node js/mod/WebInteractor.systestMain.js \
+         > git-ignores/systest-logs-front
 ) &
 
 wait

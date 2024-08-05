@@ -1,4 +1,4 @@
-import WebInteractor from '../mod/socket.js'
+import WebInteractor from '../mod/WebInteractor.js'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 

@@ -1,4 +1,4 @@
-import WebInteractor from './socket.js'
+import WebInteractor from './WebInteractor.js'
 
 const wi = new WebInteractor(
     {

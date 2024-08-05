@@ -1,5 +1,5 @@
 import presentMoment from './presentMoment.js'
-import TestCase from './testLib.js'
+import TestCase from './TestCase.js'
 
 const test = new TestCase()
 
