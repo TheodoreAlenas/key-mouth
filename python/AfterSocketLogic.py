@@ -24,7 +24,7 @@ class Moments:
 
 class Conn:
 
-    def __init__(self, time):
+    def __init__(self, time, session):
         pass
 
 
@@ -33,7 +33,7 @@ class AfterSocketLogic:
     last_id = -1
     last_moment = -1
     conns = {}
-    recent_ungrouped = []
+    last_moments = []
 
     def __init__(self, time, moments_db, min_silence, min_moment):
         self.min_silence = min_silence
@@ -42,16 +42,16 @@ class AfterSocketLogic:
 
     def cleanup(self):
         self.conns.clear()
-        self.recent_ungrouped.clear()
+        self.last_moments.clear()
 
     def get_last_few(self):  # NO TEST COVERAGE
-        last = [e for _, e in self.recent_ungrouped]
+        last = [e for _, e in self.last_moments]
         return self.moments.get_last_few() + [last]
 
-    def register(self, time, _):
+    def register(self, time, session):
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(time)
+        self.conns[i] = Conn(time, session)
         return ([], i)
 
     def disconnect(self, _, conn_id):
@@ -62,7 +62,7 @@ class AfterSocketLogic:
         conn_id, data = conn_id_and_data
         if data == "+":
             return ([], None)
-        self.recent_ungrouped.append((time, {
+        self.last_moments.append((time, {
             "connId": conn_id,
             "type": "write",
             "body": data
@@ -72,5 +72,5 @@ class AfterSocketLogic:
 
     def update(self, time, _):
         s = {"lastMoment": None,
-             "curMoment": [e for _, e in self.recent_ungrouped]}
+             "curMoment": [e for _, e in self.last_moments]}
         return ([(conn, s) for conn in self.conns], None)

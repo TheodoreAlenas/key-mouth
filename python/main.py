@@ -45,7 +45,7 @@ async def root(websocket: WebSocket, session: str):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        conn_id = await wrap(logic.register, None)
+        conn_id = await wrap(logic.register, session)
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
