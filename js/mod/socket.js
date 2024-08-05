@@ -1,67 +1,85 @@
 import presentMoment from './presentMoment.js'
 
-export default function initSocketReturnTeardown(args, onUnlock) {
-    try {
-        return initUnhandled(args, onUnlock)
+export default class WebInteractor {
+    setSetOldMoments(v) {this.setOldMoments = v}
+    setSetLastMoment(v) {this.setLastMoment = v}
+    setSetInputValue(v) {this.setInputValue = v}
+    setOnReadySocket(f) {this.onReadySocket = f}
+    constructor(env, session) {
+        try {
+            return this.constructorUnhandled(env, session)
+        }
+        catch (e) {
+            console.error("Error constructing web interactor, args: " +
+                          JSON.stringify({env, session}))
+            throw e
+        }
     }
-    catch (e) {
-        console.error("Error on socket interactor init, args: " +
-                      JSON.stringify(args))
-        throw e
+    constructorUnhandled(env, session) {
+        ifSessionIsntStringThrowError(session)
+        this.socket = new WebSocket(env.webSocketUri +
+                                    "?session=" + encodeURI(session))
+        this.setMomentsOnceFetched(env)
+        this.onOpenSendVersionAndUnlock(this.socket)
+        this.onMessageSetLatest(this.socket)
     }
-}
-
-function initUnhandled(
-    {env, session, setInputValue, setOldMoments, setLastMoment},
-    onUnlock) {
-
-    const socket = new WebSocket(env.webSocketUri)
-    setMomentsOnceFetched(env, setOldMoments, setLastMoment)
-    onOpenSendVersionAndUnlock(socket, setInputValue, onUnlock)
-    onMessageSetLatest(socket, setLastMoment)
-    return function() {socket.close()}
-}
-
-function setMomentsOnceFetched(env, setOldMoments, setLastMoment) {
-    fetch(env.lastMomentsUri)
-        .then(res => res.json())
-        .catch("the response of " + env.lastMomentsUri + "isn't JSON")
-        .then(function(moments) {
-            if (moments.length == 0) return
-            const p = moments.map(m => presentMoment(getConnName, m))
-            setOldMoments(p.slice(0, -1))
-            const last = p[p.length - 1]
-            if (last.length !== 0) setLastMoment([last])
+    getDestructor() {
+        const socket = this.socket
+        return function() {socket.close()}
+    }
+    setMomentsOnceFetched(env) {
+        const self = this
+        fetch(env.lastMomentsUri)
+            .then(res => res.json())
+            .catch("the response of " + env.lastMomentsUri + "isn't JSON")
+            .then(function(moments) {
+                if (moments.length == 0) return
+                const p = moments.map(m => presentMoment(getConnName, m))
+                self.setOldMoments(p.slice(0, -1))
+                const last = p[p.length - 1]
+                if (last.length !== 0) self.setLastMoment(last)
+            })
+    }
+    onOpenSendVersionAndUnlock(socket) {
+        const self = this
+        socket.addEventListener("open", function() {
+            try {
+                socket.send('{"version": 0}')
+                self.onReadySocket(new Unlocked(socket, self.setInputValue))
+            }
+            catch (e) {
+                console.error("Error sending version or unlocking input")
+                throw e
+            }
         })
+    }
+    onMessageSetLatest(socket) {
+        const self = this
+        socket.addEventListener("message", function(event) {
+            try {
+                const diffsAndMore = JSON.parse(event.data)
+                const diffs = diffsAndMore.curMoment
+                const p = presentMoment(getConnName, diffs)
+                self.setLastMoment(p)
+            }
+            catch (e) {
+                console.error("Error setting last moment to " + event.data)
+                throw e
+            }
+        })
+    }
+
 }
 
-function onOpenSendVersionAndUnlock(socket, setInputValue, onUnlock) {
-    socket.addEventListener("open", function() {
-        try {
-            socket.send('{"version": 0}')
-            onUnlock(new Unlocked(socket, setInputValue))
-        }
-        catch (e) {
-            console.error("Error sending version or unlocking input")
-            throw e
-        }
-    })
+function ifSessionIsntStringThrowError(session) {
+    if (typeof(session) !== 'string') {
+        throw new Error(
+            "session isn't string (.../?session=hello let's say), " +
+                "typeof(session) = " + typeof(session) +
+                ", session = " + session)
+    }
 }
 
-function onMessageSetLatest(socket, setLastMoment) {
-    socket.addEventListener("message", function(event) {
-        try {
-            const diffsAndMore = JSON.parse(event.data)
-            const diffs = diffsAndMore.curMoment
-            const p = [presentMoment(getConnName, diffs)]
-            setLastMoment(p)
-        }
-        catch (e) {
-            console.error("Error setting last moment to " + event.data)
-            throw e
-        }
-    })
-}
 function getConnName(conn) {
     if (conn % 2) return "Vaggas" + conn
     return "Sotiris" + conn

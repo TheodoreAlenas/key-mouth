@@ -15,7 +15,7 @@ const env = {
     webSocketUri: "ws://localhost:8001",
     lastMomentsUri: "http://localhost:8001/last"
 }
-const session = 0
+const session = "my\nsession"
 
 function log(m) {
     console.log(Date.now() + "\t" + m)

@@ -35,7 +35,7 @@ async def wrap(f, args):
 
 
 @app.websocket("/")
-async def root(websocket: WebSocket):
+async def root(websocket: WebSocket, session: str):
     conn_id = None
     try:
         await websocket.accept()
@@ -51,5 +51,6 @@ async def root(websocket: WebSocket):
             data = await websocket.receive_text()
             await wrap(logic.handle_input, (conn_id, data))
     except WebSocketDisconnect as e:
-        id_to_sock.pop(conn_id)
-        await wrap(logic.disconnect, conn_id)
+        if conn_id is not None:
+            id_to_sock.pop(conn_id)
+            await wrap(logic.disconnect, conn_id)
