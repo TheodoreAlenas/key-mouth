@@ -8,7 +8,7 @@ export default function Home({env}) {
     useEffect(function() {
         if (router.isReady) {
             const s = new URLSearchParams(router.query)
-            const newO = new WebInteractor(env, s.get('session'))
+            const newO = new WebInteractor(env, s.get('id'))
             setO(newO)
             return newO.getDestructor()
         }
