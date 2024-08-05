@@ -1,7 +1,9 @@
 import presentMoment from './presentMoment.js'
-import assertEqual from './testLib.js'
+import TestCase from './testLib.js'
 
-assertEqual(
+const test = new TestCase()
+
+test.assertEqual(
     "none is none",
     [],
     presentMoment([], []))
@@ -12,14 +14,14 @@ function getNames(conn) {
     return "...But there's only conn 4 and conn 5"
 }
 
-assertEqual(
+test.assertEqual(
     "one writing",
     [{name: "Sotiris", message: [{type: "write", body: "hello"}]}],
     presentMoment(
         getNames,
         [{connId: 4, type: "write", body: "hello"}]))
 
-assertEqual(
+test.assertEqual(
     "two writings",
     [{name: "Sotiris", message: [{type: "write", body: "hello"}]}],
     presentMoment(
@@ -27,7 +29,7 @@ assertEqual(
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "write", body: "llo"}]))
 
-assertEqual(
+test.assertEqual(
     "two deletes",
     [{name: "Sotiris", message: [{type: "delete", body: "hello"}]}],
     presentMoment(
@@ -35,7 +37,7 @@ assertEqual(
         [{connId: 4, type: "delete", body: "llo"},
          {connId: 4, type: "delete", body: "he"}]))
 
-assertEqual(
+test.assertEqual(
     "write delete",
     [{name: "Sotiris", message: [{type: "write", body: "he"},
                                  {type: "delete", body: "he"}]}],
@@ -44,7 +46,7 @@ assertEqual(
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "delete", body: "he"}]))
 
-assertEqual(
+test.assertEqual(
     "a writes, b writes",
     [{name: "Sotiris", message: [{type: "write", body: "hi"}]},
      {name: "Mark", message: [{type: "write", body: "HELLO"}]}],
@@ -53,7 +55,7 @@ assertEqual(
         [{connId: 4, type: "write", body: "hi"},
          {connId: 5, type: "write", body: "HELLO"}]))
 
-assertEqual(
+test.assertEqual(
     "a writes, b writes, a writes",
     [{name: "Sotiris", message: [{type: "write", body: "hi"}]},
      {name: "Mark", message: [{type: "write", body: "HELLO"}]}],
@@ -62,3 +64,5 @@ assertEqual(
         [{connId: 4, type: "write", body: "h"},
          {connId: 5, type: "write", body: "HELLO"},
          {connId: 4, type: "write", body: "i"}]))
+
+test.printResults()

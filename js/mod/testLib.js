@@ -1,11 +1,21 @@
-export default function assertEqual(message, a, b) {
-    if (isEqual(a, b)) {
-        console.log("Passed: " + message)
+
+export default class TestCase {
+    line = ""
+    fails = []
+    assertEqual(message, a, b) {
+        if (isEqual(a, b)) {
+            this.line += '.'
+        }
+        else {
+            this.line += 'F'
+            this.fails.push({message, a, b})
+        }
     }
-    else {
-        console.log("Failed: " + message)
-        console.log(JSON.stringify(a))
-        console.log(JSON.stringify(b))
+    printResults() {
+        console.log(this.line)
+        this.fails.forEach(function(e) {
+            console.log(JSON.stringify(e, null, 4))
+        })
     }
 }
 
