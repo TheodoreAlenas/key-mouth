@@ -12,7 +12,8 @@ export default function initSocketReturnTeardown(args, onUnlock) {
 }
 
 function initUnhandled(
-    {env, setInputValue, setOldMoments, setLastMoment}, onUnlock) {
+    {env, session, setInputValue, setOldMoments, setLastMoment},
+    onUnlock) {
 
     const socket = new WebSocket(env.webSocketUri)
     setMomentsOnceFetched(env, setOldMoments, setLastMoment)

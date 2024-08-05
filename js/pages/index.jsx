@@ -1,5 +1,6 @@
 import initSocketReturnTeardown from '../mod/socket.js'
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 
 export default function Home({env}) {
     const [inputValue, setInputValue] = useState('')
@@ -10,9 +11,10 @@ export default function Home({env}) {
         onChange: function() {}
     }
     const [hooks, setHooks] = useState(defaultHooks)
+    const session = useSearchParams().get('session')
     useEffect(function() {
         return initSocketReturnTeardown(
-            {env, setInputValue, setOldMoments, setLastMoment},
+            {env, session, setInputValue, setOldMoments, setLastMoment},
             function(unlocked) {
                 setHooks({
                     onClear: function(event) {

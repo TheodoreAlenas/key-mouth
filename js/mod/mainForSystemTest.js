@@ -2,7 +2,7 @@ import initSocketReturnTeardown from './socket.js'
 
 function run() {
     const close = initSocketReturnTeardown(
-        {env, setInputValue, setOldMoments, setLastMoment},
+        {env, session, setInputValue, setOldMoments, setLastMoment},
         function(unlocked) {
             unlocked.onInputChange("hi")
             unlocked.onInputChange("hi there")
@@ -15,6 +15,7 @@ const env = {
     webSocketUri: "ws://localhost:8001",
     lastMomentsUri: "http://localhost:8001/last"
 }
+const session = 0
 
 function log(m) {
     console.log(Date.now() + "\t" + m)
