@@ -1,33 +1,26 @@
-import initSocketReturnTeardown from './socket.js'
+import WebInteractor from './socket.js'
 
-function run() {
-    const close = initSocketReturnTeardown(
-        {env, session, setInputValue, setOldMoments, setLastMoment},
-        function(unlocked) {
-            unlocked.onInputChange("hi")
-            unlocked.onInputChange("hi there")
-            unlocked.onClear()
-            setTimeout(close, 200)
-        })
-}
+const wi = new WebInteractor(
+    {
+        webSocketUri: "ws://localhost:8001",
+        lastMomentsUri: "http://localhost:8001/last"
+    },
+    "my\nsession")
 
-const env = {
-    webSocketUri: "ws://localhost:8001",
-    lastMomentsUri: "http://localhost:8001/last"
-}
-const session = "my\nsession"
-
-function log(m) {
-    console.log(Date.now() + "\t" + m)
-}
-function setInputValue(newValue) {
-    log("input value set to '" + newValue + "'")
-}
-function setOldMoments(m) {
+function log(m) {console.log(Date.now() + "\t" + m)}
+wi.setSetInputValue(function(m) {
+    log("input value set to '" + m + "'")
+})
+wi.setSetOldMoments(function(m) {
     log("old moments set to " + JSON.stringify(m))
-}
-function setLastMoment(m) {
+})
+wi.setSetLastMoment(function(m) {
     log("last moment set to " + JSON.stringify(m))
-}
-
-run()
+})
+const close = wi.getDestructor()
+wi.setOnReadySocket(function(unlocked) {
+    unlocked.onInputChange("hi")
+    unlocked.onInputChange("hi there")
+    unlocked.onClear()
+    setTimeout(close, 200)
+})
