@@ -14,11 +14,11 @@ app.add_middleware(
 )
 id_to_sock = {}
 mutex = threading.Lock()
-DONT_USE_THIS = AfterSocketLogic(time=time(),
-                                 moments_db=Moments(time()),
-                                 min_silence=1.0,
-                                 min_moment=0.5)
-logic = AfterSocketPublicLogic(DONT_USE_THIS)
+logic = AfterSocketPublicLogic(AfterSocketLogic(
+    time=time(),
+    moments_db=Moments(time()),
+    min_silence=1.0,
+    min_moment=0.5))
 logic.create_room(time(), "0")
 logic.create_room(time(), "hello")
 
@@ -48,7 +48,7 @@ async def last(room: str):
 
 @app.websocket("/")
 async def root(websocket: WebSocket, room: str):
-    conn_id = None
+    conn = None
     try:
         await websocket.accept()
         metadata = await websocket.receive_json()
@@ -57,12 +57,12 @@ async def root(websocket: WebSocket, room: str):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        conn_id = await wrap(logic.connect, room)
-        id_to_sock[conn_id] = websocket
+        conn = await wrap(logic.connect, room)
+        id_to_sock[conn.conn_id] = websocket
         while True:
             data = await websocket.receive_text()
-            await wrap(DONT_USE_THIS.handle_input, (conn_id, data))
+            await wrap(conn.handle_input, data)
     except WebSocketDisconnect as e:
-        if conn_id is not None:
-            id_to_sock.pop(conn_id)
-            await wrap(DONT_USE_THIS.disconnect, conn_id)
+        if conn is not None:
+            id_to_sock.pop(conn.conn_id)
+            await wrap(conn.disconnect, None)

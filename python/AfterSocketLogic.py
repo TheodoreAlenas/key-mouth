@@ -97,7 +97,7 @@ class AfterSocketLogic:
         i = self.last_id
         self.conns[i] = Conn(time, i, room, self)
         self.rooms[room].conns.append(i)
-        return ([], i)
+        return ([], self.conns[i])
 
     def disconnect(self, _, conn_id):
         room = self.rooms[self.conns[conn_id].room]
