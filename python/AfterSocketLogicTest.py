@@ -42,7 +42,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         _, conn_1 = self.logic.register(10.0, "room0")
         _, conn_2 = self.logic.register(11.0, "room0")
         self.logic.disconnect(12.0, conn_1)
-        self.logic.handle_input(12.0, (conn_1, "+"))
+        self.logic.handle_input(12.0, (conn_2, "+"))
         res, _ = self.logic.handle_input(13.0, (conn_2, "hello"))
         self.assertEqual(1, len(res))
         self.assertEqual(conn_2, res[0][0])

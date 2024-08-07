@@ -74,7 +74,8 @@ class AfterSocketLogic:
         return ([], i)
 
     def disconnect(self, _, conn_id):
-        self.rooms[self.conns[conn_id].room].conns.remove(conn_id)
+        room = self.rooms[self.conns[conn_id].room]
+        room.conns.remove(conn_id)
         self.conns.pop(conn_id)
         return ([], None)
 
@@ -82,7 +83,8 @@ class AfterSocketLogic:
         conn_id, data = conn_id_and_data
         if data == "+":
             return ([], None)
-        self.rooms[self.conns[conn_id].room].last_moments.append((time, {
+        room = self.rooms[self.conns[conn_id].room]
+        room.last_moments.append((time, {
             "connId": conn_id,
             "type": "write",
             "body": data
@@ -91,6 +93,7 @@ class AfterSocketLogic:
         return s
 
     def update(self, time, conn_id):
+        room = self.rooms[self.conns[conn_id].room]
         s = {"lastMoment": None,
-             "curMoment": [e for _, e in self.rooms[self.conns[conn_id].room].last_moments]}
-        return ([(conn, s) for conn in self.rooms[self.conns[conn_id].room].conns], None)
+             "curMoment": [e for _, e in room.last_moments]}
+        return ([(conn, s) for conn in room.conns], None)
