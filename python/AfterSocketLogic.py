@@ -64,13 +64,13 @@ class AfterSocketLogic:
         last = [e for _, e in self.rooms[room].last_moments]
         return self.moments.get_last_few() + [last]
 
-    def register(self, time, session):
-        if type(session) != str:
+    def register(self, time, room):
+        if type(room) != str:
             raise Exception("can't register with non-string room")
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(time, session)
-        self.rooms[session].conns.append(i)
+        self.conns[i] = Conn(time, room)
+        self.rooms[room].conns.append(i)
         return ([], i)
 
     def disconnect(self, _, conn_id):

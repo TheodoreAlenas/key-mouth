@@ -1,7 +1,7 @@
 import WebInteractor from './WebInteractor.js'
 
 const roomUri = "http://localhost:8001/room?room=" +
-      encodeURI("my\nsession")
+      encodeURI("my\nroom")
 const withRoom = fetch(roomUri)
 withRoom.catch(function(err) {
     console.error("Error, can't create room")
@@ -24,7 +24,7 @@ function shit() {
             webSocketUri: "ws://localhost:8001",
             lastMomentsUri: "http://localhost:8001/last"
         },
-        "my\nsession")
+        "my\nroom")
 
     function log(m) {console.log(Date.now() + "\t" + m)}
     wi.setSetInputValue(function(m) {

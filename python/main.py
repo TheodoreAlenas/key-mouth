@@ -44,7 +44,7 @@ async def wrap(f, args):
 
 
 @app.websocket("/")
-async def root(websocket: WebSocket, session: str):
+async def root(websocket: WebSocket, room: str):
     conn_id = None
     try:
         await websocket.accept()
@@ -54,7 +54,7 @@ async def root(websocket: WebSocket, session: str):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        conn_id = await wrap(logic.register, session)
+        conn_id = await wrap(logic.register, room)
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()

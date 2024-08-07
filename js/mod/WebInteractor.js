@@ -5,21 +5,21 @@ export default class WebInteractor {
     setSetLastMoment(v) {this.setLastMoment = v}
     setSetInputValue(v) {this.setInputValue = v}
     setOnReadySocket(f) {this.onReadySocket = f}
-    constructor(env, session) {
+    constructor(env, room) {
         try {
-            return this.constructorUnhandled(env, session)
+            return this.constructorUnhandled(env, room)
         }
         catch (e) {
             console.error("Error constructing web interactor, args: " +
-                          JSON.stringify({env, session}))
+                          JSON.stringify({env, room}))
             throw e
         }
     }
-    constructorUnhandled(env, session) {
-        ifSessionIsntStringThrowError(session)
+    constructorUnhandled(env, room) {
+        ifRoomIsntStringThrowError(room)
         this.socket = new WebSocket(env.webSocketUri +
-                                    "?session=" + encodeURI(session))
-        this.setMomentsOnceFetched(env, session)
+                                    "?room=" + encodeURI(room))
+        this.setMomentsOnceFetched(env, room)
         this.onOpenSendVersionAndUnlock(this.socket)
         this.onMessageSetLatest(this.socket)
     }
@@ -27,10 +27,10 @@ export default class WebInteractor {
         const socket = this.socket
         return function() {socket.close()}
     }
-    setMomentsOnceFetched(env, session) {
+    setMomentsOnceFetched(env, room) {
         const self = this
         const lastMomRoom = env.lastMomentsUri +
-              "?room=" + encodeURI(session)
+              "?room=" + encodeURI(room)
         const withStr = fetch(lastMomRoom)
         withStr.catch(function(err) {
             console.error("Error, can't fetch " + lastMomRoom)
@@ -81,12 +81,12 @@ export default class WebInteractor {
 
 }
 
-function ifSessionIsntStringThrowError(session) {
-    if (typeof(session) !== 'string') {
+function ifRoomIsntStringThrowError(room) {
+    if (typeof(room) !== 'string') {
         throw new Error(
-            "session isn't string (.../?session=hello let's say), " +
-                "typeof(session) = " + typeof(session) +
-                ", session = " + session)
+            "room isn't string (.../?room=hello let's say), " +
+                "typeof(room) = " + typeof(room) +
+                ", room = " + room)
     }
 }
 
