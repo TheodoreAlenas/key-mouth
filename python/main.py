@@ -1,4 +1,4 @@
-from AfterSocketLogic import AfterSocketLogic, Moments, LogicHttpException
+from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, Conn, Moments, LogicHttpException
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
@@ -14,10 +14,11 @@ app.add_middleware(
 )
 id_to_sock = {}
 mutex = threading.Lock()
-logic = AfterSocketLogic(time=time(),
-                         moments_db=Moments(time()),
-                         min_silence=1.0,
-                         min_moment=0.5)
+DONT_USE_THIS = AfterSocketLogic(time=time(),
+                                 moments_db=Moments(time()),
+                                 min_silence=1.0,
+                                 min_moment=0.5)
+logic = AfterSocketPublicLogic(DONT_USE_THIS)
 logic.create_room(time(), "0")
 logic.create_room(time(), "hello")
 
@@ -60,8 +61,8 @@ async def root(websocket: WebSocket, room: str):
         id_to_sock[conn_id] = websocket
         while True:
             data = await websocket.receive_text()
-            await wrap(logic.handle_input, (conn_id, data))
+            await wrap(DONT_USE_THIS.handle_input, (conn_id, data))
     except WebSocketDisconnect as e:
         if conn_id is not None:
             id_to_sock.pop(conn_id)
-            await wrap(logic.disconnect, conn_id)
+            await wrap(DONT_USE_THIS.disconnect, conn_id)
