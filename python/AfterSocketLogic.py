@@ -95,11 +95,14 @@ class AfterSocketLogic:
             "type": "write",
             "body": data
         }))
-        s = self.update(time, conn_id)
-        return s
+        return (self._update(time, room), None)
 
     def update(self, time, conn_id):
         room = self.rooms[self.conns[conn_id].room]
+        return (self._update(time, room), None)
+
+    def _update(self, time, room):
         s = {"lastMoment": None,
              "curMoment": [e for _, e in room.last_moments]}
-        return ([(conn, s) for conn in room.conns], None)
+        return [(conn, s) for conn in room.conns]
+
