@@ -58,6 +58,19 @@ class Conn:
         return self.logic.update(time, self.conn_id)
 
 
+class AfterSocketPublicLogic:
+
+    def __init__(self, time, moments_db, min_silence, min_moment):
+        self.logic = AfterSocketLogic(
+            time, moments_db, min_silence, min_moment)
+
+    def create_room(self, time, name):
+        return self.logic.create_room(self, time, name)
+
+    def get_last_few(self, time, room):
+        return self.logic.get_last_few(self, time, name)
+
+
 class AfterSocketLogic:
 
     def __init__(self, time, moments_db, min_silence, min_moment):
