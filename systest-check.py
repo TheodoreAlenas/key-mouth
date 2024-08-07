@@ -64,7 +64,7 @@ class FrontCheck(unittest.TestCase):
         self.assertEqual(3, n)
 
     def test_no_excess_events(self):
-        self.assertTrue(len(self.lines) == 7)
+        self.assertEqual(6, len(self.lines))
 
 
 if __name__ == "__main__":

@@ -112,6 +112,20 @@ class AfterSocketLogicTest(unittest.TestCase):
         res, _ = conn_2.handle_input(10.7, "2")
         self.assertEqual(None, res[0][1]["lastMoment"])
 
+    def test_database_starts_empty(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        conn_1.handle_input(10.1, "+")
+        res, _ = self.logic.get_last_few(10.2, "room0")
+        self.assertEqual([], res)
+
+    def test_database_reflects_moment(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        conn_1.handle_input(10.1, "+")
+        res, _ = conn_1.handle_input(10.1, "hello")
+        self.assertEqual([], res[0][1]["lastMoment"])
+        _, last_few = self.logic.get_last_few(10.2, "room0")
+        self.assertEqual([[]], last_few)
+
 
 if __name__ == "__main__":
     unittest.main()

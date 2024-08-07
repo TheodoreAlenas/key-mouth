@@ -39,9 +39,7 @@ export default class WebInteractor {
             try {
                 if (moments.length == 0) return
                 const p = moments.map(m => presentMoment(getConnName, m))
-                self.setOldMoments(p.slice(0, -1))
-                const last = p[p.length - 1]
-                if (last.length !== 0) self.setLastMoment(last)
+                self.setOldMoments(p)
             }
             catch (err) {
                 console.error("Error setting last moments to " +

@@ -30,6 +30,9 @@ class Moments:
     def add_room(self, _, name):
         self.rooms[name] = []
 
+    def add_moment(self, _, room, moment):
+        self.rooms[room].append(moment)
+
     def get_last_few(self, room):
         return self.rooms[room]
 
@@ -94,8 +97,7 @@ class AfterSocketLogic:
         return ([], None)
 
     def get_last_few(self, _, room):
-        last = [e for _, e in self.rooms[room].last_moments]
-        return ([], self.moments.get_last_few(room) + [last])
+        return ([], self.moments.get_last_few(room))
 
     def connect(self, time, room):
         if type(room) != str:
@@ -122,6 +124,7 @@ class AfterSocketLogic:
         if time - conn.last_spoke > self.min_silence and \
            time - room.last_moment_time > self.min_moment:
             room.last_moment_notify = [e for _, e in room.last_moments]
+            self.moments.add_moment(time, conn.room, room.last_moment_notify)
             room.last_moments = []
             room.last_moment_time = time
         conn.last_spoke = time
