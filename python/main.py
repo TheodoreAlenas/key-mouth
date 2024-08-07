@@ -1,5 +1,5 @@
-from AfterSocketLogic import AfterSocketLogic, Moments
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from AfterSocketLogic import AfterSocketLogic, Moments, LogicHttpException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
 import threading
@@ -18,11 +18,20 @@ logic = AfterSocketLogic(time=time(),
                          moments_db=Moments(time()),
                          min_silence=1.0,
                          min_moment=0.5)
+logic.create_room(time(), "0")
+logic.create_room(time(), "hello")
 
+
+@app.get("/room")
+async def create_room(room: str):
+    try:
+        logic.create_room(time(), room)
+    except LogicHttpException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @app.get("/last")
-async def last():
-    return logic.get_last_few()
+async def last(room: str):
+    return logic.get_last_few(room)
 
 
 async def wrap(f, args):

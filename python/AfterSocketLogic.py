@@ -1,4 +1,12 @@
 
+
+class LogicHttpException(Exception):
+    def __init__(self, detail, status_code):
+        self.status_code = status_code
+        self.detail = detail
+        super().__init__(detail)
+
+
 class Moments:
 
     def __init__(self, time):
@@ -47,6 +55,9 @@ class AfterSocketLogic:
         self.rooms = {}
 
     def create_room(self, time, name):
+        if name in self.rooms:
+            raise LogicHttpException("room " + name + " exists",
+                                     status_code=409)
         self.rooms[name] = Room(time)
 
     def get_last_few(self, room):  # NO TEST COVERAGE
@@ -63,7 +74,7 @@ class AfterSocketLogic:
         return ([], i)
 
     def disconnect(self, _, conn_id):
-        self.rooms[self.conns[conn_id].room].conns.pop(conn_id)
+        self.rooms[self.conns[conn_id].room].conns.remove(conn_id)
         self.conns.pop(conn_id)
         return ([], None)
 

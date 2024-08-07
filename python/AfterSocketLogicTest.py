@@ -69,6 +69,13 @@ class AfterSocketLogicTest(unittest.TestCase):
         res, _ = self.logic.handle_input(13.0, (conn_1, "1"))
         self.assertEqual(1, len(res))
 
+    def test_create_room_twice_get_409(self):
+        try:
+            self.logic.create_room(10.0, "room0")
+            self.assertFalse("should have thrown error")
+        except Exception as e:
+            self.assertEqual(409, e.status_code)
+
     def test_register_get_no_moments(self):
         _, conn_1 = self.logic.register(10.0, "room0")
         res, _ = self.logic.update(10.1, conn_1)

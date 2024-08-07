@@ -1,26 +1,46 @@
 import WebInteractor from './WebInteractor.js'
 
-const wi = new WebInteractor(
-    {
-        webSocketUri: "ws://localhost:8001",
-        lastMomentsUri: "http://localhost:8001/last"
-    },
-    "my\nsession")
+const roomUri = "http://localhost:8001/room?room=" +
+      encodeURI("my\nsession")
+const withRoom = fetch(roomUri)
+withRoom.catch(function(err) {
+    console.error("Error, can't create room")
+    throw err
+})
+const unreachable = withRoom.then(function() {
+    fetch(roomUri).then(function(res) {
+        if (res.status !== 409) {
+            throw new Error("creating room twice, error code: " +
+                            res.status)
+        }
+    })
+})
 
-function log(m) {console.log(Date.now() + "\t" + m)}
-wi.setSetInputValue(function(m) {
-    log("input value set to '" + m + "'")
-})
-wi.setSetOldMoments(function(m) {
-    log("old moments set to " + JSON.stringify(m))
-})
-wi.setSetLastMoment(function(m) {
-    log("last moment set to " + JSON.stringify(m))
-})
-const close = wi.getDestructor()
-wi.setOnReadySocket(function(unlocked) {
-    unlocked.onInputChange("hi")
-    unlocked.onInputChange("hi there")
-    unlocked.onClear()
-    setTimeout(close, 200)
-})
+unreachable.then(shit)
+
+function shit() {
+    const wi = new WebInteractor(
+        {
+            webSocketUri: "ws://localhost:8001",
+            lastMomentsUri: "http://localhost:8001/last"
+        },
+        "my\nsession")
+
+    function log(m) {console.log(Date.now() + "\t" + m)}
+    wi.setSetInputValue(function(m) {
+        log("input value set to '" + m + "'")
+    })
+    wi.setSetOldMoments(function(m) {
+        log("old moments set to " + JSON.stringify(m))
+    })
+    wi.setSetLastMoment(function(m) {
+        log("last moment set to " + JSON.stringify(m))
+    })
+    const close = wi.getDestructor()
+    wi.setOnReadySocket(function(unlocked) {
+        unlocked.onInputChange("hi")
+        unlocked.onInputChange("hi there")
+        unlocked.onClear()
+        setTimeout(close, 200)
+    })
+}

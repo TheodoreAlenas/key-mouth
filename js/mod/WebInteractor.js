@@ -19,7 +19,7 @@ export default class WebInteractor {
         ifSessionIsntStringThrowError(session)
         this.socket = new WebSocket(env.webSocketUri +
                                     "?session=" + encodeURI(session))
-        this.setMomentsOnceFetched(env)
+        this.setMomentsOnceFetched(env, session)
         this.onOpenSendVersionAndUnlock(this.socket)
         this.onMessageSetLatest(this.socket)
     }
@@ -27,18 +27,27 @@ export default class WebInteractor {
         const socket = this.socket
         return function() {socket.close()}
     }
-    setMomentsOnceFetched(env) {
+    setMomentsOnceFetched(env, session) {
         const self = this
-        fetch(env.lastMomentsUri)
-            .then(res => res.json())
-            .catch("the response of " + env.lastMomentsUri + "isn't JSON")
-            .then(function(moments) {
-                if (moments.length == 0) return
-                const p = moments.map(m => presentMoment(getConnName, m))
-                self.setOldMoments(p.slice(0, -1))
-                const last = p[p.length - 1]
-                if (last.length !== 0) self.setLastMoment(last)
-            })
+        const lastMomRoom = env.lastMomentsUri +
+              "?room=" + encodeURI(session)
+        const withStr = fetch(lastMomRoom)
+        withStr.catch(function(err) {
+            console.error("Error, can't fetch " + lastMomRoom)
+            throw err
+        })
+        const withJson = withStr.then(res => res.json())
+        withJson.catch(function(err) {
+            console.error("Error, not JSON: " + lastMomRoom)
+            throw err
+        })
+        withJson.then(function(moments) {
+            if (moments.length == 0) return
+            const p = moments.map(m => presentMoment(getConnName, m))
+            self.setOldMoments(p.slice(0, -1))
+            const last = p[p.length - 1]
+            if (last.length !== 0) self.setLastMoment(last)
+        })
     }
     onOpenSendVersionAndUnlock(socket) {
         const self = this
@@ -63,7 +72,8 @@ export default class WebInteractor {
                 self.setLastMoment(p)
             }
             catch (e) {
-                console.error("Error setting last moment to " + event.data)
+                console.error("Error setting last moment to " +
+                              event.data)
                 throw e
             }
         })
