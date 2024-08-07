@@ -58,7 +58,7 @@ class Conn:
         return s
 
     def handle_input(self, time, data):
-        return self._logic.handle_input(time, (self.conn_id, data))
+        return self._logic.handle_input(time, (self, data))
 
     def update(self, time, _):
         return self._logic.update(time, self.conn_id)
@@ -111,16 +111,19 @@ class AfterSocketLogic:
         self.conns.pop(conn_id)
         return ([], None)
 
-    def handle_input(self, time, conn_id_and_data):
-        conn_id, data = conn_id_and_data
+    def handle_input(self, time, conn_and_data):
+        conn, data = conn_and_data
         if data == "+":
             return ([], None)
-        room = self.rooms[self.conns[conn_id].room]
-        if time - self.conns[conn_id].last_spoke > self.min_silence:
+        room = self.rooms[conn.room]
+        if room.last_moment_notify is not None:
+            room.last_moment_notify = None
+        if time - conn.last_spoke > self.min_silence:
             room.last_moment_notify = [e for _, e in room.last_moments]
             room.last_moments = []
+        conn.last_spoke = time
         room.last_moments.append((time, {
-            "connId": conn_id,
+            "connId": conn.conn_id,
             "type": "write",
             "body": data
         }))

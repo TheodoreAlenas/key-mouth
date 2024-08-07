@@ -90,6 +90,9 @@ class AfterSocketLogicTest(unittest.TestCase):
         after, _ = conn_2.handle_input(11.3, "2")
         self.assertEqual(
             before[0][1]["curMoment"], after[0][1]["lastMoment"])
+        conn_2.handle_input(11.4, "+")
+        gone, _ = conn_2.handle_input(11.5, "2")
+        self.assertEqual(None, gone[0][1]["lastMoment"])
 
 
 if __name__ == "__main__":
