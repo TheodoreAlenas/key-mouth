@@ -17,6 +17,7 @@ export default class WebInteractor {
     }
     constructorUnhandled(env, room) {
         ifRoomIsntStringThrowError(room)
+        this.cachedPresentedOldMoments = []
         this.socket = new WebSocket(env.webSocketUri +
                                     "?room=" + encodeURI(room))
         this.setMomentsOnceFetched(env, room)
@@ -39,6 +40,7 @@ export default class WebInteractor {
             try {
                 if (moments.length == 0) return
                 const p = moments.map(m => presentMoment(getConnName, m))
+                self.cachedPresentedOldMoments = p
                 self.setOldMoments(p)
             }
             catch (err) {
@@ -80,10 +82,12 @@ export default class WebInteractor {
         const self = this
         socket.addEventListener("message", function(event) {
             try {
-                const diffsAndMore = JSON.parse(event.data)
-                const diffs = diffsAndMore.curMoment
-                const p = presentMoment(getConnName, diffs)
+                const {lastMoment, curMoment} = JSON.parse(event.data)
+                const p = presentMoment(getConnName, curMoment)
                 self.setLastMoment(p)
+                if (lastMoment == null) return
+                const l = presentMoment(getConnName, lastMoment)
+                self.setOldMoments(self.cachedPresentedOldMoments.concat([l]))
             }
             catch (e) {
                 console.error("Error setting last moment to " +
