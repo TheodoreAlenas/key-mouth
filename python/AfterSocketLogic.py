@@ -11,9 +11,7 @@ class Moments:
 
     def __init__(self, time):
         self.last_time = time
-
-    def get_last_few(self):
-        return [
+        self.rooms = {"hello": [
             [
                 {"connId": 4, "type": "write", "body": "H"},
                 {"connId": 4, "type": "write", "body": "i"},
@@ -27,7 +25,13 @@ class Moments:
                 {"connId": 5, "type": "write",
                  "body": "I thought I'd find you here"}
             ]
-        ]
+        ]}
+
+    def add_room(self, _, name):
+        self.rooms[name] = []
+
+    def get_last_few(self, room):
+        return self.rooms[room]
 
 
 class Conn:
@@ -59,10 +63,11 @@ class AfterSocketLogic:
             raise LogicHttpException("room " + name + " exists",
                                      status_code=409)
         self.rooms[name] = Room(time)
+        self.moments.add_room(time, name)
 
     def get_last_few(self, room):  # NO TEST COVERAGE
         last = [e for _, e in self.rooms[room].last_moments]
-        return self.moments.get_last_few() + [last]
+        return self.moments.get_last_few(room) + [last]
 
     def register(self, time, room):
         if type(room) != str:

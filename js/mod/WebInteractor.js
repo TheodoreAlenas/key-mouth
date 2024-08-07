@@ -42,11 +42,18 @@ export default class WebInteractor {
             throw err
         })
         withJson.then(function(moments) {
-            if (moments.length == 0) return
-            const p = moments.map(m => presentMoment(getConnName, m))
-            self.setOldMoments(p.slice(0, -1))
-            const last = p[p.length - 1]
-            if (last.length !== 0) self.setLastMoment(last)
+            try {
+                if (moments.length == 0) return
+                const p = moments.map(m => presentMoment(getConnName, m))
+                self.setOldMoments(p.slice(0, -1))
+                const last = p[p.length - 1]
+                if (last.length !== 0) self.setLastMoment(last)
+            }
+            catch (err) {
+                console.error("Error setting last moments to " +
+                              JSON.stringify(moments))
+                throw err
+            }
         })
     }
     onOpenSendVersionAndUnlock(socket) {
