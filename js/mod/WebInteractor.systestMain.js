@@ -1,6 +1,6 @@
 import WebInteractor from './WebInteractor.js'
 
-const roomUri = "http://localhost:8001/room?room=" +
+const roomUri = "http://localhost:8001/room?name=" +
       encodeURI("my\nroom")
 const withRoom = fetch(roomUri, {method: "PUT"})
 withRoom.catch(function(err) {

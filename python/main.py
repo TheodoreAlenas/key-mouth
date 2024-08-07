@@ -37,8 +37,8 @@ async def wrap(f, args):
 
 
 @app.put("/room")
-async def create_room(room: str):
-    await wrap(logic.create_room, room)
+async def create_room(name: str):
+    await wrap(logic.create_room, name)
 
 
 @app.get("/last")

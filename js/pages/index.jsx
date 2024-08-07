@@ -3,8 +3,8 @@ import Link from "next/link"
 
 export default function Home({env}) {
     const ss = [
-        {text: "Zero",  href: env.roomUri + "?id=0"},
-        {text: "Hello", href: env.roomUri + "?id=hello"}
+        {text: "Zero",  href: env.roomUri + "?name=0"},
+        {text: "Hello", href: env.roomUri + "?name=hello"}
     ]
     return (
         <>
