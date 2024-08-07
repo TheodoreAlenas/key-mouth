@@ -22,25 +22,27 @@ logic.create_room(time(), "0")
 logic.create_room(time(), "hello")
 
 
+async def wrap(f, args):
+    mutex.acquire()
+    try:
+        to_send, to_return = f(time(), args)
+        mutex.release()
+        for conn, json in to_send:
+            await id_to_sock[conn].send_json(json)
+        return to_return
+    except LogicHttpException as e:
+        mutex.release()
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
 @app.put("/room")
 async def create_room(room: str):
-    try:
-        logic.create_room(time(), room)
-    except LogicHttpException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    await wrap(logic.create_room, room)
+
 
 @app.get("/last")
 async def last(room: str):
-    return logic.get_last_few(room)
-
-
-async def wrap(f, args):
-    mutex.acquire()
-    to_send, to_return = f(time(), args)
-    mutex.release()
-    for conn, json in to_send:
-        await id_to_sock[conn].send_json(json)
-    return to_return
+    return await wrap(logic.get_last_few, room)
 
 
 @app.websocket("/")

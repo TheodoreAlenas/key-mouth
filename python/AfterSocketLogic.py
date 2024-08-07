@@ -64,10 +64,11 @@ class AfterSocketLogic:
                                      status_code=409)
         self.rooms[name] = Room(time)
         self.moments.add_room(time, name)
+        return ([], None)
 
-    def get_last_few(self, room):  # NO TEST COVERAGE
+    def get_last_few(self, _, room):  # NO TEST COVERAGE
         last = [e for _, e in self.rooms[room].last_moments]
-        return self.moments.get_last_few(room) + [last]
+        return ([], self.moments.get_last_few(room) + [last])
 
     def register(self, time, room):
         if type(room) != str:
