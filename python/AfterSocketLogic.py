@@ -39,6 +39,7 @@ class Room:
     def __init__(self, _):
         self.last_moments = []
         self.conns = []
+        self.last_moment_notify = None
 
 
 class Conn:
@@ -47,6 +48,7 @@ class Conn:
         self.conn_id = conn_id
         self.room = room
         self._logic = logic
+        self.last_spoke = 0.0
 
     def disconnect(self, time, _):
         s = self._logic.disconnect(time, self.conn_id)
@@ -114,6 +116,9 @@ class AfterSocketLogic:
         if data == "+":
             return ([], None)
         room = self.rooms[self.conns[conn_id].room]
+        if time - self.conns[conn_id].last_spoke > self.min_silence:
+            room.last_moment_notify = [e for _, e in room.last_moments]
+            room.last_moments = []
         room.last_moments.append((time, {
             "connId": conn_id,
             "type": "write",
@@ -126,7 +131,7 @@ class AfterSocketLogic:
         return (self._update(time, room), None)
 
     def _update(self, time, room):
-        s = {"lastMoment": None,
+        s = {"lastMoment": room.last_moment_notify,
              "curMoment": [e for _, e in room.last_moments]}
         return [(conn, s) for conn in room.conns]
 
