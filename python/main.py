@@ -22,7 +22,7 @@ logic.create_room(time(), "0")
 logic.create_room(time(), "hello")
 
 
-@app.get("/room")
+@app.put("/room")
 async def create_room(room: str):
     try:
         logic.create_room(time(), room)

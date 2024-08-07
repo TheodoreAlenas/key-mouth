@@ -2,13 +2,13 @@ import WebInteractor from './WebInteractor.js'
 
 const roomUri = "http://localhost:8001/room?room=" +
       encodeURI("my\nroom")
-const withRoom = fetch(roomUri)
+const withRoom = fetch(roomUri, {method: "PUT"})
 withRoom.catch(function(err) {
     console.error("Error, can't create room")
     throw err
 })
 const unreachable = withRoom.then(function() {
-    fetch(roomUri).then(function(res) {
+    fetch(roomUri, {method: "PUT"}).then(function(res) {
         if (res.status !== 409) {
             throw new Error("creating room twice, error code: " +
                             res.status)
