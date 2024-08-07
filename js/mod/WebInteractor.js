@@ -32,15 +32,9 @@ export default class WebInteractor {
         const lastMomRoom = env.lastMomentsUri +
               "?room=" + encodeURI(room)
         const withStr = fetch(lastMomRoom)
-        withStr.catch(function(err) {
-            console.error("Error, can't fetch " + lastMomRoom)
-            throw err
-        })
-        const withJson = withStr.then(res => res.json())
-        withJson.catch(function(err) {
-            console.error("Error, not JSON: " + lastMomRoom)
-            throw err
-        })
+        withStr.catch(rethrowCantFetch)
+        const withJson = withStr.then(throwIfNot200AndReturnJson)
+        withJson.catch(rethrowJsonFuncFailed)
         withJson.then(function(moments) {
             try {
                 if (moments.length == 0) return
@@ -55,6 +49,21 @@ export default class WebInteractor {
                 throw err
             }
         })
+        function rethrowCantFetch(err) {
+            console.error("Error, can't fetch " + lastMomRoom)
+            throw err
+        }
+        function throwIfNot200AndReturnJson(res) {
+            if (res.status !== 200) {
+                throw new Error("Error, fetched " + lastMomRoom +
+                                " with status " + res.status)
+            }
+            return res.json()
+        }
+        function rethrowJsonFuncFailed(err) {
+            console.error("Error, res.json() failed, " + lastMomRoom)
+            throw err
+        }
     }
     onOpenSendVersionAndUnlock(socket) {
         const self = this
