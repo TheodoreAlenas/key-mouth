@@ -100,8 +100,17 @@ class AfterSocketLogicTest(unittest.TestCase):
         conn_2.handle_input(11.2, "+")
         conn_2.handle_input(11.3, "2")
         conn_2.handle_input(11.4, "+")
-        gone, _ = conn_2.handle_input(11.5, "2")
-        self.assertEqual(None, gone[0][1]["lastMoment"])
+        res, _ = conn_2.handle_input(11.5, "2")
+        self.assertEqual(None, res[0][1]["lastMoment"])
+
+    def test_nearby_moments_merge(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(10.1, "room0")
+        conn_1.handle_input(10.2, "+")
+        conn_1.handle_input(10.3, "1")
+        conn_2.handle_input(10.6, "+")
+        res, _ = conn_2.handle_input(10.7, "2")
+        self.assertEqual(None, res[0][1]["lastMoment"])
 
 
 if __name__ == "__main__":

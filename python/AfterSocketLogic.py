@@ -40,6 +40,7 @@ class Room:
         self.last_moments = []
         self.conns = []
         self.last_moment_notify = None
+        self.last_moment_time = 0.0
 
 
 class Conn:
@@ -118,9 +119,11 @@ class AfterSocketLogic:
         room = self.rooms[conn.room]
         if room.last_moment_notify is not None:
             room.last_moment_notify = None
-        if time - conn.last_spoke > self.min_silence:
+        if time - conn.last_spoke > self.min_silence and \
+           time - room.last_moment_time > self.min_moment:
             room.last_moment_notify = [e for _, e in room.last_moments]
             room.last_moments = []
+            room.last_moment_time = time
         conn.last_spoke = time
         room.last_moments.append((time, {
             "connId": conn.conn_id,
