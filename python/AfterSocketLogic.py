@@ -34,17 +34,28 @@ class Moments:
         return self.rooms[room]
 
 
-class Conn:
-
-    def __init__(self, _, room):
-        self.room = room
-
-
 class Room:
 
     def __init__(self, _):
         self.last_moments = []
         self.conns = []
+
+
+class Conn:
+
+    def __init__(self, _, conn_id, room, logic):
+        self.conn_id = conn_id
+        self.room = room
+        self.logic = logic
+
+    def disconnect(self, time, _):
+        return self.logic.disconnect(time, self.conn_id)
+
+    def handle_input(self, time, data):
+        return self.logic.handle_input(time, (self.conn_id, data))
+
+    def update(self, time, _):
+        return self.logic.update(time, self.conn_id)
 
 
 class AfterSocketLogic:
@@ -75,7 +86,7 @@ class AfterSocketLogic:
             raise Exception("can't connect with non-string room")
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(time, room)
+        self.conns[i] = Conn(time, i, room, self)
         self.rooms[room].conns.append(i)
         return ([], i)
 
