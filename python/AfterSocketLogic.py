@@ -66,13 +66,13 @@ class AfterSocketLogic:
         self.moments.add_room(time, name)
         return ([], None)
 
-    def get_last_few(self, _, room):  # NO TEST COVERAGE
+    def get_last_few(self, _, room):
         last = [e for _, e in self.rooms[room].last_moments]
         return ([], self.moments.get_last_few(room) + [last])
 
-    def register(self, time, room):
+    def connect(self, time, room):
         if type(room) != str:
-            raise Exception("can't register with non-string room")
+            raise Exception("can't connect with non-string room")
         self.last_id += 1
         i = self.last_id
         self.conns[i] = Conn(time, room)
