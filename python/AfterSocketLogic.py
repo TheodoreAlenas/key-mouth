@@ -46,25 +46,29 @@ class Conn:
     def __init__(self, _, conn_id, room, logic):
         self.conn_id = conn_id
         self.room = room
-        self.logic = logic
+        self._logic = logic
 
     def disconnect(self, time, _):
-        return self.logic.disconnect(time, self.conn_id)
+        s = self._logic.disconnect(time, self.conn_id)
+        self.conn_id = None
+        self.room = None
+        self.logic = None
+        return s
 
     def handle_input(self, time, data):
-        return self.logic.handle_input(time, (self.conn_id, data))
+        return self._logic.handle_input(time, (self.conn_id, data))
 
     def update(self, time, _):
-        return self.logic.update(time, self.conn_id)
+        return self._logic.update(time, self.conn_id)
 
 
 class AfterSocketPublicLogic:
 
     def __init__(self, logic):
-        self.logic = logic
-        self.create_room = self.logic.create_room
-        self.get_last_few = self.logic.get_last_few
-        self.connect = self.logic.connect
+        self._logic = logic
+        self.create_room = self._logic.create_room
+        self.get_last_few = self._logic.get_last_few
+        self.connect = self._logic.connect
 
 
 class AfterSocketLogic:
