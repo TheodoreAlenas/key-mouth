@@ -90,6 +90,15 @@ class AfterSocketLogicTest(unittest.TestCase):
         after, _ = conn_2.handle_input(11.3, "2")
         self.assertEqual(
             before[0][1]["curMoment"], after[0][1]["lastMoment"])
+        self.assertEqual(1, len(after[0][1]["curMoment"]))
+
+    def test_last_moment_notification_resets(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(10.1, "room0")
+        conn_1.handle_input(10.2, "+")
+        conn_1.handle_input(10.3, "1")
+        conn_2.handle_input(11.2, "+")
+        conn_2.handle_input(11.3, "2")
         conn_2.handle_input(11.4, "+")
         gone, _ = conn_2.handle_input(11.5, "2")
         self.assertEqual(None, gone[0][1]["lastMoment"])
