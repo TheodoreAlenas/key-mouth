@@ -119,7 +119,7 @@ class AfterSocketLogic:
         i = self.last_id
         self.conns[i] = Conn(time, i, room, self)
         self.rooms[room].conns.append(i)
-        s = {"n": None,
+        s = {"n": self.moments.get_len(room),
              "last": [e for _, e in self.rooms[room].last_moments]}
         return ([(i, s)], self.conns[i])
 

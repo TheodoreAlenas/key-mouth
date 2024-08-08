@@ -20,7 +20,7 @@ function withWebInteractor(name, room, callback) {
     const wi = new WebInteractor(
         {
             webSocketUri: "ws://localhost:8001",
-            lastMomentsUri: "http://localhost:8001/last"
+            lastMomentsUri: "http://localhost:8001/last",
             momentsRangeUri: "http://localhost:8001/moments"
         },
         room)

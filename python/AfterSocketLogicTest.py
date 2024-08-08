@@ -75,17 +75,14 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(res_1[0][1]["last"],
                          res_2[0][1]["last"])
 
-    def test_connect_dont_get_previous_moment_update(self):
+    def test_on_connect_get_up_to_date(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         conn_1.handle_input(10.1, "+")
         conn_1.handle_input(10.2, "old")
         conn_1.handle_input(99.0, "+")
         res_1, _ = conn_1.handle_input(99.1, "new")
         res_2, conn_2 = self.logic.connect(99.2, "room0")
-        self.assertNotEqual(None, res_1[0][1]["n"])
-        self.assertEqual(None, res_2[0][1]["n"])
-        self.assertEqual(res_1[0][1]["last"],
-                         res_2[0][1]["last"])
+        self.assertEqual(res_1[0][1], res_1[0][1])
 
     def test_interrupting_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")

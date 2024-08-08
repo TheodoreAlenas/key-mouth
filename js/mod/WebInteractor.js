@@ -1,3 +1,4 @@
+import Io from './Io.js'
 import presentMoment from './presentMoment.js'
 
 export default class WebInteractor {
@@ -16,106 +17,70 @@ export default class WebInteractor {
         }
     }
     constructorUnhandled(env, room) {
-        ifRoomIsntStringThrowError(room)
-        this.cachedPresentedOldMoments = []
-        this.socket = new WebSocket(env.webSocketUri +
-                                    "?room=" + encodeURI(room))
-        this.setMomentsOnceFetched(env, room)
-        this.onOpenSendVersionAndUnlock(this.socket)
-        this.onMessageSetLatest(env, this.socket)
+        const self = this
+        function onReadySocket(io) {
+            self.onReadySocket(new Unlocked(io, self.setInputValue))
+        }
+        this.io = new Io({env, room, onReadySocket})
+        this.cached = []
+        this._setMomentsOnceFetched()
+        function setLast(n, last) {self._setLast(n, last)}
+        this.io.onMomentsMessage(setLast)
     }
     getDestructor() {
-        const socket = this.socket
-        return function() {socket.close()}
+        return this.io.getDestructor()
     }
-    withJsonFetched(uri, callback) {
-        const withStr = fetch(uri)
-        withStr.catch(function(err) {
-            console.error("Error, can't fetch " + uri)
-            throw err
-        })
-        const withJson = withStr.then(function(err) {
-            if (res.status !== 200) {
-                throw new Error("Error, fetched " + uri +
-                                " with status " + res.status)
-            }
-            return res.json()
-        })
-        withJson.then(callback)
-        withJson.catch(function(err) {
-            console.error("Error, res.json() failed, " + uri)
-            throw err
-        })
-    }
-    setMomentsOnceFetched(env, room) {
+    _setMomentsOnceFetched(io) {
         const self = this
-        const lastMomRoom = env.lastMomentsUri +
-              "?room=" + encodeURI(room)
-        this.withJsonFetched(lastMomRoom, function(moments) {
+        this.io.withLastMoments(function(res) {
             try {
-                if (moments.length == 0) return
-                const p = moments.map(m => presentMoment(getConnName, m))
-                self.cachedPresentedOldMoments = p
-                self.lastMomentN = null
-                self.setOldMoments(p)
+                self._setMomentsOnceFetchedInner(res)
             }
             catch (err) {
-                console.error("Error setting last moments to " +
-                              JSON.stringify(moments))
+                console.error("Error setting last moments from " +
+                              JSON.stringify(res))
                 throw err
             }
         })
     }
-    onOpenSendVersionAndUnlock(socket) {
+    _setMomentsOnceFetchedInner({start, end, moments}) {
+        const p = moments.map(m => presentMoment(getConnName, m))
+        this.cached = p
+        this.lastMomentN = end
+        this.setOldMoments(p)
+    }
+    _setLast(n, last) {
+        try {
+            const p = presentMoment(getConnName, last)
+            this.setLastMoment(p)
+            this._updateOldMoments(n)
+        }
+        catch (e) {
+            console.error("Error setting last moment, " +
+                          JSON.stringify({n, last}))
+            throw e
+        }
+    }
+    _updateOldMoments(n) {
+        if (n == this.lastMomentN) return
+        if (n < this.lastMomentN) {
+            throw new Error("Error updating old moments, got n = " +
+                            n + " < self.lastMomentN = " +
+                            this.lastMomentN)
+        }
         const self = this
-        socket.addEventListener("open", function() {
-            try {
-                socket.send('{"version": 0}')
-                self.onReadySocket(new Unlocked(socket, self.setInputValue))
-            }
-            catch (e) {
-                console.error("Error sending version or unlocking input")
-                throw e
-            }
+        this.io.withMomentsRange(this.lastMomentN, n, function(res) {
+            self._updateOldMomentsInner(n, res)
         })
     }
-    onMessageSetLatest(env, socket) {
-        const self = this
-        socket.addEventListener("message", function(event) {
-            try {
-                const {n, last} = JSON.parse(event.data)
-                const p = presentMoment(getConnName, last)
-                self.setLastMoment(p)
-                if (n == self.lastMomentN) return
-                if (n < self.lastMomentN) {
-                    console.error("Error, got n = " + n +
-                                  " < self.lastMomentN = " +
-                                  self.lastMomentN)
-                }
-                fetch(env.momentsRangeUri, function)
-                self.lastMomentN = n
-                const l = presentMoment(getConnName, n)
-                self.cachedPresentedOldMoments =
-                    self.cachedPresentedOldMoments.concat([l])
-                self.setOldMoments(self.cachedPresentedOldMoments)
-            }
-            catch (e) {
-                console.error("Error setting last moment to " +
-                              event.data)
-                throw e
-            }
-        })
+    _updateOldMomentsInner(n,  moments) {
+        const p = moments.map(
+            m => presentMoment(getConnName, m))
+        this.lastMomentN = n
+        this.cached = this.cached.concat(p)
+        this.setOldMoments(this.cached)
     }
 
-}
-
-function ifRoomIsntStringThrowError(room) {
-    if (typeof(room) !== 'string') {
-        throw new Error(
-            "room isn't string (.../?room=hello let's say), " +
-                "typeof(room) = " + typeof(room) +
-                ", room = " + room)
-    }
 }
 
 function getConnName(conn) {
@@ -124,15 +89,15 @@ function getConnName(conn) {
 }
 
 class Unlocked {
-    constructor(socket, setInputValue) {
-        this.socket = socket
+    constructor(io, setInputValue) {
+        this.io = io
         this.inputValue = ""
         this.setInputValue = setInputValue
     }
     onClear() {
         this.inputValue = ""
         this.setInputValue("")
-        this.socket.send("clear")
+        this.io.sendOne("clear")
     }
     onInputChange(newValue) {
         const oldValue = this.inputValue
@@ -150,8 +115,7 @@ class Unlocked {
         const d = getDiff(this.inputValue, newValue)
         this.inputValue = newValue
         this.setInputValue(newValue)
-        const s = this.socket
-        d.forEach(function(e) { trySending(s, e, d) })
+        this.io.sendList(d)
     }
 }
 
@@ -168,15 +132,4 @@ function getDiff(a, b) {
         }
     }
     throw new Error("can't handle diff, a: " + a + ", b: " + b)
-}
-
-function trySending(s, e, d) {
-    try {
-        s.send(e)
-    }
-    catch (err) {
-        console.error("Error sending " + JSON.stringify(d) +
-                      ", maybe set input before init")
-        throw err
-    }
 }
