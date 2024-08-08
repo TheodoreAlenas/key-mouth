@@ -19,7 +19,8 @@ export default function Home({env}) {
 export async function getStaticProps() {
     const env = {
         webSocketUri: "ws://localhost:8000",
-        lastMomentsUri: "http://localhost:8000/last"
+        lastMomentsUri: "http://localhost:8000/last",
+        momentsRangeUri: "http://localhost:8000/moments"
     }
     return {props: {env}}
 }
