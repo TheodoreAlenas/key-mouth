@@ -34,7 +34,8 @@ class Moments:
         self.rooms[room].append(moment)
 
     def get_last_few(self, room):
-        return self.rooms[room]
+        r = self.rooms[room]
+        return {"start": 0, "end": len(r), "moments": r}
 
     def get_len(self, room):
         return len(self.rooms[room])
