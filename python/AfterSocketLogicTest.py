@@ -18,7 +18,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(
             [(
                 conn.conn_id,
-                {"lastMoment": 1, "curMoment": [{
+                {"n": 1, "last": [{
                     "connId": conn.conn_id,
                     "type": "write",
                     "body": "hello"}]}
@@ -64,7 +64,7 @@ class AfterSocketLogicTest(unittest.TestCase):
     def test_connect_get_no_moments(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         res, _ = conn_1.update(10.1, None)
-        self.assertEqual(1, res[0][1]["lastMoment"])
+        self.assertEqual(1, res[0][1]["n"])
 
     def test_connect_get_others_last_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -72,8 +72,8 @@ class AfterSocketLogicTest(unittest.TestCase):
         res_1, _ = conn_1.handle_input(10.2, "1")
         res_2, conn_2 = self.logic.connect(10.3, "room0")
         self.assertEqual(1, len(res_2))
-        self.assertEqual(res_1[0][1]["curMoment"],
-                         res_2[0][1]["curMoment"])
+        self.assertEqual(res_1[0][1]["last"],
+                         res_2[0][1]["last"])
 
     def test_connect_dont_get_previous_moment_update(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -82,10 +82,10 @@ class AfterSocketLogicTest(unittest.TestCase):
         conn_1.handle_input(99.0, "+")
         res_1, _ = conn_1.handle_input(99.1, "new")
         res_2, conn_2 = self.logic.connect(99.2, "room0")
-        self.assertNotEqual(None, res_1[0][1]["lastMoment"])
-        self.assertEqual(None, res_2[0][1]["lastMoment"])
-        self.assertEqual(res_1[0][1]["curMoment"],
-                         res_2[0][1]["curMoment"])
+        self.assertNotEqual(None, res_1[0][1]["n"])
+        self.assertEqual(None, res_2[0][1]["n"])
+        self.assertEqual(res_1[0][1]["last"],
+                         res_2[0][1]["last"])
 
     def test_interrupting_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -94,10 +94,10 @@ class AfterSocketLogicTest(unittest.TestCase):
         before, _ = conn_1.handle_input(10.3, "1")
         conn_2.handle_input(11.2, "+")
         after, _ = conn_2.handle_input(11.3, "2")
-        self.assertEqual(2, after[0][1]["lastMoment"])
+        self.assertEqual(2, after[0][1]["n"])
         _, m = self.logic.get_moments_range(11.4, ("room0", 0, 2))
-        self.assertEqual(before[0][1]["curMoment"], m[1])
-        self.assertEqual(1, len(after[0][1]["curMoment"]))
+        self.assertEqual(before[0][1]["last"], m[1])
+        self.assertEqual(1, len(after[0][1]["last"]))
 
     def test_last_moment_notification_resets(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -108,7 +108,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         conn_2.handle_input(11.3, "2")
         conn_2.handle_input(11.4, "+")
         res, _ = conn_2.handle_input(11.5, "2")
-        self.assertEqual(2, res[0][1]["lastMoment"])
+        self.assertEqual(2, res[0][1]["n"])
 
     def test_nearby_moments_merge(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -117,7 +117,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         conn_1.handle_input(10.3, "1")
         conn_2.handle_input(10.6, "+")
         res, _ = conn_2.handle_input(10.7, "2")
-        self.assertEqual(2, res[0][1]["lastMoment"])
+        self.assertEqual(2, res[0][1]["n"])
 
     def test_database_starts_empty(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
