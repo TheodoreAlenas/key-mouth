@@ -28,7 +28,7 @@ class Moments:
         ]}
 
     def add_room(self, _, name):
-        self.rooms[name] = []
+        self.rooms[name] = [[]]
 
     def add_moment(self, _, room, moment):
         self.rooms[room].append(moment)
@@ -36,14 +36,21 @@ class Moments:
     def get_last_few(self, room):
         return self.rooms[room]
 
+    def get_len(self, room):
+        return len(self.rooms[room])
+
+    def get_range(self, room, start, end):
+        return self.rooms[room][start:end]
+
 
 class Room:
 
-    def __init__(self, _):
+    def __init__(self, time, name):
+        self.name = name
         self.last_moments = []
         self.conns = []
         self.last_moment_notify = None
-        self.last_moment_time = 0.0
+        self.last_moment_time = time
 
 
 class Conn:
@@ -74,6 +81,7 @@ class AfterSocketPublicLogic:
         self._logic = logic
         self.create_room = self._logic.create_room
         self.get_last_few = self._logic.get_last_few
+        self.get_moments_range = self._logic.get_moments_range
         self.connect = self._logic.connect
 
 
@@ -92,12 +100,16 @@ class AfterSocketLogic:
         if name in self.rooms:
             raise LogicHttpException("room " + name + " exists",
                                      status_code=409)
-        self.rooms[name] = Room(time)
+        self.rooms[name] = Room(time, name)
         self.moments.add_room(time, name)
         return ([], None)
 
     def get_last_few(self, _, room):
         return ([], self.moments.get_last_few(room))
+
+    def get_moments_range(self, _, room_start_end):
+        room, start, end = room_start_end
+        return ([], self.moments.get_range(room, start, end))
 
     def connect(self, time, room):
         if type(room) != str:
@@ -142,7 +154,7 @@ class AfterSocketLogic:
         return (self._update(time, room), None)
 
     def _update(self, time, room):
-        s = {"lastMoment": room.last_moment_notify,
+        s = {"lastMoment": self.moments.get_len(room.name),
              "curMoment": [e for _, e in room.last_moments]}
         return [(conn, s) for conn in room.conns]
 
