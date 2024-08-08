@@ -46,6 +46,11 @@ async def create_room(name: str):
     await wrap(logic.create_room, name)
 
 
+@app.get("/moments")
+async def last(room: str, start: int, end: int):
+    return await wrap(logic.get_moments_range, (room, start, end))
+
+
 @app.get("/last")
 async def last(room: str):
     return await wrap(logic.get_last_few, room)
