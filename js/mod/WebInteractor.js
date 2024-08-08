@@ -62,6 +62,7 @@ export default class WebInteractor {
         }
     }
     _updateOldMoments(n) {
+        if (this.lastMomentN === undefined) return
         if (n == this.lastMomentN) return
         if (n < this.lastMomentN) {
             throw new Error("Error updating old moments, got n = " +
