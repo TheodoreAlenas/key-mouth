@@ -3,27 +3,20 @@ import Uri from '../mod/Uri.js'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 
-export default function Home({env}) {
+export default function Home() {
     const [o, setO] = useState(null)
     const router = useRouter()
     useEffect(function() {
         if (router.isReady) {
             const s = new URLSearchParams(router.query)
-            const newO = new WebInteractor(env, s.get('name'))
+            const roomName = s.get('name')
+            const uri = new Uri("dev", roomName)
+            const newO = new WebInteractor(uri)
             setO(newO)
             return newO.getDestructor()
         }
     }, [router.isReady])
     return <><Moments o={o} /><Input o={o} /></>
-}
-
-export async function getStaticProps() {
-    const env = {
-        webSocketUri: "ws://localhost:8000",
-        lastMomentsUri: "http://localhost:8000/last",
-        momentsRangeUri: "http://localhost:8000/moments"
-    }
-    return {props: {env}}
 }
 
 function Moments({o}) {
