@@ -20,8 +20,14 @@ export default function Home({env}) {
 }
 
 export async function getStaticProps() {
-    const env = ["http", "localhost", "8000"]
-    return {props: {env}}
+    if (process.env.KEYMOUTH_PROD === undefined) {
+        return {props: {env: ["http", "localhost", "8000"]}}
+    }
+    return {props: {env: [
+        process.env.KEYMOUTH_HTTP,
+        process.env.KEYMOUTH_HOST,
+        process.env.KEYMOUTH_PORT
+    ]}}
 }
 
 function Moments({o}) {
