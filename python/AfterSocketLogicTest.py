@@ -47,21 +47,6 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(1, len(res))
         self.assertEqual(conn_2.conn_id, res[0][0])
 
-    #def test_two_conn_one_msg_each_and_last_goes_last(self):
-    #    _, conn_1 = self.logic.connect(10.0, "room0")
-    #    _, conn_2 = self.logic.connect(11.0, "room0")
-    #    conn_1.handle_input(         11.0, "+")
-    #    conn_2.handle_input(         12.0, "+")
-    #    conn_2.handle_input(         13.0, "2")
-    #    res, _ = conn_1.handle_input(14.0, "1")
-    #    self.assertEqual(
-    #        [
-    #            {"connId": conn_2.conn_id, "type": "write", "body": "2"},
-    #            {"connId": conn_1.conn_id, "type": "write", "body": "1"}
-    #        ],
-    #        res[0][1]["curMoment"])
-    #    self.assertEqual(res[0][1], res[1][1])
-
     def test_message_in_one_room_is_isolated(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(11.0, "room1")
@@ -80,6 +65,27 @@ class AfterSocketLogicTest(unittest.TestCase):
         _, conn_1 = self.logic.connect(10.0, "room0")
         res, _ = conn_1.update(10.1, None)
         self.assertEqual(None, res[0][1]["lastMoment"])
+
+    def test_connect_get_others_last_moment(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        conn_1.handle_input(10.1, "+")
+        res_1, _ = conn_1.handle_input(10.2, "1")
+        res_2, conn_2 = self.logic.connect(10.3, "room0")
+        self.assertEqual(1, len(res_2))
+        self.assertEqual(res_1[0][1]["curMoment"],
+                         res_2[0][1]["curMoment"])
+
+    def test_connect_dont_get_previous_moment_update(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        conn_1.handle_input(10.1, "+")
+        conn_1.handle_input(10.2, "old")
+        conn_1.handle_input(99.0, "+")
+        res_1, _ = conn_1.handle_input(99.1, "new")
+        res_2, conn_2 = self.logic.connect(99.2, "room0")
+        self.assertNotEqual(None, res_1[0][1]["lastMoment"])
+        self.assertEqual(None, res_2[0][1]["lastMoment"])
+        self.assertEqual(res_1[0][1]["curMoment"],
+                         res_2[0][1]["curMoment"])
 
     def test_interrupting_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")

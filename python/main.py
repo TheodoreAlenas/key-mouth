@@ -23,11 +23,16 @@ logic.create_room(time(), "0")
 logic.create_room(time(), "hello")
 
 
-async def wrap(f, args):
+def do_nothing(_):
+    pass
+
+
+async def wrap(f, args, before_sending=do_nothing):
     mutex.acquire()
     try:
         to_send, to_return = f(time(), args)
         mutex.release()
+        before_sending(to_return)
         for conn, json in to_send:
             await id_to_sock[conn].send_json(json)
         return to_return
@@ -57,8 +62,9 @@ async def root(websocket: WebSocket, room: str):
                   + str(metadata["version"]))
             websocket.close(code=1002, reason="only v0 is supported")
             return
-        conn = await wrap(logic.connect, room)
-        id_to_sock[conn.conn_id] = websocket
+        def assign_the_socket(conn):
+            id_to_sock[conn.conn_id] = websocket
+        conn = await wrap(logic.connect, room, assign_the_socket)
         while True:
             data = await websocket.receive_text()
             await wrap(conn.handle_input, data)
