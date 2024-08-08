@@ -1,6 +1,7 @@
 import WebInteractor from '../mod/WebInteractor.js'
 import Uri from '../mod/Uri.js'
-import { useEffect, useState } from "react"
+import styles from './room.module.css'
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
 
 export default function Home({env}) {
@@ -16,7 +17,7 @@ export default function Home({env}) {
             return newO.getDestructor()
         }
     }, [router.isReady])
-    return <><Moments o={o} /><Input o={o} /></>
+    return <><Moments o={o} /><InputAndButton o={o} /></>
 }
 
 export async function getStaticProps() {
@@ -34,7 +35,10 @@ function Moments({o}) {
     if (o === null || o === undefined) {
         return <>{"Loading..."}</>
     }
-    return <ul><OldMoments o={o} /><LastMoment o={o} /></ul>
+    return <ul className={styles.main + ' ' + styles.speechBubbles}>
+               <OldMoments o={o} />
+               <LastMoment o={o} />
+           </ul>
 }
 
 function OldMoments({o}) {
@@ -63,15 +67,13 @@ function LastMoment({o}) {
     }
 }
 
-function Input({o}) {
-    const [inputValue, setInputValue] = useState('')
+function InputAndButton({o}) {
     const defaultHooks = {
         onSubmit: function(e) {e.preventDefault},
         onChange: function() {}
     }
     const [hooks, setHooks] = useState(defaultHooks)
-    if (!(o === null || o === undefined)) {
-        o.setSetInputValue(setInputValue)
+    if (o !== null) {
         o.setOnReadySocket(function(unlocked) {
             setHooks({
                 onClear: function(event) {
@@ -79,20 +81,42 @@ function Input({o}) {
                     unlocked.onClear()
                 },
                 onChange: function(event) {
-                    unlocked.onInputChange(event.target.value)
+                    const t = event.target
+                    t.style.height = 'auto'
+                    t.style.height = t.scrollHeight + 'px'
+                    unlocked.onInputChange(t.value)
                 }
             })
         })
     }
     return (
-        <form onSubmit={hooks.onClear}>
-            <input
-                type="text"
-                value={inputValue}
-                onChange={hooks.onChange}
-            />
+        <form onSubmit={hooks.onClear} className={styles.stickyBottom}>
+            <Input o={o} onChange={hooks.onChange} />
             <button type="submit">Clear</button>
         </form>
+    )
+}
+
+function Input({o, onChange}) {
+    const [inputValue, setInputValue] = useState('')
+    if (o !== null) o.setSetInputValue(setInputValue)
+    const inpRef = useRef(null)
+    useEffect(function() {
+        const t = inpRef.current
+        t.style.height = 'auto'
+        t.style.height = t.scrollHeight + 'px'
+    }, [])
+    return (
+        <div className={styles.messengerInputContainer}>
+            <textarea
+                ref={inpRef}
+                name="message"
+                placeholder="Each key will be sent"
+                className={styles.messengerInput}
+                value={inputValue}
+                onChange={onChange}
+            />
+        </div>
     )
 }
 
@@ -109,9 +133,10 @@ function momentToLiUl(moment, i) {
 
 function personToLi(person, i) {
     return <li id={person.id} key={i}>
-               <span key="name">{person.name}</span>
-               {': '}
-               {person.message.map(pieceToSpan)}
+               <div className={styles.speechBubble}>
+                   <span key="name">{person.name + ': '}</span>
+                   {person.message.map(pieceToSpan)}
+               </div>
            </li>
  }
 
