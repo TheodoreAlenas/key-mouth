@@ -1,19 +1,10 @@
 
 export default class Uri {
-    constructor(mode, room) {
+    constructor([http, host, port], room) {
         ifRoomIsntStringThrowError(room)
         this.room = room
-        if (mode === "dev") {
-            this.http = "http://"
-            this.hostPort = "localhost:8000"
-        }
-        else if (mode == "systest") {
-            this.http = "http://"
-            this.hostPort = "localhost:8001"
-        }
-        else {
-            throw new Error("Invalid Uri mode in constructor: " + mode)
-        }
+        this.http = http + '://'
+        this.hostPort = host + ':' + port
     }
     webSocket() {
         return "ws://" + this.hostPort +
