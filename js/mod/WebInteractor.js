@@ -6,22 +6,22 @@ export default class WebInteractor {
     setSetLastMoment(v) {this.setLastMoment = v}
     setSetInputValue(v) {this.setInputValue = v}
     setOnReadySocket(f) {this.onReadySocket = f}
-    constructor(env, room) {
+    constructor(uri) {
         try {
-            return this.constructorUnhandled(env, room)
+            return this.constructorUnhandled(uri)
         }
         catch (e) {
-            console.error("Error constructing web interactor, args: " +
-                          JSON.stringify({env, room}))
+            console.error("Error constructing web interactor, " +
+                          "typeof(uri) = " + uri + " (exp object)")
             throw e
         }
     }
-    constructorUnhandled(env, room) {
+    constructorUnhandled(uri) {
         const self = this
         function onReadySocket(io) {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
         }
-        this.io = new Io({env, room, onReadySocket})
+        this.io = new Io(uri, onReadySocket)
         this.cached = []
         this._setMomentsOnceFetched()
         function setLast(n, last) {self._setLast(n, last)}

@@ -1,14 +1,14 @@
 import WebInteractor from './WebInteractor.js'
+import Uri from './Uri.js'
 
-const roomUri = "http://localhost:8001/room?name=" +
-      encodeURI("my\nroom")
-const withRoom = fetch(roomUri, {method: "PUT"})
+const uri = new Uri("systest", "my\nroom")
+const withRoom = uri.fetchPutRoom()
 withRoom.catch(function(err) {
     console.error("Error, can't create room")
     throw err
 })
 const withNoError = withRoom.then(function() {
-    fetch(roomUri, {method: "PUT"}).then(function(res) {
+    uri.fetchPutRoom().then(function(res) {
         if (res.status !== 409) {
             throw new Error("creating room twice, error code: " +
                             res.status)
@@ -17,13 +17,7 @@ const withNoError = withRoom.then(function() {
 })
 
 function withWebInteractor(name, room, callback) {
-    const wi = new WebInteractor(
-        {
-            webSocketUri: "ws://localhost:8001",
-            lastMomentsUri: "http://localhost:8001/last",
-            momentsRangeUri: "http://localhost:8001/moments"
-        },
-        room)
+    const wi = new WebInteractor(uri)
 
     function log(m) {
         console.log(Date.now() + "\t[" + name + "]\t" + m)

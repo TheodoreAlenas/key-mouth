@@ -1,4 +1,5 @@
 import WebInteractor from '../mod/WebInteractor.js'
+import Uri from '../mod/Uri.js'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 

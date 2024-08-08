@@ -1,21 +1,17 @@
 
 export default class Io {
-    constructor(args) {
+    constructor(uri, onReadySocket) {
         try {
-            return this.constructorUnhandled(args)
+            return this.constructorUnhandled(uri, onReadySocket)
         }
         catch (e) {
-            console.error("Error constructing web io, args: " +
-                          JSON.stringify(args))
+            console.error("Error constructing web io")
             throw e
         }
     }
-    constructorUnhandled({env, room, onReadySocket}) {
-        ifRoomIsntStringThrowError(room)
-        this.env = env
-        this.room = room
-        this.socket = new WebSocket(env.webSocketUri +
-                                    "?room=" + encodeURI(room))
+    constructorUnhandled(uri, onReadySocket) {
+        this.uri = uri
+        this.socket = new WebSocket(uri.webSocket())
         onOpenSendVersionAnd(this.socket, onReadySocket, this)
     }
     getDestructor() {
@@ -30,10 +26,7 @@ export default class Io {
         this.socket.send(e)
     }
     withLastMoments(callback) {
-        const self = this
-        const lastMomRoom = this.env.lastMomentsUri +
-              "?room=" + encodeURI(this.room)
-        withJsonFetched(lastMomRoom, function(res) {
+        withJsonFetched(this.uri.lastMoments(), function(res) {
             try {
                 callback(res)
             }
@@ -45,11 +38,8 @@ export default class Io {
         })
     }
     withMomentsRange(start, end, callback) {
-        const rangeUri = this.env.momentsRangeUri +
-              "?room=" + encodeURI(this.room) +
-              "&start=" + start +
-              "&end=" + end
-        withJsonFetched(rangeUri, function(res) {
+        const u = this.uri.momentsRange(start, end)
+        withJsonFetched(u, function(res) {
             try {
                 callback(res)
             }
@@ -107,15 +97,6 @@ function withJsonFetched(uri, callback) {
         console.error("Error, res.json() failed, " + uri)
         throw err
     })
-}    
-
-function ifRoomIsntStringThrowError(room) {
-    if (typeof(room) !== 'string') {
-        throw new Error(
-            "room isn't string (.../?room=hello let's say), " +
-                "typeof(room) = " + typeof(room) +
-                ", room = " + room)
-    }
 }
 
 function trySending(socket, e, list) {
