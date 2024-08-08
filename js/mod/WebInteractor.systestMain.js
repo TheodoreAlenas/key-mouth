@@ -45,9 +45,11 @@ function withWebInteractor(name, room, callback) {
 
 withNoError.then(function() {
     withWebInteractor("say", "my\nroom", function(unlocked, close) {
-        unlocked.onInputChange("hi")
-        unlocked.onInputChange("hi there")
-        unlocked.onClear()
+        setTimeout(function() {
+            unlocked.onInputChange("hi")
+            unlocked.onInputChange("hi there")
+            unlocked.onClear()
+        }, 50)
         setTimeout(close, 200)
     })
     withWebInteractor("hear", "my\nroom", function(unlocked, close) {
@@ -63,5 +65,5 @@ withNoError.then(function() {
         withWebInteractor("all", "my\nroom", function(unlocked, close) {
             setTimeout(close, 200)
         })
-    }, 800)
+    }, 650)
 })

@@ -97,17 +97,15 @@ class FrontCheck(unittest.TestCase):
         self.assertEqual(stop_last, all_last)
 
     def test_and_the_messages_havent_changed(self):
-        m1 = '\t[stop]\tlast moment set to [{"name":"Vaggas1","message":[{"type":"write","body":"hi thereclear"}]}]'
-        m2 = '\t[stop]\tlast moment set to [{"name":"Sotiris2","message":[{"type":"write","body":"interrupt"}]}]' 
-        n1 = 0
-        n2 = 0
+        m1 = '\t[stop]\tlast moment set to [{"name":"Sotiris0","message":[{"type":"write","body":"hi thereclear"}]}]'
+        m2 = '\t[stop]\tlast moment set to [{"name":"Sotiris2","message":[{"type":"write","body":"interrupt"}]}]'
+        n1 = n2 = 0
         for l in self.lines:
             if l.find(m1) != -1:
                 n1 += 1
             if l.find(m2) != -1:
                 n2 += 1
-        self.assertEqual(1, n1)
-        self.assertEqual(1, n2)
+        self.assertEqual((1, 1), (n1, n2))
 
     def test_unless_interrupt_old_moments_are_nothing(self):
         say = '[say]\told moments set to [[]]'
