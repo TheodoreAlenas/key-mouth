@@ -70,14 +70,15 @@ export default class WebInteractor {
                             this.lastMomentN)
         }
         const self = this
-        this.io.withMomentsRange(this.lastMomentN, n, function(res) {
+        const oldLastMomentN = this.lastMomentN
+        this.lastMomentN = n
+        this.io.withMomentsRange(oldLastMomentN, n, function(res) {
             self._updateOldMomentsInner(n, res)
         })
     }
     _updateOldMomentsInner(n,  moments) {
         const p = moments.map(
             m => presentMoment(getConnName, m))
-        this.lastMomentN = n
         this.cached = this.cached.concat(p)
         this.setOldMoments(this.cached)
     }
