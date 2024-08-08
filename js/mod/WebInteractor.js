@@ -8,7 +8,7 @@ export default class WebInteractor {
     setOnReadySocket(f) {this.onReadySocket = f}
     constructor(uri) {
         try {
-            return this.constructorUnhandled(uri)
+            this.constructorUnhandled(uri)
         }
         catch (e) {
             console.error("Error constructing web interactor, " +
