@@ -22,25 +22,41 @@ export default class WebInteractor {
                                     "?room=" + encodeURI(room))
         this.setMomentsOnceFetched(env, room)
         this.onOpenSendVersionAndUnlock(this.socket)
-        this.onMessageSetLatest(this.socket)
+        this.onMessageSetLatest(env, this.socket)
     }
     getDestructor() {
         const socket = this.socket
         return function() {socket.close()}
     }
+    withJsonFetched(uri, callback) {
+        const withStr = fetch(uri)
+        withStr.catch(function(err) {
+            console.error("Error, can't fetch " + uri)
+            throw err
+        })
+        const withJson = withStr.then(function(err) {
+            if (res.status !== 200) {
+                throw new Error("Error, fetched " + uri +
+                                " with status " + res.status)
+            }
+            return res.json()
+        })
+        withJson.then(callback)
+        withJson.catch(function(err) {
+            console.error("Error, res.json() failed, " + uri)
+            throw err
+        })
+    }
     setMomentsOnceFetched(env, room) {
         const self = this
         const lastMomRoom = env.lastMomentsUri +
               "?room=" + encodeURI(room)
-        const withStr = fetch(lastMomRoom)
-        withStr.catch(rethrowCantFetch)
-        const withJson = withStr.then(throwIfNot200AndReturnJson)
-        withJson.catch(rethrowJsonFuncFailed)
-        withJson.then(function(moments) {
+        this.withJsonFetched(lastMomRoom, function(moments) {
             try {
                 if (moments.length == 0) return
                 const p = moments.map(m => presentMoment(getConnName, m))
                 self.cachedPresentedOldMoments = p
+                self.lastMomentN = null
                 self.setOldMoments(p)
             }
             catch (err) {
@@ -49,21 +65,6 @@ export default class WebInteractor {
                 throw err
             }
         })
-        function rethrowCantFetch(err) {
-            console.error("Error, can't fetch " + lastMomRoom)
-            throw err
-        }
-        function throwIfNot200AndReturnJson(res) {
-            if (res.status !== 200) {
-                throw new Error("Error, fetched " + lastMomRoom +
-                                " with status " + res.status)
-            }
-            return res.json()
-        }
-        function rethrowJsonFuncFailed(err) {
-            console.error("Error, res.json() failed, " + lastMomRoom)
-            throw err
-        }
     }
     onOpenSendVersionAndUnlock(socket) {
         const self = this
@@ -78,16 +79,25 @@ export default class WebInteractor {
             }
         })
     }
-    onMessageSetLatest(socket) {
+    onMessageSetLatest(env, socket) {
         const self = this
         socket.addEventListener("message", function(event) {
             try {
-                const {lastMoment, curMoment} = JSON.parse(event.data)
-                const p = presentMoment(getConnName, curMoment)
+                const {n, last} = JSON.parse(event.data)
+                const p = presentMoment(getConnName, last)
                 self.setLastMoment(p)
-                if (lastMoment == null) return
-                const l = presentMoment(getConnName, lastMoment)
-                self.setOldMoments(self.cachedPresentedOldMoments.concat([l]))
+                if (n == self.lastMomentN) return
+                if (n < self.lastMomentN) {
+                    console.error("Error, got n = " + n +
+                                  " < self.lastMomentN = " +
+                                  self.lastMomentN)
+                }
+                fetch(env.momentsRangeUri, function)
+                self.lastMomentN = n
+                const l = presentMoment(getConnName, n)
+                self.cachedPresentedOldMoments =
+                    self.cachedPresentedOldMoments.concat([l])
+                self.setOldMoments(self.cachedPresentedOldMoments)
             }
             catch (e) {
                 console.error("Error setting last moment to " +
