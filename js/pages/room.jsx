@@ -1,6 +1,7 @@
 import WebInteractor from '../mod/WebInteractor.js'
 import Uri from '../mod/Uri.js'
 import styles from './room.module.css'
+import Layout from '../components/layout.jsx'
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
 
@@ -17,10 +18,12 @@ export default function Home({env}) {
             return newO.getDestructor()
         }
     }, [router.isReady])
-    return <main className={styles.main}>
-               <Moments o={o} />
-               <InputAndButton o={o} />
-           </main>
+    return <Layout>
+               <main className={styles.main}>
+                   <Moments o={o} />
+                   <InputAndButton o={o} />
+               </main>
+           </Layout>
 }
 
 export async function getStaticProps() {
