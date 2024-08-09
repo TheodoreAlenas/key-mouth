@@ -41,22 +41,19 @@ async def wrap(f, args, before_sending=do_nothing):
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@app.put("/room")
-async def create_room(name: str):
-    await wrap(logic.create_room, name)
+@app.put("/{room}")
+async def room_put(name: str):
+    await wrap(logic.create_room, room)
 
 
-@app.get("/moments")
-async def last(room: str, start: int, end: int):
+@app.get("/{room}")
+async def room_get(room: str,
+                   start: int|None = None,
+                   end: int|None = None):
     return await wrap(logic.get_moments_range, (room, start, end))
 
 
-@app.get("/last")
-async def last(room: str):
-    return await wrap(logic.get_last_few, room)
-
-
-@app.websocket("/")
+@app.websocket("/{room}")
 async def root(websocket: WebSocket, room: str):
     conn = None
     try:
