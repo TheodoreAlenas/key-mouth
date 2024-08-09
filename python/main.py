@@ -47,7 +47,7 @@ async def root_get():
 
 
 @app.put("/{room}")
-async def room_put(name: str):
+async def room_put(room: str):
     await wrap(logic.create_room, room)
 
 

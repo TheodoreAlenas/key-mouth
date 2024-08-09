@@ -110,13 +110,22 @@ class AfterSocketLogic:
 
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end
-        if start is None and end is None:
-            return ([], self.moments.get_last_few(room))
-        return ([], self.moments.get_range(room, start, end))
+        try:
+            if start is None and end is None:
+                return ([], self.moments.get_last_few(room))
+            return ([], self.moments.get_range(room, start, end))
+        except Exception as e:
+            raise Exception("(room, start, end) = (" +
+                            room + ', ' +
+                            str(start) + ', ' +
+                            str(end) + ')')
 
     def connect(self, time, room):
         if type(room) != str:
             raise Exception("can't connect with non-string room")
+        if not room in self.rooms:
+            raise LogicHttpException("room " + str(room) +
+                                     "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
         self.conns[i] = Conn(time, i, room, self)

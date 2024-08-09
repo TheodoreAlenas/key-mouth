@@ -1,26 +1,30 @@
 
 export default class UriRoom {
-    constructor([http, host, port], room) {
+    constructor([ws, [http, pre]], room) {
         ifRoomIsntStringThrowError(room)
         this.room = room
+        this.ws = ws
         this.http = http + '://'
-        this.hostPortRoom = host + ':' + port +
-            '/' + encodeURI(this.room)
+        this.pre = pre + '/' + encodeURI(this.room)
     }
     webSocket() {
-        return "ws://" + this.hostPortRoom
+        return this.ws + '/' + this.room
     }
     lastMoments() {
-        return this.http + this.hostPortRoom
+        return this.http + this.pre
     }
     momentsRange(start, end) {
-        return this.http + this.hostPortRoom +
+        return this.http + this.pre +
             "?start=" + start +
             "&end=" + end
     }
     fetchPutRoom() {
-        const u = this.http + this.hostPortRoom
-        return fetch(u, {method: "PUT"})
+        const u = this.http + this.pre
+        const f = fetch(u, {method: "PUT"})
+        f.catch(function(err) {
+            console.error("can't fetch PUT room at " + u)
+        })
+        return f
     }
 }
 

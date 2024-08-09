@@ -1,13 +1,15 @@
 import WebInteractor from './WebInteractor.js'
 import UriRoom from './UriRoom.js'
 
-const uri = new UriRoom(["http", "localhost", "8001"], "my\nroom")
+const uri = new UriRoom(
+    ["ws://localhost:8001", ["http", "localhost:8001"]],
+    "my room")
 const withRoom = uri.fetchPutRoom()
-withRoom.catch(function(err) {
-    console.error("Error, can't create room")
-    throw err
-})
-const withNoError = withRoom.then(function() {
+const withNoError = withRoom.then(function(res) {
+    if (res.status !== 200) {
+        throw new Error("creating room failed with error code: " +
+                        res.status)
+    }
     uri.fetchPutRoom().then(function(res) {
         if (res.status !== 409) {
             throw new Error("creating room twice, error code: " +
@@ -35,7 +37,7 @@ function withWebInteractor(name, room, callback) {
 }
 
 withNoError.then(function() {
-    withWebInteractor("say", "my\nroom", function(unlocked, close) {
+    withWebInteractor("say", "my room", function(unlocked, close) {
         setTimeout(function() {
             unlocked.onInputChange("hi")
             unlocked.onInputChange("hi there")
@@ -43,17 +45,17 @@ withNoError.then(function() {
         }, 50)
         setTimeout(close, 200)
     })
-    withWebInteractor("hear", "my\nroom", function(unlocked, close) {
+    withWebInteractor("hear", "my room", function(unlocked, close) {
         setTimeout(close, 200)
     })
     setTimeout(function() {
-        withWebInteractor("stop", "my\nroom", function(unlocked, close) {
+        withWebInteractor("stop", "my room", function(unlocked, close) {
             unlocked.onInputChange("interrupt")
             setTimeout(close, 200)
         })
     }, 600)
     setTimeout(function() {
-        withWebInteractor("all", "my\nroom", function(unlocked, close) {
+        withWebInteractor("all", "my room", function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 650)

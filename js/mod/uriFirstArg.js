@@ -1,19 +1,21 @@
 
 function getArg() {
-    if (process.env.KEYMOUTH_PROD === undefined) {
-        const ui = ["http", "localhost", "3000"]
-        const api = ["http", "localhost", "8000"]
-        return {
-            home: [ui, api],
-            room: api
-        }
+    if (process.env.KEYMOUTH_DEPLOY === undefined) {
+        const ui = ["http", "localhost:3000"]
+        const api = ["http", "localhost:8000"]
+        const ws = "ws://localhost:8000"
+        return {home: [ui, api], room: [ws, api]}
     }
-    const same = [
-        process.env.KEYMOUTH_HTTP,
-        process.env.KEYMOUTH_HOST,
-        process.env.KEYMOUTH_PORT
+    const ui = [
+        process.env.KEYMOUTH_UI_HTTP,
+        process.env.KEYMOUTH_UI_PRE
     ]
-    return {home: [same, same], room: same}
+    const api = [
+        process.env.KEYMOUTH_API_HTTP,
+        process.env.KEYMOUTH_API_PRE
+    ]
+    const ws = process.env.KEYMOUTH_WS
+    return {home: [ui, api], room: [ws, api]}
 }
 
 const uriFirstArg = getArg()

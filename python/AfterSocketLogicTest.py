@@ -61,6 +61,13 @@ class AfterSocketLogicTest(unittest.TestCase):
         except Exception as e:
             self.assertEqual(409, e.status_code)
 
+    def test_if_room_doesnt_exist_404(self):
+        try:
+            self.logic.connect(10.0, "nonexistent")
+            self.assertFalse("should have thrown error")
+        except Exception as e:
+            self.assertEqual(404, e.status_code)
+
     def test_connect_get_no_moments(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         res, _ = conn_1.update(10.1, None)
