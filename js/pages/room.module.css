@@ -23,9 +23,6 @@
 .speechBubbles li {
     list-style: none;
 }
-.speechBubbles > li {
-    margin: 0.5em 0;
-}
 .speechBubble {
     background-color: #fff;
     border-radius: 0.4em;

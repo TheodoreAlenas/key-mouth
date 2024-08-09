@@ -43,9 +43,9 @@ function Moments({o}) {
     let pres = <code>{"ERROR"}</code>
     try {pres = <>{oldMoments.map(momentToLiUl)}</>}
     catch (e) {}
-    return <ul className={styles.speechBubbles}>
-               {moments.map(momentAndIdToLiUl)}
-           </ul>
+    return <section className={styles.speechBubbles}>
+               {moments.map(momentAndIdToUl)}
+           </section>
 }
 
 function InputAndButton({o}) {
@@ -103,11 +103,11 @@ function Input({o, onChange}) {
     )
 }
 
-function momentAndIdToLiUl(momentAndId) {
+function momentAndIdToUl(momentAndId) {
     const m = momentAndId
     if (m.length === 0) return
     try {
-        return <li key={m.id}><ul>{m.body.map(personToLi)}</ul></li>
+        return <ul key={m.id}>{m.body.map(personToLi)}</ul>
     }
     catch (e) {
         console.error("Error rendering moment " + JSON.stringify(m))
