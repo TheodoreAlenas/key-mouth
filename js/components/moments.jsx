@@ -1,4 +1,4 @@
-import styles from './moments.module.css'
+import styles from './bubbleList.module.css'
 import { useEffect, useRef, useState } from "react"
 
 export default function Moments({o}) {
@@ -10,16 +10,14 @@ export default function Moments({o}) {
     let pres = <code>{"ERROR"}</code>
     try {pres = <>{oldMoments.map(momentToLiUl)}</>}
     catch (e) {}
-    return <section className={styles.speechBubbles}>
-               {moments.map(momentAndIdToUl)}
-           </section>
+    return <section>{moments.map(momentAndIdToUl)}</section>
 }
 
 function momentAndIdToUl(momentAndId) {
     const m = momentAndId
     if (m.length === 0) return
     try {
-        return <ul key={m.key}>{m.body.map(personToLi)}</ul>
+        return <ul key={m.key} className={styles.bubbleList}>{m.body.map(personToLi)}</ul>
     }
     catch (e) {
         console.error("Error rendering moment " + JSON.stringify(m))
@@ -29,7 +27,7 @@ function momentAndIdToUl(momentAndId) {
 
 function personToLi(person, i) {
     return <li id={person.id} key={i}>
-               <div className={styles.speechBubble}>
+               <div className={styles.bubbleListItem}>
                    <strong key="name">{person.name + ': '}</strong>
                    {person.message.map(pieceToSpan)}
                </div>

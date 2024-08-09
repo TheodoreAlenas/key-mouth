@@ -1,4 +1,6 @@
 import UriHome from '../mod/UriHome.js'
+import laySt from './index.module.css'
+import bubSt from '../components/bubbleList.module.css'
 import uriFirstArg from '../mod/uriFirstArg.js'
 import Link from "next/link"
 
@@ -9,15 +11,19 @@ export default function Home({env}) {
         {text: "Hello", href: uri.room("hello")}
     ]
     return (
-        <>
+        <main className={laySt.main} style={{backgroundColor: "var(--bg-pale)"}}>
             <h1>Rooms</h1>
-            <ul>{ss.map(roomToLiLink)}</ul>
-        </>
+            <ul className={bubSt.bubbleList}>{ss.map(roomToLiLink)}</ul>
+        </main>
     )
 }
 
 function roomToLiLink(s, i) {
-    return <li key={i}><Link href={s.href}>{s.text}</Link></li>
+    return <li key={i}>
+               <Link className={bubSt.bubbleListItem}
+                     href={s.href}
+               >{s.text}</Link>
+           </li>
 }
 
 export async function getStaticProps() {
