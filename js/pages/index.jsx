@@ -1,10 +1,12 @@
-
+import UriHome from '../mod/UriHome.js'
+import uriFirstArg from '../mod/uriFirstArg.js'
 import Link from "next/link"
 
 export default function Home({env}) {
+    const uri = new UriHome(env.home)
     const ss = [
-        {text: "Zero",  href: env.roomUri + "?name=0"},
-        {text: "Hello", href: env.roomUri + "?name=hello"}
+        {text: "Zero",  href: uri.room("0")},
+        {text: "Hello", href: uri.room("hello")}
     ]
     return (
         <>
@@ -19,8 +21,5 @@ function roomToLiLink(s, i) {
 }
 
 export async function getStaticProps() {
-    const env = {
-        roomUri: "http://localhost:3000/room"
-    }
-    return {props: {env}}
+    return {props: {env: uriFirstArg}}
 }

@@ -1,7 +1,7 @@
 import WebInteractor from './WebInteractor.js'
-import Uri from './Uri.js'
+import UriRoom from './UriRoom.js'
 
-const uri = new Uri(["http", "localhost", "8001"], "my\nroom")
+const uri = new UriRoom(["http", "localhost", "8001"], "my\nroom")
 const withRoom = uri.fetchPutRoom()
 withRoom.catch(function(err) {
     console.error("Error, can't create room")

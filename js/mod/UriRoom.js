@@ -1,10 +1,13 @@
 
-export default class Uri {
+export default class UriRoom {
     constructor([http, host, port], room) {
         ifRoomIsntStringThrowError(room)
         this.room = room
         this.http = http + '://'
         this.hostPort = host + ':' + port
+    }
+    home() {
+        return this.http + this.hostPort
     }
     webSocket() {
         return "ws://" + this.hostPort +

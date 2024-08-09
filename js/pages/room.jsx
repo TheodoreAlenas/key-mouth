@@ -1,5 +1,6 @@
 import WebInteractor from '../mod/WebInteractor.js'
-import Uri from '../mod/Uri.js'
+import UriRoom from '../mod/UriRoom.js'
+import uriFirstArg from '../mod/uriFirstArg.js'
 import styles from './room.module.css'
 import Moments from '../components/moments.jsx'
 import InputAndButton from '../components/inputAndButton.jsx'
@@ -14,13 +15,13 @@ export default function Home({env}) {
         if (router.isReady) {
             const s = new URLSearchParams(router.query)
             const roomName = s.get('name')
-            const uri = new Uri(env, roomName)
+            const uri = new UriRoom(env.room, roomName)
             const newO = new WebInteractor(uri)
             setO(newO)
             return newO.getDestructor()
         }
     }, [router.isReady])
-    return <Layout>
+    return <Layout env={env}>
                <main className={styles.main + ' ' + styles.bgPale}>
                    <Moments o={o} />
                    <InputAndButton
@@ -32,12 +33,5 @@ export default function Home({env}) {
 }
 
 export async function getStaticProps() {
-    if (process.env.KEYMOUTH_PROD === undefined) {
-        return {props: {env: ["http", "localhost", "8000"]}}
-    }
-    return {props: {env: [
-        process.env.KEYMOUTH_HTTP,
-        process.env.KEYMOUTH_HOST,
-        process.env.KEYMOUTH_PORT
-    ]}}
+    return {props: {env: uriFirstArg}}
 }
