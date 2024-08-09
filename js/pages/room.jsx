@@ -2,6 +2,7 @@ import WebInteractor from '../mod/WebInteractor.js'
 import Uri from '../mod/Uri.js'
 import styles from './room.module.css'
 import Moments from '../components/moments.jsx'
+import InputAndButton from '../components/inputAndButton.jsx'
 import Layout from '../components/layout.jsx'
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
@@ -22,7 +23,10 @@ export default function Home({env}) {
     return <Layout>
                <main className={styles.main + ' ' + styles.bgPale}>
                    <Moments o={o} />
-                   <InputAndButton o={o} />
+                   <InputAndButton
+                       o={o}
+                       className={styles.bgPale + ' ' +
+                                  styles.stickyBottom} />
                </main>
            </Layout>
 }
@@ -36,60 +40,4 @@ export async function getStaticProps() {
         process.env.KEYMOUTH_HOST,
         process.env.KEYMOUTH_PORT
     ]}}
-}
-
-function InputAndButton({o}) {
-    const defaultHooks = {
-        onSubmit: function(e) {e.preventDefault},
-        onChange: function() {}
-    }
-    const [hooks, setHooks] = useState(defaultHooks)
-    if (o !== null) {
-        o.setOnReadySocket(function(unlocked) {
-            setHooks({
-                onClear: function(event) {
-                    event.preventDefault()
-                    unlocked.onClear()
-                },
-                onChange: function(event) {
-                    const t = event.target
-                    t.style.height = 'auto'
-                    t.style.height = t.scrollHeight + 'px'
-                    unlocked.onInputChange(t.value)
-                }
-            })
-        })
-    }
-    return (
-        <form onSubmit={hooks.onClear}
-              className={styles.stickyBottom + ' ' +
-                         styles.messengerInputForm + ' ' +
-                         styles.bgPale}>
-            <Input o={o} onChange={hooks.onChange} />
-            <button className="clearButton" type="submit">Clear</button>
-        </form>
-    )
-}
-
-function Input({o, onChange}) {
-    const [inputValue, setInputValue] = useState('')
-    if (o !== null) o.setSetInputValue(setInputValue)
-    const inpRef = useRef(null)
-    useEffect(function() {
-        const t = inpRef.current
-        t.style.height = 'auto'
-        t.style.height = t.scrollHeight + 'px'
-    }, [])
-    return (
-        <div className={styles.messengerInputContainer}>
-            <textarea
-                ref={inpRef}
-                name="message"
-                placeholder="Each key will be sent"
-                className={styles.messengerInput}
-                value={inputValue}
-                onChange={onChange}
-            />
-        </div>
-    )
 }
