@@ -1,8 +1,12 @@
 .main {
     font-family: system-ui,sans-serif;
     font-size: 0.45cm;
+    background-color: #cde;
+    min-height: 100vh;
+    padding: 0.8em;
 }
 
+[data-sch=dark] .main {background-color: #456;}
 [data-sch=dark] .speechBubble {background-color: #334;}
 
 .speechBubbles ul {
@@ -18,7 +22,7 @@
     margin: 0.5em 0;
 }
 .speechBubble {
-    background-color: #abd;
+    background-color: #fff;
     border-radius: 0.4em;
     padding: 0.3em 0.8em;
     margin: 0.1em 0;

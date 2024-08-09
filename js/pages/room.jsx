@@ -17,7 +17,10 @@ export default function Home({env}) {
             return newO.getDestructor()
         }
     }, [router.isReady])
-    return <><Moments o={o} /><InputAndButton o={o} /></>
+    return <main className={styles.main}>
+               <Moments o={o} />
+               <InputAndButton o={o} />
+           </main>
 }
 
 export async function getStaticProps() {
@@ -40,7 +43,7 @@ function Moments({o}) {
     let pres = <code>{"ERROR"}</code>
     try {pres = <>{oldMoments.map(momentToLiUl)}</>}
     catch (e) {}
-    return <ul className={styles.main + ' ' + styles.speechBubbles}>
+    return <ul className={styles.speechBubbles}>
                {moments.map(momentAndIdToLiUl)}
            </ul>
 }
@@ -113,7 +116,7 @@ function momentAndIdToLiUl(momentAndId) {
 function personToLi(person, i) {
     return <li id={person.id} key={i}>
                <div className={styles.speechBubble}>
-                   <span key="name">{person.name + ': '}</span>
+                   <strong key="name">{person.name + ': '}</strong>
                    {person.message.map(pieceToSpan)}
                </div>
            </li>
