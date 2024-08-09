@@ -107,7 +107,7 @@ function momentAndIdToUl(momentAndId) {
     const m = momentAndId
     if (m.length === 0) return
     try {
-        return <ul key={m.id}>{m.body.map(personToLi)}</ul>
+        return <ul key={m.key}>{m.body.map(personToLi)}</ul>
     }
     catch (e) {
         console.error("Error rendering moment " + JSON.stringify(m))
