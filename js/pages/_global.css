@@ -1,5 +1,10 @@
+[data-sch=dark] body {--bg-norm: #000} body {--bg-norm: #fff}
+[data-sch=dark] body {--fg-norm: #fff} body {--fg-norm: #000}
+[data-sch=dark] body {--bg-pale: #333} body {--bg-pale: #cde}
+
 body {
     font-family: system-ui,sans-serif;
     font-size: 0.45cm;
     margin: 0 0;
+    min-height: 100vh;
 }

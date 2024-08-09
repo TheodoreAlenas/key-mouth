@@ -1,0 +1,11 @@
+.stickyTop {
+    position: sticky;
+    top: 0
+}
+
+.tmpCenter {
+    background-color: var(--bg-norm);
+    display: block;
+    text-align: center;
+    padding: 1em;
+}

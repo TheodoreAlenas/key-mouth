@@ -1,7 +1,6 @@
 .main {
     padding: 0 0.8em;
     margin: 0 auto;
-    min-height: 100vh;
     max-width: 20cm;
     display: grid;
     grid-auto-flow: row;
