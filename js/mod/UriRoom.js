@@ -8,7 +8,7 @@ export default class UriRoom {
         this.pre = pre + '/' + encodeURI(this.room)
     }
     webSocket() {
-        return this.ws + '/' + this.room
+        return this.ws + '/' + encodeURI(this.room)
     }
     lastMoments() {
         return this.http + this.pre

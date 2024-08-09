@@ -3,7 +3,7 @@ import UriRoom from './UriRoom.js'
 
 const uri = new UriRoom(
     ["ws://localhost:8001", ["http", "localhost:8001"]],
-    "my room")
+    "my\nroom")
 const withRoom = uri.fetchPutRoom()
 const withNoError = withRoom.then(function(res) {
     if (res.status !== 200) {
@@ -37,7 +37,7 @@ function withWebInteractor(name, room, callback) {
 }
 
 withNoError.then(function() {
-    withWebInteractor("say", "my room", function(unlocked, close) {
+    withWebInteractor("say", "my\nroom", function(unlocked, close) {
         setTimeout(function() {
             unlocked.onInputChange("hi")
             unlocked.onInputChange("hi there")
@@ -45,17 +45,17 @@ withNoError.then(function() {
         }, 50)
         setTimeout(close, 200)
     })
-    withWebInteractor("hear", "my room", function(unlocked, close) {
+    withWebInteractor("hear", "my\nroom", function(unlocked, close) {
         setTimeout(close, 200)
     })
     setTimeout(function() {
-        withWebInteractor("stop", "my room", function(unlocked, close) {
+        withWebInteractor("stop", "my\nroom", function(unlocked, close) {
             unlocked.onInputChange("interrupt")
             setTimeout(close, 200)
         })
     }, 600)
     setTimeout(function() {
-        withWebInteractor("all", "my room", function(unlocked, close) {
+        withWebInteractor("all", "my\nroom", function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 650)
