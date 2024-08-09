@@ -33,38 +33,16 @@ export async function getStaticProps() {
 
 function Moments({o}) {
     if (o === null || o === undefined) {
-        return <>{"Loading..."}</>
+        return <code>{"Loading..."}</code>
     }
+    const [moments, setMoments] = useState([])
+    o.setSetMoments(setMoments)
+    let pres = <code>{"ERROR"}</code>
+    try {pres = <>{oldMoments.map(momentToLiUl)}</>}
+    catch (e) {}
     return <ul className={styles.main + ' ' + styles.speechBubbles}>
-               <OldMoments o={o} />
-               <LastMoment o={o} />
+               {moments.map(momentAndIdToLiUl)}
            </ul>
-}
-
-function OldMoments({o}) {
-    const [oldMoments, setOldMoments] = useState([])
-    o.setSetOldMoments(setOldMoments)
-    try {
-        return <>{oldMoments.map(momentToLiUl)}</>
-    }
-    catch (e) {
-        console.error("Error rendering the old moments")
-        console.error(e.message)
-        return <code>{"ERROR"}</code>
-    }
-}
-
-function LastMoment({o}) {
-    const [lastMoment, setLastMoment] = useState([])
-    o.setSetLastMoment(setLastMoment)
-    try {
-        return <>{momentToLiUl(lastMoment)}</>
-    }
-    catch (e) {
-        console.error("Error rendering the last moment")
-        console.error(e.message)
-        return <code>{"ERROR"}</code>
-    }
 }
 
 function InputAndButton({o}) {
@@ -120,13 +98,14 @@ function Input({o, onChange}) {
     )
 }
 
-function momentToLiUl(moment, i) {
-    if (moment.length === 0) return
+function momentAndIdToLiUl(momentAndId) {
+    const m = momentAndId
+    if (m.length === 0) return
     try {
-        return <li key={i}><ul>{moment.map(personToLi)}</ul></li>
+        return <li key={m.id}><ul>{m.body.map(personToLi)}</ul></li>
     }
     catch (e) {
-        console.error("Error rendering moment " + JSON.stringify(moment))
+        console.error("Error rendering moment " + JSON.stringify(m))
         throw e
     }
 }

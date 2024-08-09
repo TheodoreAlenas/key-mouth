@@ -25,11 +25,8 @@ function withWebInteractor(name, room, callback) {
     wi.setSetInputValue(function(m) {
         log("input value set to '" + m + "'")
     })
-    wi.setSetOldMoments(function(m) {
-        log("old moments set to " + JSON.stringify(m))
-    })
-    wi.setSetLastMoment(function(m) {
-        log("last moment set to " + JSON.stringify(m))
+    wi.setSetMoments(function(m) {
+        log("moments set to " + JSON.stringify(m))
     })
     const close = wi.getDestructor()
     wi.setOnReadySocket(function(unlocked) {

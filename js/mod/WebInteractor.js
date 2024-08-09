@@ -2,8 +2,7 @@ import Io from './Io.js'
 import presentMoment from './presentMoment.js'
 
 export default class WebInteractor {
-    setSetOldMoments(v) {this.setOldMoments = v}
-    setSetLastMoment(v) {this.setLastMoment = v}
+    setSetMoments(v) {this.setMoments = v}
     setSetInputValue(v) {this.setInputValue = v}
     setOnReadySocket(f) {this.onReadySocket = f}
     constructor(uri) {
@@ -22,13 +21,18 @@ export default class WebInteractor {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
         }
         this.io = new Io(uri, onReadySocket)
-        this.cached = []
+        this.cached = {}
         this._setMomentsOnceFetched()
         function setLast(n, last) {self._setLast(n, last)}
         this.io.onMomentsMessage(setLast)
     }
     getDestructor() {
         return this.io.getDestructor()
+    }
+    _setMomentsFromCached() {
+        const keys = Object.keys(this.cached)
+        const s = keys.map(k => ({key: k, body: this.cached[k]}))
+        this.setMoments(s)
     }
     _setMomentsOnceFetched(io) {
         const self = this
@@ -45,14 +49,15 @@ export default class WebInteractor {
     }
     _setMomentsOnceFetchedInner({start, end, moments}) {
         const p = moments.map(m => presentMoment(getConnName, m))
-        this.cached = p
+        for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
         this.lastMomentN = end
-        this.setOldMoments(p)
+        this._setMomentsFromCached()
     }
     _setLast(n, last) {
         try {
             const p = presentMoment(getConnName, last)
-            this.setLastMoment(p)
+            this.cached[n] = p
+            this._setMomentsFromCached()
             this._updateOldMoments(n)
         }
         catch (e) {
@@ -72,15 +77,16 @@ export default class WebInteractor {
         const self = this
         const oldLastMomentN = this.lastMomentN
         this.lastMomentN = n
-        this.io.withMomentsRange(oldLastMomentN, n, function(res) {
-            self._updateOldMomentsInner(n, res)
+        this.io.withMomentsRange(oldLastMomentN, n, function(moments) {
+            self._updateOldMomentsInner(oldLastMomentN, n, moments)
         })
     }
-    _updateOldMomentsInner(n,  moments) {
+    _updateOldMomentsInner(oldLastMomentN, n,  moments) {
         const p = moments.map(
             m => presentMoment(getConnName, m))
-        this.cached = this.cached.concat(p)
-        this.setOldMoments(this.cached)
+        const start = oldLastMomentN
+        for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
+        this._setMomentsFromCached()
     }
 
 }
