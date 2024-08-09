@@ -1,6 +1,7 @@
 import WebInteractor from '../mod/WebInteractor.js'
 import Uri from '../mod/Uri.js'
 import styles from './room.module.css'
+import Moments from '../components/moments.jsx'
 import Layout from '../components/layout.jsx'
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
@@ -35,20 +36,6 @@ export async function getStaticProps() {
         process.env.KEYMOUTH_HOST,
         process.env.KEYMOUTH_PORT
     ]}}
-}
-
-function Moments({o}) {
-    if (o === null || o === undefined) {
-        return <code>{"Loading..."}</code>
-    }
-    const [moments, setMoments] = useState([])
-    o.setSetMoments(setMoments)
-    let pres = <code>{"ERROR"}</code>
-    try {pres = <>{oldMoments.map(momentToLiUl)}</>}
-    catch (e) {}
-    return <section className={styles.speechBubbles}>
-               {moments.map(momentAndIdToUl)}
-           </section>
 }
 
 function InputAndButton({o}) {
@@ -105,31 +92,4 @@ function Input({o, onChange}) {
             />
         </div>
     )
-}
-
-function momentAndIdToUl(momentAndId) {
-    const m = momentAndId
-    if (m.length === 0) return
-    try {
-        return <ul key={m.key}>{m.body.map(personToLi)}</ul>
-    }
-    catch (e) {
-        console.error("Error rendering moment " + JSON.stringify(m))
-        throw e
-    }
-}
-
-function personToLi(person, i) {
-    return <li id={person.id} key={i}>
-               <div className={styles.speechBubble}>
-                   <strong key="name">{person.name + ': '}</strong>
-                   {person.message.map(pieceToSpan)}
-               </div>
-           </li>
- }
-
-function pieceToSpan(piece, i) {
-    if (piece.type === "write") return <span key={i}>{piece.body}</span>
-    if (piece.type === "delete") return <s key={i}>{piece.body}</s>
-    else return <span key={i}>ERROR</span>
 }
