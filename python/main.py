@@ -41,6 +41,11 @@ async def wrap(f, args, before_sending=do_nothing):
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
+@app.get("/")
+async def root_get():
+    return await wrap(logic.get_rooms, None)
+
+
 @app.put("/{room}")
 async def room_put(name: str):
     await wrap(logic.create_room, room)

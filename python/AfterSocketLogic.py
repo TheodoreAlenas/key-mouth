@@ -81,6 +81,7 @@ class AfterSocketPublicLogic:
     def __init__(self, logic):
         self._logic = logic
         self.create_room = self._logic.create_room
+        self.get_rooms = self._logic.get_rooms
         self.get_moments_range = self._logic.get_moments_range
         self.connect = self._logic.connect
 
@@ -103,6 +104,9 @@ class AfterSocketLogic:
         self.rooms[name] = Room(time, name)
         self.moments.add_room(time, name)
         return ([], None)
+
+    def get_rooms(self, _time, _arg):
+        return ([], [r for r in self.rooms])
 
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end
