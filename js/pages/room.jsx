@@ -19,7 +19,7 @@ export default function Home({env}) {
         }
     }, [router.isReady])
     return <Layout>
-               <main className={styles.main}>
+               <main className={styles.main + ' ' + styles.bgPale}>
                    <Moments o={o} />
                    <InputAndButton o={o} />
                </main>
@@ -76,7 +76,8 @@ function InputAndButton({o}) {
     return (
         <form onSubmit={hooks.onClear}
               className={styles.stickyBottom + ' ' +
-                         styles.messengerInputForm}>
+                         styles.messengerInputForm + ' ' +
+                         styles.bgPale}>
             <Input o={o} onChange={hooks.onChange} />
             <button className="clearButton" type="submit">Clear</button>
         </form>
