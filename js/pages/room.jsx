@@ -71,9 +71,11 @@ function InputAndButton({o}) {
         })
     }
     return (
-        <form onSubmit={hooks.onClear} className={styles.stickyBottom}>
+        <form onSubmit={hooks.onClear}
+              className={styles.stickyBottom + ' ' +
+                         styles.messengerInputForm}>
             <Input o={o} onChange={hooks.onChange} />
-            <button type="submit">Clear</button>
+            <button className="clearButton" type="submit">Clear</button>
         </form>
     )
 }
