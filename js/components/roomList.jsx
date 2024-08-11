@@ -6,7 +6,7 @@ export default function RoomList({rooms}) {
     if (rooms === null) return <code>Loading...</code>
     return (
         <main className={shapes.thinCentered + ' ' + colors.bgPale + ' ' + shapes.stretch}>
-            <h1>Rooms</h1>
+            <h1 style={{textAlign: "center"}}>Rooms</h1>
             <ul className={shapes.bubbleGroupSpacing + ' ' +
                            shapes.noBullets + ' ' +
                            shapes.links}
