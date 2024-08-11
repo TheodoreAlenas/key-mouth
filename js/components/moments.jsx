@@ -1,4 +1,5 @@
 import styles from './bubbleList.module.css'
+import shapes from './shapes.module.css'
 import { useEffect, useRef, useState } from "react"
 
 export default function Moments({o}) {
@@ -21,7 +22,7 @@ export default function Moments({o}) {
         console.error("couldn't present:")
         console.error(state.moments)
     }
-    return <section style={{padding: 1}}>{finalPres}</section>
+    return <section className={shapes.stretch}>{finalPres}</section>
 }
 
 function getIsAtBottom() {
