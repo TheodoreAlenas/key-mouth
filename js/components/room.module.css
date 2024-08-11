@@ -4,8 +4,7 @@
     max-width: 20cm;
 }
 
-[data-sch=dark] .bgPale {background-color: #456;}
-.bgPale {background-color: #cde;;}
+.bgPale {background-color: #ddd;}
 
 .stickyBottom {
     position: sticky;

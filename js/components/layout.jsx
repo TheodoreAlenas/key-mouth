@@ -6,7 +6,8 @@ export default function Layout({ env, children }) {
     return <>
                <a href={uri.home()}
                   className={styles.stickyTop + ' ' +
-                             styles.tmpCenter}
+                             styles.tmpCenter + ' ' +
+                             styles.link}
                >Home</a>
                {children}
            </>

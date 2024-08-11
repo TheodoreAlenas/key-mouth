@@ -28,7 +28,9 @@ export default function InputAndButton({o, className}) {
               className={className + ' ' +
                          styles.messengerInputForm}>
             <Input o={o} onChange={hooks.onChange} />
-            <button className="clearButton" type="submit">Clear</button>
+            <button className={styles.messengerButton}
+                    type="submit"
+            >Clear</button>
         </form>
     )
 }

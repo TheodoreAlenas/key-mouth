@@ -3,20 +3,21 @@
     display: grid;
     grid-auto-columns: auto max-content;
     grid-auto-flow: column;
-    gap: 1em;
+    gap: 0.8em;
     padding: 0.8em 0;
 }
 
 .messengerInput {
     box-sizing: border-box;
     width: 100%;
-    border: 1px solid #aaa;
+    border: 2px solid #008;
     outline: none;
     resize: none;
     padding: 1em;
-    border-radius: 15px;
+    border-radius: 5px;
     background-color: #ddd;
     font-family: inherit;
+    font-size: inherit;
 }
 
 .messengerInput::placeholder {
@@ -25,5 +26,18 @@
 }
 
 .messengerInput:focus {
+    background-color: #fff;
+}
+
+.messengerButton {
+    border: 2px solid #008;
+    border-radius: 5px;
+    background-color: #ddd;
+    padding: 1em;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.messengerButton:hover {
     background-color: #fff;
 }
