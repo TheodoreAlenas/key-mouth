@@ -1,13 +1,11 @@
 import UriHome from '../mod/UriHome.js'
-import laySt from './index.module.css'
-import bubSt from '../components/bubbleList.module.css'
 import uriFirstArg from '../mod/uriFirstArg.js'
-import Link from "next/link"
+import RoomList from '../components/roomList.jsx'
 import { useEffect, useState } from "react"
 
 export default function Home({env}) {
     const uri = new UriHome(env.home)
-    const [rooms, setRooms] = useState(<code>Loading...</code>)
+    const [rooms, setRooms] = useState(null)
     useEffect(function() {
         const with200 = fetch(uri.rooms()).then(function(res) {
             if (res.status !== 200) {
@@ -21,26 +19,10 @@ export default function Home({env}) {
             throw err
         })
         with200.then(function(json) {
-            setRooms(
-                json.map(e => ({text: e, href: uri.room(e)}))
-                    .map(roomToLiLink)
-            )
+            setRooms(json.map(e => ({text: e, href: uri.room(e)})))
         })
     }, [])
-    return (
-        <main className={laySt.main} style={{backgroundColor: "var(--bg-pale)"}}>
-            <h1>Rooms</h1>
-            <ul className={bubSt.bubbleList}>{rooms}</ul>
-        </main>
-    )
-}
-
-function roomToLiLink(s, i) {
-    return <li key={i}>
-               <Link className={bubSt.bubbleListItem}
-                     href={s.href}
-               >{s.text}</Link>
-           </li>
+    return <RoomList rooms={rooms} />
 }
 
 export async function getStaticProps() {
