@@ -4,7 +4,8 @@
     grid-auto-columns: auto max-content;
     grid-auto-flow: column;
     gap: 0.8em;
-    padding: 0.8em 0;
+    padding: 0.8em;
+    background-color: #fff;
 }
 
 .messengerInput {
@@ -32,12 +33,12 @@
 .messengerButton {
     border: 2px solid #008;
     border-radius: 5px;
-    background-color: #ddd;
+    background-color: #fff;
     padding: 1em;
     font-family: inherit;
     font-size: inherit;
 }
 
 .messengerButton:hover {
-    background-color: #fff;
+    background-color: #ddd;
 }

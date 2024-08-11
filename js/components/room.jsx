@@ -8,8 +8,7 @@ export default function Room({o}) {
             <Moments o={o} />
             <InputAndButton
                 o={o}
-                className={styles.bgPale + ' ' +
-                           styles.stickyBottom} />
+                className={styles.stickyBottom} />
         </main>
     )
 }

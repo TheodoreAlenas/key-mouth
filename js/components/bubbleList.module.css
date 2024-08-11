@@ -1,5 +1,6 @@
 .bubbleList {
     padding: 0 0;
+    margin: 0.8em;
 }
 .bubbleList li {
     list-style: none;
