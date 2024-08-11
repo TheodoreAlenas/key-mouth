@@ -31,7 +31,6 @@ export default function InputAndButton({o, className}) {
             })
         })
     }
-    console.log(hooks)
     return (
         <form onSubmit={hooks.onClear}
               className={className + ' ' +
