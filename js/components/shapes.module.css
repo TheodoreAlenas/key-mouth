@@ -1,7 +1,6 @@
-.main {
-    padding: 0 0;
-    margin: 0 auto;
+.thinCentered {
     max-width: 20cm;
+    margin: 0 auto;
 }
 
 .bgPale {background-color: #ddd;}
@@ -10,3 +9,4 @@
     position: sticky;
     bottom: 0;
 }
+
