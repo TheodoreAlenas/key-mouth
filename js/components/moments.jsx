@@ -1,23 +1,52 @@
 import styles from './bubbleList.module.css'
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 export default function Moments({o}) {
     if (o === null || o === undefined) {
         return <code>{"Loading..."}</code>
     }
-    const [moments, setMoments] = useState([])
-    o.setSetMoments(setMoments)
+    const [state, setState] = useState({atBottom: true, moments: []})
+    o.setSetMoments(function(v) {
+        console.log("o sets the moments to:")
+        console.log(v)
+        setState({atBottom: getIsAtBottom(), moments: v})
+    })
+    useEffect(function() {
+        console.log("useEffect calls the function")
+        if (state.atBottom) scrollToBottom()
+    }, [state])
     let pres = <code>{"ERROR"}</code>
-    try {pres = <>{oldMoments.map(momentToLiUl)}</>}
-    catch (e) {}
-    return <section>{moments.map(momentAndIdToUl)}</section>
+    return <section>{state.moments.map(momentAndIdToUl)}</section>
+}
+
+function getIsAtBottom() {
+    const e = document.documentElement
+    const visiblePlusAboveIt = e.clientHeight + window.scrollY
+    const allOfIt = e.scrollHeight
+    console.log({
+        clientHeight: e.clientHeight,
+        scrollY: window.scrollY,
+        scrollHeight: e.scrollHeight,
+        willReturn: (visiblePlusAboveIt === allOfIt)
+    })
+    return visiblePlusAboveIt === allOfIt
+}
+
+function scrollToBottom() {
+    console.log("scrollToBottom called")
+    window.scrollTo({
+        top: document.documentElement.scrollHeight
+    })
+    console.log("scrollY is now: " + window.scrollY)
 }
 
 function momentAndIdToUl(momentAndId) {
     const m = momentAndId
     if (m.length === 0) return
     try {
-        return <ul key={m.key} className={styles.bubbleList}>{m.body.map(personToLi)}</ul>
+        return <ul key={m.key} className={styles.bubbleList}>
+                   {m.body.map(personToLi)}
+               </ul>
     }
     catch (e) {
         console.error("Error rendering moment " + JSON.stringify(m))
