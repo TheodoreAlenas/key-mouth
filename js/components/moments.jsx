@@ -1,6 +1,5 @@
-import styles from './bubbleList.module.css'
 import shapes from './shapes.module.css'
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Moments({o}) {
     if (o === null || o === undefined) {
@@ -42,7 +41,7 @@ function momentAndIdToUl(momentAndId) {
     try {
         const m = momentAndId
         if (m.length === 0) return
-        return <ul key={m.key} className={styles.bubbleList}>
+        return <ul key={m.key} className={shapes.bubbleList}>
                    {m.body.map(personToLi)}
                </ul>
     }
@@ -55,7 +54,7 @@ function momentAndIdToUl(momentAndId) {
 
 function personToLi(person, i) {
     return <li id={person.id} key={i}>
-               <div className={styles.bubbleListItem}>
+               <div className={shapes.bubbleListItem}>
                    <strong key="name">{person.name + ': '}</strong>
                    {person.message.map(pieceToSpan)}
                </div>
