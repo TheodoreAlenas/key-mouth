@@ -47,7 +47,7 @@ function Input({o, onChange}) {
             <textarea
                 ref={inpRef}
                 name="message"
-                placeholder="Each key will be sent"
+                placeholder="Think and type"
                 className={styles.messengerInput}
                 value={inputValue}
                 onChange={onChange}
