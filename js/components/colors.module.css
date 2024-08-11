@@ -1,2 +1,11 @@
 .bgPale {background-color: #ddd;}
 .bubbleColors {background-color: #fff;}
+
+.inputForm {background-color: #fff;}
+.button {background-color: #fff;}
+.input:focus {background-color: #fff;}
+.input {border: 2px solid #008;}
+.button {border: 2px solid #008;}
+.input {background-color: #ddd;}
+.button:hover {background-color: #ddd;}
+.input::placeholder {color: #000;}
