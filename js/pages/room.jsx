@@ -1,14 +1,12 @@
 import WebInteractor from '../mod/WebInteractor.js'
 import UriRoom from '../mod/UriRoom.js'
 import uriFirstArg from '../mod/uriFirstArg.js'
-import styles from './room.module.css'
-import Moments from '../components/moments.jsx'
-import InputAndButton from '../components/inputAndButton.jsx'
+import Room from '../components/room.jsx'
 import Layout from '../components/layout.jsx'
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
 
-export default function Home({env}) {
+export default function PageRoom({env}) {
     const [o, setO] = useState(null)
     const router = useRouter()
     useEffect(function() {
@@ -22,13 +20,7 @@ export default function Home({env}) {
         }
     }, [router.isReady])
     return <Layout env={env}>
-               <main className={styles.main + ' ' + styles.bgPale}>
-                   <Moments o={o} />
-                   <InputAndButton
-                       o={o}
-                       className={styles.bgPale + ' ' +
-                                  styles.stickyBottom} />
-               </main>
+               <Room o={o} />
            </Layout>
 }
 
