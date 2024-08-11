@@ -3,10 +3,12 @@
     display: grid;
     grid-auto-columns: auto max-content;
     grid-auto-flow: column;
+    gap: 1em;
     padding: 0.8em 0;
 }
 
 .messengerInput {
+    box-sizing: border-box;
     width: 100%;
     border: 1px solid #aaa;
     outline: none;
