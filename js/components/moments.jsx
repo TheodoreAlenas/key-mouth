@@ -1,4 +1,5 @@
 import shapes from './shapes.module.css'
+import colors from './colors.module.css'
 import { useEffect, useState } from "react"
 
 export default function Moments({o}) {
@@ -20,6 +21,7 @@ export default function Moments({o}) {
     catch (err) {
         console.error("couldn't present:")
         console.error(state.moments)
+        console.error(err)
     }
     return <section className={shapes.stretch}>{finalPres}</section>
 }
@@ -55,14 +57,21 @@ function momentAndIdToUl(momentAndId) {
 }
 
 function personToLi(person, i) {
-    return <li id={person.id} key={i}>
-               <div className={colors.bubbleColors + ' ' +
-                               shapes.bubbleSpacing + ' ' +
-                               shapes.bubbleWrap}>
-                   <strong key="name">{person.name + ': '}</strong>
-                   {person.message.map(pieceToSpan)}
-               </div>
-           </li>
+    try {
+        return <li id={person.id} key={i}>
+                   <div className={colors.bubbleColors + ' ' +
+                                   shapes.bubbleSpacing + ' ' +
+                                   shapes.bubbleWrap}>
+                       <strong key="name">{person.name + ': '}</strong>
+                       {person.message.map(pieceToSpan)}
+                   </div>
+               </li>
+    }
+    catch (e) {
+        console.error("error rendering person " + i + ':')
+        console.error(person)
+        throw e
+    }
  }
 
 function pieceToSpan(piece, i) {
