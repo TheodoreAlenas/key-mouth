@@ -1,5 +1,5 @@
 import styles from './bubbleList.module.css'
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function Moments({o}) {
     if (o === null || o === undefined) {
@@ -21,7 +21,7 @@ export default function Moments({o}) {
         console.error("couldn't present:")
         console.error(state.moments)
     }
-    return <section>{finalPres}</section>
+    return <section style={{padding: 1}}>{finalPres}</section>
 }
 
 function getIsAtBottom() {
