@@ -6,14 +6,19 @@ export default function RoomList({rooms}) {
     return (
         <main className={shapes.thinCentered + ' ' + shapes.bgPale + ' ' + shapes.stretch}>
             <h1>Rooms</h1>
-            <ul className={shapes.bubbleList + ' ' + shapes.links}>{rooms.map(roomToLiLink)}</ul>
+            <ul className={shapes.bubbleGroupSpacing + ' ' +
+                           shapes.noBullets + ' ' +
+                           shapes.links}
+            >{rooms.map(roomToLiLink)}</ul>
         </main>
     )
 }
 
 function roomToLiLink(s, i) {
     return <li key={i}>
-               <Link className={shapes.bubbleListItem}
+               <Link className={shapes.bubbleColors + ' ' +
+                                shapes.bubbleSpacing + ' ' +
+                                shapes.bubbleWrap}
                      href={s.href}
                >{s.text}</Link>
            </li>

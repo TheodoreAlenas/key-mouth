@@ -41,7 +41,9 @@ function momentAndIdToUl(momentAndId) {
     try {
         const m = momentAndId
         if (m.length === 0) return
-        return <ul key={m.key} className={shapes.bubbleList}>
+        return <ul key={m.key}
+                   className={shapes.bubbleGroupSpacing + ' ' +
+                              shapes.noBullets}>
                    {m.body.map(personToLi)}
                </ul>
     }
@@ -54,7 +56,9 @@ function momentAndIdToUl(momentAndId) {
 
 function personToLi(person, i) {
     return <li id={person.id} key={i}>
-               <div className={shapes.bubbleListItem}>
+               <div className={shapes.bubbleSpacing + ' ' +
+                               shapes.bubbleColors + ' ' +
+                               shapes.bubbleWrap}>
                    <strong key="name">{person.name + ': '}</strong>
                    {person.message.map(pieceToSpan)}
                </div>
