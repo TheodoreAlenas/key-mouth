@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react"
 import styles from './inputAndButton.module.css'
+import colors from './colors.module.css'
+import { useEffect, useRef, useState } from "react"
 
 export default function InputAndButton({o, className}) {
     const defaultHooks = {
@@ -26,9 +27,11 @@ export default function InputAndButton({o, className}) {
     return (
         <form onSubmit={hooks.onClear}
               className={className + ' ' +
-                         styles.messengerInputForm}>
+                         styles.messengerInputForm + ' ' +
+                         colors.inputForm}>
             <Input o={o} onChange={hooks.onChange} />
-            <button className={styles.messengerButton}
+            <button className={styles.messengerButton + ' ' +
+                               colors.button}
                     type="submit"
             >Clear</button>
         </form>
@@ -50,7 +53,7 @@ function Input({o, onChange}) {
                 ref={inpRef}
                 name="message"
                 placeholder="Think and type"
-                className={styles.messengerInput}
+                className={styles.messengerInput + ' ' + colors.input}
                 value={inputValue}
                 onChange={onChange}
             />
