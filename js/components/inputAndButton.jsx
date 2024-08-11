@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react"
 
 export default function InputAndButton({o, className}) {
     const defaultHooks = {
-        onSubmit: function(e) {e.preventDefault},
-        onChange: function() {}
+        onClear: function(e) {e.preventDefault},
+        onChange: function() {},
+        onKeyDown: function() {}
     }
     const [hooks, setHooks] = useState(defaultHooks)
     if (o !== null) {
@@ -20,16 +21,26 @@ export default function InputAndButton({o, className}) {
                     t.style.height = 'auto'
                     t.style.height = t.scrollHeight + 'px'
                     unlocked.onInputChange(t.value)
+                },
+                onKeyDown: function(event) {
+                    if (event.key !== 'Enter') return
+                    if (event.shiftKey) return
+                    event.preventDefault()
+                    unlocked.onClear()
                 }
             })
         })
     }
+    console.log(hooks)
     return (
         <form onSubmit={hooks.onClear}
               className={className + ' ' +
                          styles.messengerInputForm + ' ' +
                          colors.inputForm}>
-            <Input o={o} onChange={hooks.onChange} />
+            <Input o={o}
+                   onChange={hooks.onChange}
+                   onKeyDown={hooks.onKeyDown}
+            />
             <button className={styles.messengerButton + ' ' +
                                colors.button}
                     type="submit"
@@ -38,7 +49,7 @@ export default function InputAndButton({o, className}) {
     )
 }
 
-function Input({o, onChange}) {
+function Input({o, onChange, onKeyDown}) {
     const [inputValue, setInputValue] = useState('')
     if (o !== null) o.setSetInputValue(setInputValue)
     const inpRef = useRef(null)
@@ -56,7 +67,9 @@ function Input({o, onChange}) {
                 className={styles.messengerInput + ' ' + colors.input}
                 value={inputValue}
                 onChange={onChange}
+                onKeyDown={onKeyDown}
             />
         </div>
     )
 }
+
