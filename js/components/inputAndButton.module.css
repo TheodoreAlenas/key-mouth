@@ -12,10 +12,10 @@
     width: 100%;
     border: 1px solid #aaa;
     outline: none;
-    resize: none; /* Prevent resizing */
+    resize: none;
     padding: 1em;
-    border-radius: 15px; /* Rounded corners inside */
-    background-color: #ddd; /* White background */
+    border-radius: 15px;
+    background-color: #ddd;
     font-family: inherit;
 }
 
@@ -25,5 +25,5 @@
 }
 
 .messengerInput:focus {
-    background-color: #fff; /* Slight background change on focus */
+    background-color: #fff;
 }
