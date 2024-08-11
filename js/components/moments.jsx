@@ -7,49 +7,47 @@ export default function Moments({o}) {
     }
     const [state, setState] = useState({atBottom: true, moments: []})
     o.setSetMoments(function(v) {
-        console.log("o sets the moments to:")
-        console.log(v)
         setState({atBottom: getIsAtBottom(), moments: v})
     })
     useEffect(function() {
-        console.log("useEffect calls the function")
         if (state.atBottom) scrollToBottom()
     }, [state])
-    let pres = <code>{"ERROR"}</code>
-    return <section>{state.moments.map(momentAndIdToUl)}</section>
+    let finalPres = <code>{"ERROR"}</code>
+    try {
+        const pres = state.moments.map(momentAndIdToUl)
+        finalPres = pres
+    }
+    catch (err) {
+        console.error("couldn't present:")
+        console.error(state.moments)
+    }
+    return <section>{finalPres}</section>
 }
 
 function getIsAtBottom() {
     const e = document.documentElement
     const visiblePlusAboveIt = e.clientHeight + window.scrollY
     const allOfIt = e.scrollHeight
-    console.log({
-        clientHeight: e.clientHeight,
-        scrollY: window.scrollY,
-        scrollHeight: e.scrollHeight,
-        willReturn: (visiblePlusAboveIt === allOfIt)
-    })
     return visiblePlusAboveIt === allOfIt
 }
 
 function scrollToBottom() {
-    console.log("scrollToBottom called")
     window.scrollTo({
         top: document.documentElement.scrollHeight
     })
-    console.log("scrollY is now: " + window.scrollY)
 }
 
 function momentAndIdToUl(momentAndId) {
-    const m = momentAndId
-    if (m.length === 0) return
     try {
+        const m = momentAndId
+        if (m.length === 0) return
         return <ul key={m.key} className={styles.bubbleList}>
                    {m.body.map(personToLi)}
                </ul>
     }
     catch (e) {
-        console.error("Error rendering moment " + JSON.stringify(m))
+        console.error("error rendering moment and id:")
+        console.error(momentAndId)
         throw e
     }
 }
