@@ -1,10 +1,11 @@
 import shapes from './shapes.module.css'
+import colors from './colors.module.css'
 import Link from "next/link"
 
 export default function RoomList({rooms}) {
     if (rooms === null) return <code>Loading...</code>
     return (
-        <main className={shapes.thinCentered + ' ' + shapes.bgPale + ' ' + shapes.stretch}>
+        <main className={shapes.thinCentered + ' ' + colors.bgPale + ' ' + shapes.stretch}>
             <h1>Rooms</h1>
             <ul className={shapes.bubbleGroupSpacing + ' ' +
                            shapes.noBullets + ' ' +
@@ -16,7 +17,7 @@ export default function RoomList({rooms}) {
 
 function roomToLiLink(s, i) {
     return <li key={i}>
-               <Link className={shapes.bubbleColors + ' ' +
+               <Link className={colors.bubbleColors + ' ' +
                                 shapes.bubbleSpacing + ' ' +
                                 shapes.bubbleWrap}
                      href={s.href}

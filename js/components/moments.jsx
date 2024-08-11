@@ -56,8 +56,8 @@ function momentAndIdToUl(momentAndId) {
 
 function personToLi(person, i) {
     return <li id={person.id} key={i}>
-               <div className={shapes.bubbleSpacing + ' ' +
-                               shapes.bubbleColors + ' ' +
+               <div className={colors.bubbleColors + ' ' +
+                               shapes.bubbleSpacing + ' ' +
                                shapes.bubbleWrap}>
                    <strong key="name">{person.name + ': '}</strong>
                    {person.message.map(pieceToSpan)}

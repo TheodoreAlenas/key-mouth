@@ -5,8 +5,6 @@
 
 .stretch {padding: 1px}
 
-.bgPale {background-color: #ddd;}
-
 .stickyBottom {
     position: sticky;
     bottom: 0;
@@ -42,9 +40,6 @@
     padding: 0.3em 0.8em;
     margin: 0.1em 0;
     display: inline-block;
-}
-.bubbleColors {
-    background-color: #fff;
 }
 .bubbleWrap {
     max-width: 100%;
