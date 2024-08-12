@@ -80,10 +80,12 @@ function pieceToSpan(piece, i) {
         return <span key={i}>{piece.body}</span>
     }
     if (piece.type === "delete") {
-        return <del className={colors.delete} key={i}>{piece.body}</del>
+        return <del className={colors.delete + ' ' + shapes.delete}
+                    key={i}>{piece.body}</del>
     }
     if (piece.type === "erase") {
-        return <del className={colors.erase} key={i}>{piece.body}</del>
+        return <del className={colors.erase + ' ' + shapes.erase}
+                    key={i}>{piece.body}</del>
     }
     else return <span key={i}>ERROR</span>
 }

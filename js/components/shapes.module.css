@@ -23,7 +23,6 @@
 }
 
 .link, .links a {
-    color: #008;
     text-underline-offset: 5px;
     text-decoration-thickness: 2px;
 }
@@ -45,4 +44,14 @@
     max-width: 100%;
     box-sizing: border-box;
     word-wrap: break-word;
+}
+
+.erase, .delete {
+    text-decoration: none;
+    padding: 0 0.2em;
+    margin: 0 0.2em;
+}
+.delete {
+    font-style: italic;
+    font-weight: bold;
 }

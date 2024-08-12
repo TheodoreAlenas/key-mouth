@@ -9,6 +9,7 @@ export default function RoomList({rooms}) {
             <h1 style={{textAlign: "center"}}>Rooms</h1>
             <ul className={shapes.bubbleGroupSpacing + ' ' +
                            shapes.noBullets + ' ' +
+                           colors.links + ' ' +
                            shapes.links}
             >{rooms.map(roomToLiLink)}</ul>
         </main>

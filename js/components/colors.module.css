@@ -1,19 +1,9 @@
 .bgPale {background-color: #ccc;}
 .bubbleColors {background-color: #fff;}
-.erase {background-color: #ccc; color: #fff;
-        text-decoration: none;
-        padding: 0 0.2em;
-        margin: 0 0.2em;
-       }
+.erase {background-color: #ccc; color: #fff;}
 .moment:hover .erase {background-color: #ddd; color: #000;}
 .moment:hover .delete {background-color: #ddd; color: #000;}
-.delete {background-color: #ccc; color: #fff;
-         text-decoration: none;
-         padding: 0 0.2em;
-         margin: 0 0.2em;
-         font-style: italic;
-         font-weight: bold;
-        }
+.delete {background-color: #ccc; color: #fff;}
 
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}
@@ -24,3 +14,4 @@
 .input {background-color: #ccc;}
 .button:hover {background-color: #ccc;}
 .input::placeholder {color: #000;}
+.link, .links a {color: #008;}

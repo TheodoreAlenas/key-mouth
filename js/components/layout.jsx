@@ -1,4 +1,5 @@
 import shapes from './shapes.module.css'
+import colors from './colors.module.css'
 import UriHome from '../mod/UriHome.js'
 
 export default function Layout({ env, children }) {
@@ -7,6 +8,7 @@ export default function Layout({ env, children }) {
                <a href={uri.home()}
                   className={shapes.stickyTop + ' ' +
                              shapes.tmpCenter + ' ' +
+                             colors.link + ' ' +
                              shapes.link}
                >Home</a>
                {children}
