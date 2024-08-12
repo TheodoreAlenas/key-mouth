@@ -24,6 +24,11 @@ export default function InputAndButton({o, className}) {
                 },
                 onKeyDown: function(event) {
                     if (event.key !== 'Enter') return
+                    if (getIsOnMobile()) {
+                        event.preventDefault()
+                        unlocked.onInputChange(event.target.value + '\n')
+                        return
+                    }
                     if (event.shiftKey) return
                     event.preventDefault()
                     unlocked.onClear()
@@ -46,6 +51,10 @@ export default function InputAndButton({o, className}) {
             >Clear</button>
         </form>
     )
+}
+
+function getIsOnMobile() {
+    return / Android | webOS | iPhone | iPad | iPod | BlackBerry | IEMobile | Opera Mini /i.test(navigator.userAgent)
 }
 
 function Input({o, onChange, onKeyDown}) {
