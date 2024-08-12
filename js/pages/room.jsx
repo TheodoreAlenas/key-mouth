@@ -19,7 +19,7 @@ export default function PageRoom({env}) {
             return newO.getDestructor()
         }
     }, [router.isReady])
-    return <Layout env={env}>
+    return <Layout env={env} showHome>
                <Room o={o} />
            </Layout>
 }

@@ -1,5 +1,6 @@
 import styles from './inputAndButton.module.css'
 import colors from './colors.module.css'
+import shapes from './shapes.module.css'
 import { useEffect, useRef, useState } from "react"
 
 export default function InputAndButton({o, className}) {
@@ -45,7 +46,7 @@ export default function InputAndButton({o, className}) {
                    onChange={hooks.onChange}
                    onKeyDown={hooks.onKeyDown}
             />
-            <button className={styles.messengerButton + ' ' +
+            <button className={shapes.button + ' ' +
                                colors.button}
                     type="submit"
             >Clear</button>

@@ -25,10 +25,3 @@
 .messengerInput::placeholder {
     text-align: center;
 }
-
-.messengerButton {
-    border-radius: 5px;
-    padding: 1em;
-    font-family: inherit;
-    font-size: inherit;
-}

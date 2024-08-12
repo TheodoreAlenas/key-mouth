@@ -1,6 +1,7 @@
 import UriHome from '../mod/UriHome.js'
 import uriFirstArg from '../mod/uriFirstArg.js'
 import RoomList from '../components/roomList.jsx'
+import Layout from '../components/layout.jsx'
 import { useEffect, useState } from "react"
 
 export default function Home({env}) {
@@ -22,7 +23,7 @@ export default function Home({env}) {
             setRooms(json.map(e => ({text: e, href: uri.room(e)})))
         })
     }, [])
-    return <RoomList rooms={rooms} />
+    return <Layout env={env}><RoomList rooms={rooms} /></Layout>
 }
 
 export async function getStaticProps() {
