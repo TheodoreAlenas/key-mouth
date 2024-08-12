@@ -49,9 +49,8 @@ class Room:
 
     def __init__(self, time, name):
         self.name = name
-        self.last_moments = []
+        self.last_moment = []
         self.conns = []
-        self.last_moment_notify = None
         self.last_moment_time = time
 
 
@@ -94,7 +93,6 @@ class AfterSocketLogic:
         self.min_moment = min_moment
         self.moments = moments_db
         self.last_id = -1
-        self.last_moment = -1
         self.conns = {}
         self.rooms = {}
 
@@ -132,7 +130,7 @@ class AfterSocketLogic:
         self.conns[i] = Conn(time, i, room, self)
         self.rooms[room].conns.append(i)
         s = {"n": self.moments.get_len(room),
-             "last": [e for _, e in self.rooms[room].last_moments]}
+             "last": [e for _, e in self.rooms[room].last_moment]}
         return ([(i, s)], self.conns[i])
 
     def disconnect(self, _, conn_id):
@@ -146,16 +144,14 @@ class AfterSocketLogic:
         if data == "+":
             return ([], None)
         room = self.rooms[conn.room]
-        if room.last_moment_notify is not None:
-            room.last_moment_notify = None
         if time - conn.last_spoke > self.min_silence and \
            time - room.last_moment_time > self.min_moment:
-            room.last_moment_notify = [e for _, e in room.last_moments]
-            self.moments.add_moment(time, conn.room, room.last_moment_notify)
-            room.last_moments = []
+            baked_moment = [e for _, e in room.last_moment]
+            self.moments.add_moment(time, conn.room, baked_moment)
+            room.last_moment = []
             room.last_moment_time = time
         conn.last_spoke = time
-        room.last_moments.append((time, {
+        room.last_moment.append((time, {
             "connId": conn.conn_id,
             "type": "write",
             "body": data
@@ -168,7 +164,7 @@ class AfterSocketLogic:
 
     def _update(self, time, room):
         s = {"n": self.moments.get_len(room.name),
-             "last": [e for _, e in room.last_moments]}
+             "last": [e for _, e in room.last_moment]}
         return [(conn, s) for conn in room.conns]
 
 
