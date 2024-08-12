@@ -15,16 +15,52 @@ export default function presentMoment(getNames, diffs) {
             const m = conn.message
             m[m.length - 1].body += diff.body
         }
-        else if (diff.type === "delete" && conn.prevType === "delete") {
-            const m = conn.message
-            const last = m[m.length - 1]
-            last.body = diff.body + last.body
-        }
-        else {
+        else if (diff.type === "write") {
             conn.message.push({
-                type: diff.type,
+                type: "write",
                 body: diff.body
             })
+        }
+        else if (diff.type === "delete") {
+            if (conn.message.length === 0) {
+                conn.message.push({
+                    type: "delete",
+                    body: diff.body
+                })
+            }
+            else {
+                const m = conn.message
+                const last = m[m.length - 1]
+                if (last.type == "write" &&
+                    last.body.endsWith(diff.body)) {
+
+                    const end = last.body.length - diff.body.length
+                    if (end > 0) last.body = last.body.substr(0, end)
+                    else conn.message.pop()
+                    conn.message.push({
+                        type: "erase",
+                        body: diff.body
+                    })
+                }
+                else if (last.type == "erase") {
+                    const prev = m[m.length - 2]
+                    if (prev.type == "write" &&
+                        prev.body.endsWith(diff.body)) {
+
+                        const end = prev.body.length - diff.body.length
+                        if (end > 0) prev.body = prev.body.substr(0, end)
+                        else {
+                            const keep = conn.message.pop()
+                            conn.message.pop()
+                            conn.message.push(keep)
+                        }
+                        last.body = diff.body + last.body
+                    }
+                }
+                else {
+                    last.body = diff.body + last.body
+                }
+            }
         }
         conn.prevType = diff.type
     }

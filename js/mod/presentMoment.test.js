@@ -22,6 +22,13 @@ test.assertEqual(
         [{connId: 4, type: "write", body: "hello"}]))
 
 test.assertEqual(
+    "one deletion",
+    [{name: "Sotiris", message: [{type: "delete", body: "hello"}]}],
+    presentMoment(
+        getNames,
+        [{connId: 4, type: "delete", body: "hello"}]))
+
+test.assertEqual(
     "two writings",
     [{name: "Sotiris", message: [{type: "write", body: "hello"}]}],
     presentMoment(
@@ -30,7 +37,7 @@ test.assertEqual(
          {connId: 4, type: "write", body: "llo"}]))
 
 test.assertEqual(
-    "two deletes",
+    "two deletions",
     [{name: "Sotiris", message: [{type: "delete", body: "hello"}]}],
     presentMoment(
         getNames,
@@ -38,13 +45,30 @@ test.assertEqual(
          {connId: 4, type: "delete", body: "he"}]))
 
 test.assertEqual(
-    "write delete",
-    [{name: "Sotiris", message: [{type: "write", body: "he"},
-                                 {type: "delete", body: "he"}]}],
+    "write 2 delete 1",
+    [{name: "Sotiris", message: [{type: "write", body: "h"},
+                                 {type: "erase", body: "e"}]}],
     presentMoment(
         getNames,
         [{connId: 4, type: "write", body: "he"},
-         {connId: 4, type: "delete", body: "he"}]))
+         {connId: 4, type: "delete", body: "e"}]))
+
+test.assertEqual(
+    "write 1 delete 1",
+    [{name: "Sotiris", message: [{type: "erase", body: "h"}]}],
+    presentMoment(
+        getNames,
+        [{connId: 4, type: "write", body: "h"},
+         {connId: 4, type: "delete", body: "h"}]))
+
+test.assertEqual(
+    "write 2 delete 1 delete 1",
+    [{name: "Sotiris", message: [{type: "erase", body: "he"}]}],
+    presentMoment(
+        getNames,
+        [{connId: 4, type: "write", body: "he"},
+         {connId: 4, type: "delete", body: "e"},
+         {connId: 4, type: "delete", body: "h"}]))
 
 test.assertEqual(
     "a writes, b writes",
