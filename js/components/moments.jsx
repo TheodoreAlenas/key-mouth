@@ -76,6 +76,7 @@ function personToLi(person, i) {
 
 function pieceToSpan(piece, i) {
     if (piece.type === "write") return <span key={i}>{piece.body}</span>
-    if (piece.type === "delete") return <s key={i}>{piece.body}</s>
+    if (piece.type === "delete") return <s key={i}>{'[' + piece.body + ']'}</s>
+    if (piece.type === "erase") return <s key={i}>{piece.body}</s>
     else return <span key={i}>ERROR</span>
 }

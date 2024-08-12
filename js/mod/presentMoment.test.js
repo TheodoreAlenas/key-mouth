@@ -71,6 +71,38 @@ test.assertEqual(
          {connId: 4, type: "delete", body: "h"}]))
 
 test.assertEqual(
+    "write 1 delete 1 delete 1",
+    [{name: "Sotiris", message: [{type: "delete", body: "h"},
+                                 {type: "erase", body: "e"}]}],
+    presentMoment(
+        getNames,
+        [{connId: 4, type: "write", body: "e"},
+         {connId: 4, type: "delete", body: "e"},
+         {connId: 4, type: "delete", body: "h"}]))
+
+test.assertEqual(
+    "write 2 delete 1 delete 1 delete 1",
+    [{name: "Sotiris", message: [{type: "delete", body: "he"},
+                                 {type: "erase", body: "llo"}]}],
+    presentMoment(
+        getNames,
+        [{connId: 4, type: "write", body: "llo"},
+         {connId: 4, type: "delete", body: "llo"},
+         {connId: 4, type: "delete", body: "e"},
+         {connId: 4, type: "delete", body: "h"}]))
+
+test.assertEqual(
+    "write 1 delete 1 write 1 delete 1",
+    [{name: "Sotiris", message: [{type: "erase", body: "he"},
+                                 {type: "erase", body: "llo"}]}],
+    presentMoment(
+        getNames,
+        [{connId: 4, type: "write", body: "he"},
+         {connId: 4, type: "delete", body: "he"},
+         {connId: 4, type: "write", body: "llo"},
+         {connId: 4, type: "delete", body: "llo"}]))
+
+test.assertEqual(
     "a writes, b writes",
     [{name: "Sotiris", message: [{type: "write", body: "hi"}]},
      {name: "Mark", message: [{type: "write", body: "HELLO"}]}],
