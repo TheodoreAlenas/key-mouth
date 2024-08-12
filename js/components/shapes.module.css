@@ -3,18 +3,6 @@
     margin: 0 auto;
 }
 
-.stretch {padding: 1px}
-
-.stickyBottom {
-    position: sticky;
-    bottom: 0;
-}
-
-.stickyTop {
-    position: sticky;
-    top: 0
-}
-
 .link, .links a {
     text-underline-offset: 5px;
     text-decoration-thickness: 2px;
@@ -61,3 +49,15 @@
     font-family: inherit;
     font-size: inherit;
 }
+.stretch {
+    padding: 1px
+}
+.stickyBottom {
+    position: sticky;
+    bottom: 0;
+}
+.stickyTop {
+    position: sticky;
+    top: 0
+}
+
