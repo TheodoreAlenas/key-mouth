@@ -126,7 +126,5 @@ when he did a start-up and he writes in his book
 ## Bugs
 
 - on mobile, the text input scrolls too far sometimes
-- on mobile, when the text input is ok, there's no auto scroll
-- on mobile, the text input doesn't shrink back after reducing the lines
 - after deployments, a page refresh returns 404
-- the button and the text input are misaligned, one is border-box
+- the button and the text input are misaligned on mobile
