@@ -4,7 +4,8 @@
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}
 .input:focus {background-color: #fff;}
-.input {border: 2px solid #008;}
+.inputContainer {border: 2px solid #008;}
+.input {border: none;}
 .button {border: 2px solid #008;}
 .input {background-color: #ddd;}
 .button:hover {background-color: #ddd;}

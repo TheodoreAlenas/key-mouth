@@ -67,12 +67,14 @@ function Input({o, onChange, onKeyDown}) {
         t.style.height = t.scrollHeight + 'px'
     }, [])
     return (
-        <div className={styles.messengerInputContainer}>
+        <div className={styles.messengerInputContainer + ' ' +
+                        colors.inputContainer}>
             <textarea
                 ref={inpRef}
                 name="message"
                 placeholder="Think and type"
-                className={styles.messengerInput + ' ' + colors.input}
+                className={styles.messengerInput + ' ' +
+                           colors.input}
                 value={inputValue}
                 onChange={onChange}
                 onKeyDown={onKeyDown}
