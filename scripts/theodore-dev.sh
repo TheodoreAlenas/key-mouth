@@ -7,17 +7,22 @@ bspc rule --add 'firefox:*:*' --one-shot desktop=^2
 
 tmux new-session -d -t key-mouth
 
+ip="$(ip addr | sed -n 's|.*inet \(.*\)/24.*|\1|p')"
+
 tmux new-window -t key-mouth:1
-tmux send-keys  -t key-mouth:1 \
-     "cd js && npm run dev" C-m
+tmux send-keys  -t key-mouth:1 "cd js" C-m
+tmux send-keys  -t key-mouth:1 "export KEYMOUTH_LOCAL_IP=$ip" C-m
+tmux send-keys  -t key-mouth:1 "KEYMOUTH_LOCAL=yes npm run dev" C-m
+
+cmd="KEYMOUTH_LOCAL=yes uvicorn main:app --host $ip --port 8000 --reload"
 
 tmux new-window -t key-mouth:2
-tmux send-keys  -t key-mouth:2 \
-     "cd python && . venv/bin/activate && fastapi dev main.py" C-m
+tmux send-keys  -t key-mouth:2 "cd python && . venv/bin/activate" C-m
+tmux send-keys  -t key-mouth:2 "$cmd" C-m
 
 tmux new-window -t key-mouth:3
-tmux send-keys  -t key-mouth:3 \
-     "cd python && . venv/bin/activate && cd .. && emacs" C-m
+tmux send-keys  -t key-mouth:3 ". python/venv/bin/activate" C-m
+tmux send-keys  -t key-mouth:3 "emacs" C-m
 
 (firefox localhost:3000 2>&1 \
      | grep --line-buffered -v mesa_glthread \

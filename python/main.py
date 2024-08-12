@@ -6,15 +6,17 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
 import threading
+from os import environ
 
 app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if 'KEYMOUTH_LOCAL' in environ and environ['KEYMOUTH_LOCAL'] == 'yes':
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 id_to_sock = {}
 mutex = threading.Lock()
 logic = AfterSocketPublicLogic(AfterSocketLogic(
