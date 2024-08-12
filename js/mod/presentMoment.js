@@ -22,14 +22,21 @@ export default function presentMoment(getNames, diffs) {
             })
         }
         else if (diff.type === "delete") {
-            if (conn.message.length === 0) {
-                conn.message.push({
+            const m = conn.message
+            if (m.length === 0) {
+                m.push({
                     type: "delete",
                     body: diff.body
                 })
             }
+            else if (m[m.length - 1].type == "delete") {
+                m[m.length - 1].body = diff.body + m[m.length - 1].body
+            }
             else {
-                const m = conn.message
+                let toPushInTheEnd = null
+                if (m[m.length - 1].type == "erase") {
+                    toPushInTheEnd = m.pop()
+                }
                 const last = m[m.length - 1]
                 if (last.type == "write" &&
                     last.body.endsWith(diff.body)) {
@@ -37,28 +44,16 @@ export default function presentMoment(getNames, diffs) {
                     const end = last.body.length - diff.body.length
                     if (end > 0) last.body = last.body.substr(0, end)
                     else conn.message.pop()
+                }
+                if (toPushInTheEnd === null) {
                     conn.message.push({
                         type: "erase",
                         body: diff.body
                     })
                 }
-                else if (last.type == "erase") {
-                    const prev = m[m.length - 2]
-                    if (prev.type == "write" &&
-                        prev.body.endsWith(diff.body)) {
-
-                        const end = prev.body.length - diff.body.length
-                        if (end > 0) prev.body = prev.body.substr(0, end)
-                        else {
-                            const keep = conn.message.pop()
-                            conn.message.pop()
-                            conn.message.push(keep)
-                        }
-                        last.body = diff.body + last.body
-                    }
-                }
                 else {
-                    last.body = diff.body + last.body
+                    toPushInTheEnd.body = diff.body + toPushInTheEnd.body;
+                    m.push(toPushInTheEnd)
                 }
             }
         }
