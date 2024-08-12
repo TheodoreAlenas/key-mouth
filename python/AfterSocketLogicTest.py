@@ -25,6 +25,16 @@ class AfterSocketLogicTest(unittest.TestCase):
             )],
             res)
 
+    def test_deletion_parsed(self):
+        _, conn = self.logic.connect(10.0, "room0")
+        conn.handle_input(10.1, "-")
+        res, _ = conn.handle_input(10.2, "a")
+        self.assertEqual([{
+            "connId": conn.conn_id,
+            "type": "delete",
+            "body": "a"
+        }], res[0][1]["last"])
+
     def test_two_conn_one_msg_bcast(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(11.0, "room0")

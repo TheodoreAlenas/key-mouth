@@ -61,6 +61,7 @@ class Conn:
         self.room = room
         self._logic = logic
         self.last_spoke = 0.0
+        self.parse_state = "start"
 
     def disconnect(self, time, _):
         s = self._logic.disconnect(time, self.conn_id)
@@ -141,8 +142,20 @@ class AfterSocketLogic:
 
     def handle_input(self, time, conn_and_data):
         conn, data = conn_and_data
-        if data == "+":
-            return ([], None)
+        if conn.parse_state == "start":
+            if data == "+":
+                conn.parse_state = "write"
+            if data == "-":
+                conn.parse_state = "delete"
+        elif conn.parse_state == "write":
+            conn.parse_state = "start"
+            return self._handle_parsed(time, conn, "write", data)
+        elif conn.parse_state == "delete":
+            conn.parse_state = "start"
+            return self._handle_parsed(time, conn, "delete", data)
+        return ([], None)
+
+    def _handle_parsed(self, time, conn, inp_type, data):
         room = self.rooms[conn.room]
         if time - conn.last_spoke > self.min_silence and \
            time - room.last_moment_time > self.min_moment:
@@ -153,7 +166,7 @@ class AfterSocketLogic:
         conn.last_spoke = time
         room.last_moment.append((time, {
             "connId": conn.conn_id,
-            "type": "write",
+            "type": inp_type,
             "body": data
         }))
         return (self._update(time, room), None)
