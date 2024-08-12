@@ -23,7 +23,17 @@ export default function Moments({o}) {
         console.error(state.moments)
         console.error(err)
     }
-    return <section className={shapes.stretch}>{finalPres}</section>
+    const d = {
+        'document.body.scrollHeight': document.body.scrollHeight,
+        'document.body.offsetHeight': document.body.offsetHeight,
+        'window.innerHeight': window.innerHeight,
+        'Math.floor(window.scrollY)': Math.floor(window.scrollY)
+    }
+    return <pre>
+               {"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"}
+               {JSON.stringify(d, null, 2)}
+           </pre>
+//    return <section className={shapes.stretch}>{finalPres}</section>
 }
 
 function getIsAtBottom() {
