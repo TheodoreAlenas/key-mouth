@@ -45,7 +45,8 @@ function momentAndIdToUl(momentAndId) {
         if (m.length === 0) return
         return <ul key={m.key}
                    className={shapes.bubbleGroupSpacing + ' ' +
-                              shapes.noBullets}>
+                              shapes.noBullets + ' ' +
+                              colors.moment}>
                    {m.body.map(personToLi)}
                </ul>
     }
@@ -75,8 +76,14 @@ function personToLi(person, i) {
  }
 
 function pieceToSpan(piece, i) {
-    if (piece.type === "write") return <span key={i}>{piece.body}</span>
-    if (piece.type === "delete") return <s key={i}>{'[' + piece.body + ']'}</s>
-    if (piece.type === "erase") return <s key={i}>{piece.body}</s>
+    if (piece.type === "write") {
+        return <span key={i}>{piece.body}</span>
+    }
+    if (piece.type === "delete") {
+        return <del className={colors.delete} key={i}>{piece.body}</del>
+    }
+    if (piece.type === "erase") {
+        return <del className={colors.erase} key={i}>{piece.body}</del>
+    }
     else return <span key={i}>ERROR</span>
 }

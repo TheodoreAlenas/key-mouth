@@ -1,12 +1,26 @@
-.bgPale {background-color: #ddd;}
+.bgPale {background-color: #ccc;}
 .bubbleColors {background-color: #fff;}
+.erase {background-color: #ccc; color: #fff;
+        text-decoration: none;
+        padding: 0 0.2em;
+        margin: 0 0.2em;
+       }
+.moment:hover .erase {background-color: #ddd; color: #000;}
+.moment:hover .delete {background-color: #ddd; color: #000;}
+.delete {background-color: #ccc; color: #fff;
+         text-decoration: none;
+         padding: 0 0.2em;
+         margin: 0 0.2em;
+         font-style: italic;
+         font-weight: bold;
+        }
 
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}
 .input:focus {background-color: #fff;}
-.inputContainer {border: 2px solid #008;}
+.inputContainer {border: 2px solid #044;}
 .input {border: none;}
-.button {border: 2px solid #008;}
-.input {background-color: #ddd;}
-.button:hover {background-color: #ddd;}
+.button {border: 2px solid #044;}
+.input {background-color: #ccc;}
+.button:hover {background-color: #ccc;}
 .input::placeholder {color: #000;}
