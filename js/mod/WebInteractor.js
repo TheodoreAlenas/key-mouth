@@ -139,7 +139,7 @@ function getDiff(a, b) {
     }
     for (let i = 0; i < a.length && i < b.length; i++) {
         if (a[i] !== b[i]) {
-            return [":", a.substr(i), b.substr(i)]
+            return ["-", a.substr(i), "+", b.substr(i)]
         }
     }
     throw new Error("can't handle diff, a: " + a + ", b: " + b)
