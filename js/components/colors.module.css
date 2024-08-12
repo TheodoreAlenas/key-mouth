@@ -1,16 +1,34 @@
+[data-sch=dark] .bgPale {background-color: #222;}
+[data-sch=dark] .bubbleColors {background-color: #000;}
+[data-sch=dark] .inputForm {background-color: #000;}
+[data-sch=dark] .button {background-color: #000;}
+[data-sch=dark] .input {background-color: #000;}
+
 .bgPale {background-color: #eee;}
 .bubbleColors {background-color: #fff;}
-.erase {background-color: #ccc; color: #fff;}
-.moment:hover .erase {background-color: #ddd; color: #000;}
-.moment:hover .delete {background-color: #ddd; color: #000;}
-.delete {background-color: #ccc; color: #fff;}
-
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}
+.input {background-color: #fff;}
+
+[data-sch=dark] .erase {background-color: #222; color: #888;}
+[data-sch=dark] .delete {background-color: #222; color: #888;}
+[data-sch=dark] .moment:hover .erase {background-color: #000; color: #fca;}
+[data-sch=dark] .moment:hover .delete {background-color: #000; color: #fca;}
+[data-sch=dark] .button:hover {background-color: #222;}
+
+.erase {background-color: #ccc; color: #fff;}
+.delete {background-color: #ccc; color: #fff;}
+.moment:hover .erase {background-color: #ddd; color: #000;}
+.moment:hover .delete {background-color: #ddd; color: #000;}
+.button:hover {background-color: #ccc;}
+
+[data-sch=dark] .inputContainer {border-color: #048;}
+[data-sch=dark] .input::placeholder {color: #fff;}
+[data-sch=dark] .button {border-color: #048; color: inherit;}
+[data-sch=dark] .link, [data-sch=dark] .links a {color: #acf;}
+
 .inputContainer {border: 2px solid #048;}
 .input {border: none;}
-.button {border: 2px solid #048;}
-.input {background-color: #fff;}
-.button:hover {background-color: #ccc;}
 .input::placeholder {color: #000;}
+.button {border: 2px solid #048; color: inherit;}
 .link, .links a {color: #028;}
