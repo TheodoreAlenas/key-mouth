@@ -14,7 +14,6 @@
 .messengerInput {
     box-sizing: border-box;
     width: 100%;
-    outline: none;
     resize: none;
     padding: 1em;
     margin: 0;
