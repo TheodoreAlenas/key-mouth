@@ -1,4 +1,4 @@
-.bgPale {background-color: #ccc;}
+.bgPale {background-color: #eee;}
 .bubbleColors {background-color: #fff;}
 .erase {background-color: #ccc; color: #fff;}
 .moment:hover .erase {background-color: #ddd; color: #000;}
@@ -7,11 +7,10 @@
 
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}
-.input:focus {background-color: #fff;}
-.inputContainer {border: 2px solid #044;}
+.inputContainer {border: 2px solid #048;}
 .input {border: none;}
-.button {border: 2px solid #044;}
-.input {background-color: #ccc;}
+.button {border: 2px solid #048;}
+.input {background-color: #fff;}
 .button:hover {background-color: #ccc;}
 .input::placeholder {color: #000;}
-.link, .links a {color: #008;}
+.link, .links a {color: #028;}
