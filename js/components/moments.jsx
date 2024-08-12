@@ -23,29 +23,19 @@ export default function Moments({o}) {
         console.error(state.moments)
         console.error(err)
     }
-    const d = {
-        'document.body.scrollHeight': document.body.scrollHeight,
-        'document.body.offsetHeight': document.body.offsetHeight,
-        'window.innerHeight': window.innerHeight,
-        'Math.floor(window.scrollY)': Math.floor(window.scrollY)
-    }
-    return <pre>
-               {"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"}
-               {JSON.stringify(d, null, 2)}
-           </pre>
-//    return <section className={shapes.stretch}>{finalPres}</section>
+    return <section className={shapes.stretch}>{finalPres}</section>
 }
 
 function getIsAtBottom() {
-    const e = document.documentElement
-    const visiblePlusAboveIt = e.clientHeight + window.scrollY
-    const allOfIt = e.scrollHeight
-    return visiblePlusAboveIt === allOfIt
+    const visible = window.innerHeight
+    const above = Math.floor(window.scrollY)
+    const all = document.body.scrollHeight
+    return visible + above + 5 > all
 }
 
 function scrollToBottom() {
     window.scrollTo({
-        top: document.documentElement.scrollHeight
+        top: document.body.scrollHeight
     })
 }
 
