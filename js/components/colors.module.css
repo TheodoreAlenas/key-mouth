@@ -3,6 +3,7 @@
 [data-sch=dark] .inputForm {background-color: #000;}
 [data-sch=dark] .button {background-color: #000;}
 [data-sch=dark] .input {background-color: #000;}
+[data-sch=dark] .menuWrapper {background-color: #000;}
 
 .bgPale {background-color: #eee;}
 .bubbleColors {background-color: #fff;}
@@ -16,7 +17,6 @@
 [data-sch=dark] .moment:hover .erase {background-color: #000; color: #fca;}
 [data-sch=dark] .moment:hover .delete {background-color: #000; color: #fca;}
 [data-sch=dark] .button:hover {background-color: #222;}
-[data-sch=dark] .menuWrapper {background-color: #000;}
 
 .erase {background-color: #ccc; color: #fff;}
 .delete {background-color: #ccc; color: #fff;}
