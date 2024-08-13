@@ -7,7 +7,8 @@ import { useEffect, useState } from "react"
 export default function Layout({ env, showHome, children }) {
     const uri = new UriHome(env.home, 'ERROR, LAYOUT HAS NO ROOM')
     return <>
-               <nav className={shapes.stickyTop + ' ' + shapes.stretch}>
+               <nav className={shapes.menuWrapper + ' ' +
+                               colors.menuWrapper}>
                    <ul className={shapes.menu}>
                        {showHome ? <li><HomeLink uri={uri} /></li> : ''}
                        <li><ThemeToggle /></li>

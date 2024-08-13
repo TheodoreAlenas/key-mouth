@@ -48,15 +48,8 @@
     font-family: inherit;
     font-size: inherit;
 }
-.stretch {
-    padding: 1px
-}
-.stickyBottom {
-    position: sticky;
-    bottom: 0;
-}
-.stickyTop {
-    position: sticky;
-    top: 0
-}
+.stretch, .menuWrapper {padding: 1px}
+
+.stickyBottom {position: sticky; bottom: 0;}
+.menuWrapper {position: sticky; top: 0}
 

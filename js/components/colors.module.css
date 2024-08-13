@@ -9,12 +9,14 @@
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}
 .input {background-color: #fff;}
+.menuWrapper {background-color: #fff;}
 
 [data-sch=dark] .erase {background-color: #222; color: #888;}
 [data-sch=dark] .delete {background-color: #222; color: #888;}
 [data-sch=dark] .moment:hover .erase {background-color: #000; color: #fca;}
 [data-sch=dark] .moment:hover .delete {background-color: #000; color: #fca;}
 [data-sch=dark] .button:hover {background-color: #222;}
+[data-sch=dark] .menuWrapper {background-color: #000;}
 
 .erase {background-color: #ccc; color: #fff;}
 .delete {background-color: #ccc; color: #fff;}
