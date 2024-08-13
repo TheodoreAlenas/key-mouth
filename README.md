@@ -122,8 +122,3 @@ It's exhausting sometimes.
 I remember Robert Martin talking about the time
 when he did a start-up and he writes in his book
 "we wanted to be millionaires, we [...], we were full of sh-"
-
-## Bugs
-
-- on mobile, the text input scrolls too far sometimes
-- after deployments, a page refresh returns 404
