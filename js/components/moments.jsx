@@ -3,16 +3,16 @@ import colors from './colors.module.css'
 import { useEffect, useState } from "react"
 
 export default function Moments({o}) {
-    if (o === null || o === undefined) {
-        return <code>{"Loading..."}</code>
-    }
     const [state, setState] = useState({atBottom: true, moments: []})
-    o.setSetMoments(function(v) {
-        setState({atBottom: getIsAtBottom(), moments: v})
-    })
     useEffect(function() {
         if (state.atBottom) scrollToBottom()
     }, [state])
+    if (o === null || o === undefined) {
+        return <code>{"Loading..."}</code>
+    }
+    o.setSetMoments(function(v) {
+        setState({atBottom: getIsAtBottom(), moments: v})
+    })
     let finalPres = <code>{"ERROR"}</code>
     try {
         const pres = state.moments.map(momentAndIdToUl)
