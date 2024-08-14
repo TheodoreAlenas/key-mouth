@@ -144,12 +144,12 @@ class AfterSocketLogic:
         if len(data) < 2:
             return ([], None)
         if data[0] == '+':
-            return self._handle_parsed(time, conn, "write", data[1:])
+            return self._consider_baking(time, conn, "write", data[1:])
         elif data[0] == '-':
-            return self._handle_parsed(time, conn, "delete", data[1:])
+            return self._consider_baking(time, conn, "delete", data[1:])
         return ([], None)
 
-    def _handle_parsed(self, time, conn, inp_type, data):
+    def _consider_baking(self, time, conn, inp_type, data):
         room = self.rooms[conn.room]
         started_speaking = (time - conn.last_spoke > self.min_silence)
         moment_lasted = (time - room.last_moment_time > self.min_moment)
