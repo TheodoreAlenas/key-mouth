@@ -108,7 +108,6 @@ class Unlocked {
     onClear() {
         this.inputValue = ""
         this.setInputValue("")
-        this.io.sendOne("clear")
     }
     onInputChange(newValue) {
         const oldValue = this.inputValue
