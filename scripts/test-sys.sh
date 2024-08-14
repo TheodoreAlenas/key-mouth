@@ -19,10 +19,9 @@ sleep 1
     export KEYMOUTH_API=http://localhost:8001
     export KEYMOUTH_WS=ws://localhost:8001
 
-    node js/mod/WebInteractor.systestMain.js \
-         > git-ignores/systest-logs-front
+    node js/mod/WebInteractor.systestMain.js
 ) &
 
 wait
 
-python systest-check.py
+python python/systest-check.py

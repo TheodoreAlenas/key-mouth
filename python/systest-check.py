@@ -28,23 +28,5 @@ class BackCheck(unittest.TestCase):
         self.assertTrue(self.lines[-1].find(" - Finished server process [") != -1)
 
 
-class FrontCheck(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(FrontCheck, self).__init__(*args, **kwargs)
-        with open("git-ignores/systest-logs-front") as f:
-            self.lines = f.readlines()
-
-    def test_input_value_is_set_at_least_once(self):
-        a = False
-        for l in self.lines:
-            if l.find("\tinput value set to '") != -1:
-                a = True
-        self.assertTrue(a)
-
-    def test_as_many_logs_as_last_test_run(self):
-        self.assertEqual(20, len(self.lines))
-
-
 if __name__ == "__main__":
     unittest.main()

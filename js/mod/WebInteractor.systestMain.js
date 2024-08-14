@@ -1,6 +1,7 @@
 import WebInteractor from './WebInteractor.js'
 import UriRoom from './UriRoom.js'
 import uriFirstArg from './uriFirstArg.js'
+import TestCase from './TestCase.js'
 
 const uri = new UriRoom(uriFirstArg.room, "my\nroom")
 const withRoom = uri.fetchPutRoom()
@@ -17,17 +18,16 @@ const withNoError = withRoom.then(function(res) {
     })
 })
 
-function withWebInteractor(name, room, callback) {
+function withWebInteractor(buf, room, callback) {
     const wi = new WebInteractor(uri)
 
-    function log(m) {
-        console.log(Date.now() + "\t[" + name + "]\t" + m)
-    }
     wi.setSetInputValue(function(m) {
-        log("input value set to '" + m + "'")
+        buf.all.push({t: "inp", i: buf.inp.length})
+        buf.inp.push(m)
     })
     wi.setSetMoments(function(m) {
-        log("moments set to " + JSON.stringify(m))
+        buf.all.push({t: "mom", i: buf.mom.length})
+        buf.mom.push(m)
     })
     const close = wi.getDestructor()
     wi.setOnReadySocket(function(unlocked) {
@@ -35,8 +35,11 @@ function withWebInteractor(name, room, callback) {
     })
 }
 
+const conns = ["say", "hear", "stop", "all"]
+const d = conns.map(x => ({conn: x, inp: [], mom: [], all: []}))
+
 withNoError.then(function() {
-    withWebInteractor("say", "my\nroom", function(unlocked, close) {
+    withWebInteractor(d[0], "my\nroom", function(unlocked, close) {
         setTimeout(function() {
             unlocked.onInputChange("hi")
             unlocked.onInputChange("hi there")
@@ -44,18 +47,29 @@ withNoError.then(function() {
         }, 50)
         setTimeout(close, 200)
     })
-    withWebInteractor("hear", "my\nroom", function(unlocked, close) {
+    withWebInteractor(d[1], "my\nroom", function(unlocked, close) {
         setTimeout(close, 200)
     })
     setTimeout(function() {
-        withWebInteractor("stop", "my\nroom", function(unlocked, close) {
+        withWebInteractor(d[2], "my\nroom", function(unlocked, close) {
             unlocked.onInputChange("interrupt")
             setTimeout(close, 200)
         })
     }, 600)
     setTimeout(function() {
-        withWebInteractor("all", "my\nroom", function(unlocked, close) {
+        withWebInteractor(d[3], "my\nroom", function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 650)
 })
+
+setTimeout(check, 860)
+
+function check() {
+    const test = new TestCase()
+    test.assertEqual(
+        "speaker got same moments as listener",
+        d[0].mom, d[1].mom
+    )
+    test.printResults()
+}
