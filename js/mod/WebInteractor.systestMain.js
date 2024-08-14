@@ -35,8 +35,7 @@ function withWebInteractor(buf, room, callback) {
     })
 }
 
-const conns = ["say", "hear", "stop", "all"]
-const d = conns.map(x => ({conn: x, inp: [], mom: [], all: []}))
+const d = [0,0,0,0].map(x => ({inp: [], mom: [], all: []}))
 
 withNoError.then(function() {
     withWebInteractor(d[0], "my\nroom", function(unlocked, close) {
@@ -68,8 +67,62 @@ setTimeout(check, 860)
 function check() {
     const test = new TestCase()
     test.assertEqual(
+        "speaker saw an empty moment, then 2",
+        [[{key:'0', body:[]}],
+         [{key:'0', body:[]}, {key:'1', body:[]}]],
+        [d[0].mom[0], d[0].mom[1]]
+    )
+    test.assertEqual(
+        "speaker finally saw the full text he wrote",
+        {
+            "key": "1",
+            "body": [
+                {
+                    "name": "Sotiris0",
+                    "message": [
+                        {
+                            "type": "write",
+                            "body": "hi there"
+                        }
+                    ]
+                }
+            ]
+        },
+        d[0].mom[3][1]
+    )
+    test.assertEqual(
         "speaker got same moments as listener",
         d[0].mom, d[1].mom
+    )
+    test.assertEqual(
+        "interruptor joined and the first moment is empty as always",
+        [[], []], [d[2].mom[0][0].body, d[2].mom[1][0].body]
+    )
+    test.assertEqual(
+        "interruptor joined and found one moment",
+        2, d[2].mom[1].length
+    )
+    test.assertEqual(
+        "interruptor found the last snapshot of the speaker",
+        d[2].mom[1], d[0].mom[3]
+    )
+    test.assertEqual(
+        "the speaker has 4 snapshots",
+        4, d[0].mom.length
+    )
+    test.assertEqual(
+        "after interruption the previous moment didn't change",
+        d[2].mom[1][0],
+        d[2].mom[2][0]
+    )
+    test.assertEqual(
+        "interruptor interrupted and created a moment",
+        d[2].mom[1].length + 1,
+        d[2].mom[2].length
+    )
+    test.assertEqual(
+        "last visitor came and heard the last thing the previous did",
+        d[3].mom[0], d[2].mom[d[2].mom.length - 1]
     )
     test.printResults()
 }
