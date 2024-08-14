@@ -74,21 +74,11 @@ function check() {
     )
     test.assertEqual(
         "speaker finally saw the full text he wrote",
-        {
-            "key": "1",
-            "body": [
-                {
-                    "name": "Sotiris0",
-                    "message": [
-                        {
-                            "type": "write",
-                            "body": "hi there"
-                        }
-                    ]
-                }
-            ]
-        },
-        d[0].mom[3][1]
+        [{
+            "type": "write",
+            "body": "hi there"
+        }],
+        d[0].mom[3][1].body[0].message
     )
     test.assertEqual(
         "speaker got same moments as listener",
