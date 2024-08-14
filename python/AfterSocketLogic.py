@@ -151,8 +151,9 @@ class AfterSocketLogic:
 
     def _handle_parsed(self, time, conn, inp_type, data):
         room = self.rooms[conn.room]
-        if time - conn.last_spoke > self.min_silence and \
-           time - room.last_moment_time > self.min_moment:
+        started_speaking = (time - conn.last_spoke > self.min_silence)
+        moment_lasted = (time - room.last_moment_time > self.min_moment)
+        if started_speaking and moment_lasted:
             baked_moment = [e for _, e in room.last_moment]
             self.moments.add_moment(time, conn.room, baked_moment)
             room.last_moment = []

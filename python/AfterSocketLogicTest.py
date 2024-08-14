@@ -72,11 +72,6 @@ class AfterSocketLogicTest(unittest.TestCase):
         except Exception as e:
             self.assertEqual(404, e.status_code)
 
-    def test_connect_get_no_moments(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.update(10.1, None)
-        self.assertEqual(1, res[0][1]["n"])
-
     def test_connect_get_others_last_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         res_1, _ = conn_1.handle_input(10.1, "+1")
@@ -92,21 +87,33 @@ class AfterSocketLogicTest(unittest.TestCase):
         res_2, conn_2 = self.logic.connect(99.1, "room0")
         self.assertEqual(res_1[0][1], res_1[0][1])
 
+    def test_connect_get_no_moments(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        res, _ = conn_1.update(10.1, None)
+        self.assertEqual(1, res[0][1]["n"])
+
+    def test_speaking_right_after_joining_merges(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        res, _ = conn_1.handle_input(10.4, "+1")
+        self.assertEqual(1, res[0][1]["n"])
+
+    def test_speaking_after_joining_creates_moment(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        res, _ = conn_1.handle_input(10.6, "+1")
+        self.assertEqual(2, res[0][1]["n"])
+
     def test_interrupting_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        before, _ = conn_1.handle_input(10.2, "+1")
-        after, _ = conn_2.handle_input(10.8, "+2")
-        self.assertEqual(2, after[0][1]["n"])
-        _, m = self.logic.get_moments_range(10.9, ("room0", 0, 2))
-        self.assertEqual(before[0][1]["last"], m[1])
-        self.assertEqual(1, len(after[0][1]["last"]))
+        conn_1.handle_input(10.7, "+1")
+        res, _ = conn_2.handle_input(11.3, "+2")
+        self.assertEqual(3, res[0][1]["n"])
 
-    def test_nearby_moments_merge(self):
+    def test_interrupting_quickly_doesnt_count(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(10.2, "+1")
-        res, _ = conn_2.handle_input(10.6, "+2")
+        conn_1.handle_input(10.7, "+1")
+        res, _ = conn_2.handle_input(11.1, "+2")
         self.assertEqual(2, res[0][1]["n"])
 
     def test_database_starts_empty(self):
@@ -114,6 +121,15 @@ class AfterSocketLogicTest(unittest.TestCase):
         _, moments = self.logic.get_moments_range(10.2, ("room0", None, None))
         self.assertEqual({"start": 0, "end": 1, "moments": [[]]},
                          moments)
+
+    def test_interrupt_and_fetch_moments_get_socket_moments(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(10.1, "room0")
+        before, _ = conn_1.handle_input(10.2, "+1")
+        after, _ = conn_2.handle_input(10.8, "+2")
+        _, m = self.logic.get_moments_range(10.9, ("room0", 0, 2))
+        self.assertEqual(before[0][1]["last"], m[1])
+        self.assertEqual(1, len(after[0][1]["last"]))
 
 
 if __name__ == "__main__":
