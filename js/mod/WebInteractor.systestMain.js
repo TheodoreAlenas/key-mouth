@@ -125,4 +125,5 @@ function check() {
         d[3].mom[0], d[2].mom[d[2].mom.length - 1]
     )
     test.printResults()
+    if (test.getFails() !== 0) process.exit(1)
 }

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 (
     cd ./python
     . venv/bin/activate
@@ -20,8 +18,14 @@ sleep 1
     export KEYMOUTH_WS=ws://localhost:8001
 
     node js/mod/WebInteractor.systestMain.js
+    err=$?
+    if [ 0 = $err ]
+    then echo passed > git-ignores/systest-front-result
+    else echo failed > git-ignores/systest-front-result
+    fi
 ) &
 
 wait
 
-python python/systest-check.py
+test passed = "$(head git-ignores/systest-front-result)" || exit 1
+python python/systest-check.py || exit 2

@@ -122,3 +122,4 @@ test.assertEqual(
          {connId: 4, type: "write", body: "i"}]))
 
 test.printResults()
+if (test.getFails() !== 0) process.exit(1)

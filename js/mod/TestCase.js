@@ -19,6 +19,9 @@ export default class TestCase {
             console.log(JSON.stringify(e, null, 4))
         })
     }
+    getFails() {
+        return this.fails.length
+    }
 }
 
 function isEqual(a, b) {
