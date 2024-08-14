@@ -20,10 +20,14 @@ export default class Io {
     }
     sendList(list) {
         const socket = this.socket
-        list.forEach(function(e) { trySending(socket, e, list) })
-    }
-    sendOne(e) {
-        this.socket.send(e)
+        for (let e of list) {
+            try {socket.send(e)}
+            catch (err) {
+                console.error("Error sending '" + e +
+                              "' of " + JSON.stringify(list))
+                throw err
+            }
+        }
     }
     withLastMoments(callback) {
         withJsonFetched(this.uri.lastMoments(), function(res) {
@@ -97,15 +101,4 @@ function withJsonFetched(uri, callback) {
         console.error("Error, res.json() failed, " + uri)
         throw err
     })
-}
-
-function trySending(socket, e, list) {
-    try {
-        socket.send(e)
-    }
-    catch (err) {
-        console.error("Error sending " + JSON.stringify(list) +
-                      ", maybe set input before init")
-        throw err
-    }
 }
