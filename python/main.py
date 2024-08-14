@@ -9,7 +9,8 @@ import threading
 from os import environ
 
 app = FastAPI()
-if 'KEYMOUTH_LOCAL' in environ and environ['KEYMOUTH_LOCAL'] == 'yes':
+a = 'KEYMOUTH_CORS_ALL'
+if a in environ and environ[a] == 'yes':
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],

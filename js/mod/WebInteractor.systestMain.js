@@ -1,9 +1,8 @@
 import WebInteractor from './WebInteractor.js'
 import UriRoom from './UriRoom.js'
+import uriFirstArg from './uriFirstArg.js'
 
-const uri = new UriRoom(
-    ["ws://localhost:8001", ["http", "localhost:8001"]],
-    "my\nroom")
+const uri = new UriRoom(uriFirstArg.room, "my\nroom")
 const withRoom = uri.fetchPutRoom()
 const withNoError = withRoom.then(function(res) {
     if (res.status !== 200) {

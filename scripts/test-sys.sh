@@ -5,7 +5,6 @@ set -e
 (
     cd ./python
     . venv/bin/activate
-    export KEY_MOUTH_SHOW_WHO_TO=yes
     timeout 3s uvicorn                          \
             --host localhost                    \
             --port 8001                         \
@@ -16,6 +15,10 @@ set -e
 sleep 1
 
 (
+    export KEYMOUTH_UI=the-ui-uri-isnt-used
+    export KEYMOUTH_API=http://localhost:8001
+    export KEYMOUTH_WS=ws://localhost:8001
+
     node js/mod/WebInteractor.systestMain.js \
          > git-ignores/systest-logs-front
 ) &

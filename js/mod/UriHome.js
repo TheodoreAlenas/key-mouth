@@ -1,19 +1,16 @@
 
 export default class UriHome {
-    constructor([[httpUi, preUi], [httpApi, preApi]]) {
-        this.httpUi = httpUi + '://'
-        this.httpApi = httpApi + '://'
-        this.preUi = preUi
-        this.preApi = preApi
+    constructor({ui, api}) {
+        this.ui = ui
+        this.api = api
     }
     home() {
-        return this.httpUi + this.preUi + '/'
+        return this.ui + '/'
     }
     room(room) {
-        return this.httpUi + this.preUi +
-            "/room?name=" + encodeURI(room)
+        return this.ui + "/room?name=" + encodeURI(room)
     }
     rooms() {
-        return this.httpApi + this.preApi + '/'
+        return this.api + '/'
     }
 }
