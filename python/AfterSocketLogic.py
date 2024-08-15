@@ -1,68 +1,13 @@
 
 # License at the bottom
 
+from DbMock import DbMock, RoomExistsException
+
 class LogicHttpException(Exception):
     def __init__(self, detail, status_code):
         self.status_code = status_code
         self.detail = detail
         super().__init__(detail)
-
-
-class RoomExistsException(Exception):
-    def __init__(self, msg="room already exists"):
-        super().__init__(msg)
-
-
-class RoomDoesntExistException(Exception):
-    def __init__(self, msg="room doesn't exist"):
-        super().__init__(msg)
-
-
-class RoomMoments:
-
-    def __init__(self, last_moment_time, name, moments):
-        self.last_moment_time = last_moment_time
-        self.name = name
-        self.moments = moments
-
-    def add_moment(self, time, moment):
-        self.moments.append({"time": time, "moment": moment})
-        self.last_moment_time = time
-
-    def get_last_few(self):
-        m = self.moments
-        return {"start": 0, "end": len(m), "moments": m}
-
-    def get_len(self):
-        return len(self.moments)
-
-    def get_range(self, start, end):
-        return self.moments[start:end]
-
-
-class DbMock:
-
-    def __init__(self):
-        self.rooms = {}
-
-    def create_room(self, time, name):
-        if name in self.rooms:
-            raise RoomExistsException("[DbMoct] room '" + name +
-                                      "' already exists")
-        self.rooms[name] = RoomMoments(
-            time, name, [{"time": time, "moment": []}])
-
-    def get_room(self, name) -> RoomMoments:
-        if not name in self.rooms:
-            raise RoomDoesntExistException("[DbMock] room '" + name +
-                                           "' doesn't exist")
-        return self.rooms[name]
-
-    def get_rooms_and_their_last_moment_times(self):
-        res = []
-        for name in self.rooms:
-            res.append((name, self.rooms[name].last_moment_time))
-        return res
 
 
 class ConnRoomData:
