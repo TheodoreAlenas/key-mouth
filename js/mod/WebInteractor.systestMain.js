@@ -111,8 +111,12 @@ function check() {
         d[2].mom[2].length
     )
     test.assertEqual(
+        "last visitor set the view twice",
+        2, d[3].mom.length
+    )
+    test.assertEqual(
         "last visitor came and heard the last thing the previous did",
-        d[3].mom[0], d[2].mom[d[2].mom.length - 1]
+        d[3].mom[d[3].mom.length - 1], d[2].mom[d[2].mom.length - 1]
     )
     test.printResults()
     if (test.getFails() !== 0) process.exit(1)
