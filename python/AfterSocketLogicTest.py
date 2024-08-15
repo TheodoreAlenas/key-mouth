@@ -144,26 +144,49 @@ class AfterSocketLogicTest(unittest.TestCase):
 
 class DbInterfaceTest(unittest.TestCase):
 
-    def get_logic(self, db_mock):
+    def get_logic(self, time, db_mock):
         return AfterSocketPublicLogic(AfterSocketLogic(
-            time=8.0,
+            time=time,
             db=db_mock,
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
             )))
 
-    def test_empty_db_get_no_rooms(self):
-        logic = self.get_logic(DbMock())
-        self.assertEqual(([], []), logic.get_rooms(10.0, None))
+    def test_use_other_db_start_blank(self):
+        logic_1 = self.get_logic(10.0, DbMock())
+        logic_1.create_room(10.1, "room0")
+        logic_2 = self.get_logic(10.2, DbMock())
+        try:
+            logic_2.connect(10.3, "room0")
+            self.assertFalse("should have thrown an error")
+        except Exception:
+            pass
 
-    def test_one_room_db_init_right_and_get_one_room(self):
+    def test_use_same_db_dont_start_blank(self):
         db = DbMock()
-        db.create_room(10.0, "mock-room")
-        logic = self.get_logic(db)
-        self.assertEqual(
-            ([], ["mock-room"]),
-            logic.get_rooms(11.0, None))
+        logic_1 = self.get_logic(10.0, db)
+        logic_1.create_room(10.1, "room0")
+        logic_2 = self.get_logic(10.2, db)
+        logic_2.connect(10.3, "room0")
+
+    def test_use_same_db_see_stored_moment_and_not_last(self):
+        db = DbMock()
+        logic_1 = self.get_logic(10.0, db)
+        logic_1.create_room(10.1, "room0")
+        _, conn = logic_1.connect(10.2, "room0")
+        conn.handle_input(10.3, "+will be stored later")
+
+        logic_2 = self.get_logic(10.3, db)
+        res, _ = logic_2.connect(10.4, "room0")
+        self.assertEqual({'last': [], 'n': 1}, res[0][1])
+        self.assertEqual(1, len(res))
+
+        conn.handle_input(99.0, "+started speaking again, stored old")
+        logic_3 = self.get_logic(99.1, db)
+        res, _ = logic_3.connect(99.2, "room0")
+        self.assertEqual({'last': [], 'n': 2}, res[0][1])
+        self.assertEqual(1, len(res))
 
 
 if __name__ == "__main__":
