@@ -12,21 +12,7 @@ class Moments:
 
     def __init__(self, time):
         self.last_time = time
-        self.rooms = {"hello": [
-            [
-                {"connId": 4, "type": "write", "body": "H"},
-                {"connId": 4, "type": "write", "body": "i"},
-                {"connId": 4, "type": "write", "body": " Mst"},
-                {"connId": 4, "type": "delete", "body": "s"},
-                {"connId": 4, "type": "delete", "body": "t"},
-                {"connId": 4, "type": "write", "body": "ark"}
-            ],
-            [
-                {"connId": 4, "type": "write", "body": "r u there?"},
-                {"connId": 5, "type": "write",
-                 "body": "I thought I'd find you here"}
-            ]
-        ]}
+        self.rooms = {}
 
     def add_room(self, _, name):
         self.rooms[name] = [[]]
