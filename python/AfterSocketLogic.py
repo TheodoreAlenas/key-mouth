@@ -77,9 +77,6 @@ class Conn:
     def handle_input(self, time, data):
         return self._logic.handle_input(time, (self, data))
 
-    def update(self, time, _):
-        return self._logic.update(time, self.conn_id)
-
 
 class AfterSocketPublicLogic:
 
@@ -169,10 +166,6 @@ class AfterSocketLogic:
             "type": inp_type,
             "body": data
         }))
-        return (self._update(time, room), None)
-
-    def update(self, time, conn_id):
-        room = self.rooms[self.conns[conn_id].room]
         return (self._update(time, room), None)
 
     def _update(self, time, room):

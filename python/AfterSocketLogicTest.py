@@ -88,8 +88,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(res_1[0][1], res_1[0][1])
 
     def test_connect_get_no_moments(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.update(10.1, None)
+        res, conn_1 = self.logic.connect(10.0, "room0")
         self.assertEqual(1, res[0][1]["n"])
 
     def test_speaking_right_after_joining_merges(self):
