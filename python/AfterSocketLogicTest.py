@@ -6,7 +6,12 @@ class AfterSocketLogicTest(unittest.TestCase):
 
     def setUp(self):
         self.logic = AfterSocketPublicLogic(AfterSocketLogic(
-            time=8.0, db=DbMock(), conf_timing=ConfTiming(min_silence=3.0, min_moment=0.5)))
+            time=8.0,
+            db=DbMock(),
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            )))
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
 
@@ -32,12 +37,17 @@ class AfterSocketLogicTest(unittest.TestCase):
             "body": "a"
         }], res[0][1]["last"])
 
-    def test_two_conn_one_msg_bcast(self):
+    def test_two_conn_one_speaks_they_hear_the_same(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(11.0, "room0")
+        res, _ = conn_1.handle_input(12.0, "+hello")
+        self.assertEqual(res[0][1], res[1][1])
+
+    def test_two_conn_one_speaks_exactly_they_get_notified(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(11.0, "room0")
         res, _ = conn_1.handle_input(12.0, "+hello")
         self.assertEqual(2, len(res))
-        self.assertEqual(res[0][1], res[1][1])
         a = [conn_1.conn_id, conn_2.conn_id]
         b = [res[0][0], res[1][0]]
         a.sort()
@@ -57,6 +67,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         _, conn_2 = self.logic.connect(11.0, "room1")
         res, _ = conn_1.handle_input(12.0, "+1")
         self.assertEqual(1, len(res))
+        self.assertEqual(conn_1.conn_id, res[0][0])
 
     def test_create_room_twice_get_409(self):
         try:
