@@ -59,13 +59,21 @@ class Room:
         self.last_moment_time = time
 
 
+class ConfTiming:
+
+    def __init__(self, min_silence, min_moment):
+        self.min_silence = min_silence
+        self.min_moment = min_moment
+
+
 class Conn:
 
-    def __init__(self, conn_id, room: Room, logic, room_moments: RoomMoments):
+    def __init__(self, conn_id, room: Room, logic, room_moments: RoomMoments, conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
         self._logic = logic
         self._moments = room_moments
+        self._conf_timing = conf_timing
         self.last_spoke = 0.0
 
     def disconnect(self, time, _):
@@ -91,8 +99,8 @@ class Conn:
         return self._get_last_moment_broadcast_list()
 
     def _interrupted_conversation(self, time):
-        started_speaking = (time - self.last_spoke > self._logic.min_silence)
-        moment_lasted = (time - self.room.last_moment_time > self._logic.min_moment)
+        started_speaking = (time - self.last_spoke > self._conf_timing.min_silence)
+        moment_lasted = (time - self.room.last_moment_time > self._conf_timing.min_moment)
         return started_speaking and moment_lasted
 
     def _bake_moment_to_be_stored(self, time):
@@ -127,9 +135,8 @@ class AfterSocketPublicLogic:
 
 class AfterSocketLogic:
 
-    def __init__(self, time, moments_db, min_silence, min_moment):
-        self.min_silence = min_silence
-        self.min_moment = min_moment
+    def __init__(self, time, moments_db, conf_timing):
+        self._conf_timing = conf_timing
         self.moments = moments_db
         self.last_id = -1
         self.conns = {}
@@ -166,7 +173,7 @@ class AfterSocketLogic:
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, self.rooms[room], self, self.moments.rooms[room])
+        self.conns[i] = Conn(i, self.rooms[room], self, self.moments.rooms[room], self._conf_timing)
         self.rooms[room].conns.append(i)
         s = {"n": self.moments.get_len(room),
              "last": [e for _, e in self.rooms[room].last_moment]}
