@@ -8,6 +8,23 @@ class LogicHttpException(Exception):
         super().__init__(detail)
 
 
+class RoomMoments:
+
+    def __init__(self, name, moments):
+        self.name = name
+        self.moments = moments
+
+    def get_last_few(self):
+        m = self.moments
+        return {"start": 0, "end": len(m), "moments": m}
+
+    def get_len(self):
+        return len(self.moments)
+
+    def get_range(self, start, end):
+        return self.moments[start:end]
+
+
 class Moments:
 
     def __init__(self, time):
