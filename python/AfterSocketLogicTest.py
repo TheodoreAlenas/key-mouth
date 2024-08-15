@@ -97,7 +97,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         conn_1.handle_input(10.1, "+old")
         res_1, _ = conn_1.handle_input(99.0, "+new")
         res_2, conn_2 = self.logic.connect(99.1, "room0")
-        self.assertEqual(res_1[0][1], res_1[0][1])
+        self.assertEqual(res_1[0][1], res_2[0][1])
 
     def test_connect_get_no_moments(self):
         res, conn_1 = self.logic.connect(10.0, "room0")
@@ -185,24 +185,35 @@ class DbLoadRoomTest(unittest.TestCase):
         logic_2 = self.get_logic(10.2, db)
         logic_2.connect(10.3, "room0")
 
+    def test_use_same_db_dont_see_last_moment(self):
+        db = DbMock()
+
+        logic = self.get_logic(10.0, db)
+        logic.create_room(10.1, "room0")
+        _, conn = logic.connect(10.2, "room0")
+        conn.handle_input(10.3, "+will be stored later")
+
+        logic = self.get_logic(10.3, db)
+        res, _ = logic.connect(10.4, "room0")
+        self.assertEqual(1, len(res))
+
+        self.assertEqual({'last': [],   'n': 1   }, res[0][1])
+
     def test_use_same_db_see_stored_moment_and_not_last(self):
         db = DbMock()
 
-        logic_1 = self.get_logic(10.0, db)
-        logic_1.create_room(10.1, "room0")
-        _, conn = logic_1.connect(10.2, "room0")
+        logic = self.get_logic(10.0, db)
+        logic.create_room(10.1, "room0")
+        _, conn = logic.connect(10.2, "room0")
         conn.handle_input(10.3, "+will be stored later")
 
-        logic_2 = self.get_logic(10.3, db)
-        res, _ = logic_2.connect(10.4, "room0")
-        self.assertEqual({'last': [], 'n': 1}, res[0][1])
+        conn.handle_input(99.0, "+started speaking again, stored old")
+
+        logic = self.get_logic(99.1, db)
+        res, _ = logic.connect(99.2, "room0")
         self.assertEqual(1, len(res))
 
-        conn.handle_input(99.0, "+started speaking again, stored old")
-        logic_3 = self.get_logic(99.1, db)
-        res, _ = logic_3.connect(99.2, "room0")
-        self.assertEqual({'last': [], 'n': 2}, res[0][1])
-        self.assertEqual(1, len(res))
+        self.assertEqual({'last': [],   'n': 2   }, res[0][1])
 
 
 class DbLoadLastMomentTimeTest(unittest.TestCase):
