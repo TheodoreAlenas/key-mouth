@@ -68,20 +68,16 @@ class ConfTiming:
 
 class Conn:
 
-    def __init__(self, conn_id, room: Room, logic, room_moments: RoomMoments, conf_timing: ConfTiming):
+    def __init__(self, conn_id, room: Room, room_moments: RoomMoments, conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
-        self._logic = logic
         self._moments = room_moments
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
 
     def disconnect(self, time, _):
-        s = self._logic.disconnect(time, self.conn_id)
-        self.conn_id = None
-        self.room = None
-        self.logic = None
-        return s
+        self.room.conns.remove(self.conn_id)
+        return ([], None)
 
     def handle_input(self, time, data):
         if len(data) < 2:
@@ -173,17 +169,11 @@ class AfterSocketLogic:
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, self.rooms[room], self, self.moments.rooms[room], self._conf_timing)
+        self.conns[i] = Conn(i, self.rooms[room], self.moments.rooms[room], self._conf_timing)
         self.rooms[room].conns.append(i)
         s = {"n": self.moments.get_len(room),
              "last": [e for _, e in self.rooms[room].last_moment]}
         return ([(i, s)], self.conns[i])
-
-    def disconnect(self, _, conn_id):
-        room = self.rooms[self.conns[conn_id].room.name]
-        room.conns.remove(conn_id)
-        self.conns.pop(conn_id)
-        return ([], None)
 
 
 """
