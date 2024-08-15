@@ -126,6 +126,18 @@ class AfterSocketLogicTest(unittest.TestCase):
         res, _ = conn_2.handle_input(11.1, "+2")
         self.assertEqual(2, res[0][1]["n"])
 
+    def test_merged_moments_dont_chain_beyond_the_config(self):
+        conns = []
+        for i in range(7):
+            _, conn = self.logic.connect(10.0 + 0.1 * i, "room0")
+            conns.append(conn)
+        ns = []
+        for i in range(7):
+            res, _ = conns[i].handle_input(99.0 + 0.1 * i, "+hi")
+            ns.append(res[0][1]["n"])
+        self.assertEqual(2, ns[4])
+        self.assertEqual(3, ns[6])
+
     def test_database_starts_empty(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, moments = self.logic.get_moments_range(10.2, ("room0", None, None))
@@ -222,8 +234,6 @@ class DbLoadLastMomentTimeTest(unittest.TestCase):
     def test_dont_merge_new_slow(self):
         res, _ = self.conn.handle_input(99.6, "+shouldn't merge")
         self.assertEqual(3, res[0][1]['n'])
-
-# TODO many consecutive fast messages still split eventually
 
 
 if __name__ == "__main__":
