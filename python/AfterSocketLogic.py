@@ -8,6 +8,16 @@ class LogicHttpException(Exception):
         super().__init__(detail)
 
 
+class RoomExistsException(Exception):
+    def __init__(self, msg="room already exists"):
+        super().__init__(msg)
+
+
+class RoomDoesntExistException(Exception):
+    def __init__(self, msg="room doesn't exist"):
+        super().__init__(msg)
+
+
 class RoomMoments:
 
     def __init__(self, name, moments):
@@ -30,8 +40,20 @@ class RoomMoments:
 
 class DbMock:
 
+    def __init__(self):
+        self.rooms = {}
+
     def create_room(self, _, name):
-        return RoomMoments(name, [[]])
+        if name in self.rooms:
+            raise RoomExistsException("[DbMoct] room '" + name +
+                                      "' already exists")
+        self.rooms[name] = RoomMoments(name, [[]])
+
+    def get_room(self, name):
+        if not name in self.rooms:
+            raise RoomDoesntExistException("[DbMock] room '" + name +
+                                           "' doesn't exist")
+        return self.rooms[name]
 
 
 class ConnRoomData:
@@ -125,22 +147,27 @@ class AfterSocketLogic:
         self.db = db
         self.last_id = -1
         self.conns = {}
-        self.rooms = {}
+        self.rooms_ram = {}
 
     def create_room(self, time, name):
-        if name in self.rooms:
+        try:
+            self.db.create_room(time, name)
+            if name in self.rooms_ram:
+                raise RoomExistsException()
+            self.rooms_ram[name] = ConnRoomData(
+                time, name, self.db.get_room(name))
+        except RoomExistsException:
             raise LogicHttpException("room " + name + " exists",
                                      status_code=409)
-        self.rooms[name] = ConnRoomData(time, name, self.db.create_room(time, name))
         return ([], None)
 
     def get_rooms(self, _time, _arg):
-        return ([], [r for r in self.rooms])
+        return ([], [r for r in self.rooms_ram])
 
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end
         try:
-            r = self.rooms[room]
+            r = self.rooms_ram[room]
             if start is None and end is None:
                 return ([], r.moments.get_last_few())
             return ([], r.moments.get_range(start, end))
@@ -154,13 +181,13 @@ class AfterSocketLogic:
         if type(room) != str:
             raise Exception("can't connect with non-string room " +
                             str(room))
-        if not room in self.rooms:
+        if not room in self.rooms_ram:
             raise LogicHttpException("room " + str(room) +
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, self.rooms[room], self._conf_timing)
-        self.rooms[room].conns.append(i)
+        self.conns[i] = Conn(i, self.rooms_ram[room], self._conf_timing)
+        self.rooms_ram[room].conns.append(i)
         s = self.conns[i].get_last_moment_json_list()
         return ([(i, s)], self.conns[i])
 
