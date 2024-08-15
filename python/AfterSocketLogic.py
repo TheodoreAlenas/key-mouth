@@ -61,10 +61,11 @@ class Room:
 
 class Conn:
 
-    def __init__(self, _, conn_id, room, logic):
+    def __init__(self, conn_id, room, logic, room_moments):
         self.conn_id = conn_id
         self.room = room
         self._logic = logic
+        self._moments = room_moments
         self.last_spoke = 0.0
 
     def disconnect(self, time, _):
@@ -121,7 +122,7 @@ class AfterSocketLogic:
                             str(start) + ', ' +
                             str(end) + ')')
 
-    def connect(self, time, room):
+    def connect(self, _, room):
         if type(room) != str:
             raise Exception("can't connect with non-string room")
         if not room in self.rooms:
@@ -129,7 +130,7 @@ class AfterSocketLogic:
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(time, i, room, self)
+        self.conns[i] = Conn(i, room, self, self.moments.rooms[room])
         self.rooms[room].conns.append(i)
         s = {"n": self.moments.get_len(room),
              "last": [e for _, e in self.rooms[room].last_moment]}
