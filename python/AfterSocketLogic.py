@@ -53,10 +53,9 @@ class ConfTiming:
 
 class Conn:
 
-    def __init__(self, conn_id, room: ConnRoomData, room_moments: RoomMoments, conf_timing: ConfTiming):
+    def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
-        self._moments = room_moments
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
 
@@ -88,7 +87,7 @@ class Conn:
 
     def _bake_moment_to_be_stored(self, time):
         baked_moment = [e for _, e in self.room.last_moment]
-        self._moments.add_moment(time, baked_moment)
+        self.room.moments.add_moment(time, baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
 
@@ -101,7 +100,7 @@ class Conn:
         }))
 
     def _get_last_moment_broadcast_list(self):
-        s = {"n": self._moments.get_len(),
+        s = {"n": self.room.moments.get_len(),
              "last": [e for _, e in self.room.last_moment]}
         return ([(conn, s) for conn in self.room.conns], None)
 
@@ -156,7 +155,7 @@ class AfterSocketLogic:
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, self.rooms[room], self.rooms[room].moments, self._conf_timing)
+        self.conns[i] = Conn(i, self.rooms[room], self._conf_timing)
         self.rooms[room].conns.append(i)
         s = {"n": self.rooms[room].moments.get_len(),
              "last": [e for _, e in self.rooms[room].last_moment]}
