@@ -1,7 +1,8 @@
 
 # License at the bottom
 
-from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, Conn, DbMock, LogicHttpException, ConfTiming
+from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, LogicHttpException, ConfTiming
+from DbMock import DbMock
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time

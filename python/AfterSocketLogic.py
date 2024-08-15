@@ -1,87 +1,15 @@
 
 # License at the bottom
 
-from DbMock import DbMock, RoomExistsException
+from db_exceptions import RoomExistsException
+from Conn import Conn
+from logic_and_conn import ConnRoomData, ConfTiming
 
 class LogicHttpException(Exception):
     def __init__(self, detail, status_code):
         self.status_code = status_code
         self.detail = detail
         super().__init__(detail)
-
-
-class ConnRoomData:
-
-    def __init__(self, time, name, moments):
-        self.name = name
-        self.last_moment = []
-        self.conns = []
-        self.last_moment_time = time
-        self.moments = moments
-
-
-class ConfTiming:
-
-    def __init__(self, min_silence, min_moment):
-        self.min_silence = min_silence
-        self.min_moment = min_moment
-
-
-class Conn:
-
-    def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
-        self.conn_id = conn_id
-        self.room = room
-        self._conf_timing = conf_timing
-        self.last_spoke = 0.0
-
-    def disconnect(self, time, _):
-        self.room.conns.remove(self.conn_id)
-        return ([], None)
-
-    def handle_input(self, time, data):
-        if len(data) < 2:
-            return ([], None)
-        if data[0] == '+':
-            return self._handle_parsed(time, "write", data[1:])
-        elif data[0] == '-':
-            return self._handle_parsed(time, "delete", data[1:])
-        return ([], None)
-
-    def _handle_parsed(self, time, inp_type, body):
-        if self._interrupted_conversation(time):
-            self._bake_moment_to_be_stored(time)
-        self._append_and_update(time, inp_type, body)
-        return self._get_last_moment_broadcast_list()
-
-    def _interrupted_conversation(self, time):
-        started_speaking = (time - self.last_spoke >
-                            self._conf_timing.min_silence)
-        moment_lasted = (time - self.room.last_moment_time >
-                         self._conf_timing.min_moment)
-        return started_speaking and moment_lasted
-
-    def _bake_moment_to_be_stored(self, time):
-        baked_moment = [e for _, e in self.room.last_moment]
-        self.room.moments.add_moment(time, baked_moment)
-        self.room.last_moment = []
-        self.room.last_moment_time = time
-
-    def _append_and_update(self, time, inp_type, body):
-        self.last_spoke = time
-        self.room.last_moment.append((time, {
-            "connId": self.conn_id,
-            "type": inp_type,
-            "body": body
-        }))
-
-    def _get_last_moment_broadcast_list(self):
-        s = self.get_last_moment_json_list()
-        return ([(conn, s) for conn in self.room.conns], None)
-
-    def get_last_moment_json_list(self):
-        return {"n": self.room.moments.get_len(),
-                "last": [e for _, e in self.room.last_moment]}
 
 
 class AfterSocketPublicLogic:

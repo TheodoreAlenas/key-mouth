@@ -1,4 +1,5 @@
-from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, DbMock, ConfTiming
+from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, ConfTiming, RoomExistsException
+from DbMock import DbMock
 import unittest
 
 
