@@ -118,6 +118,67 @@ function check() {
         "last visitor came and heard the last thing the previous did",
         d[3].mom[d[3].mom.length - 1], d[2].mom[d[2].mom.length - 1]
     )
+    console.log(JSON.stringify(d[3].mom, null, 2))
+    test.assertEqual(
+        "last visitor got the same as the last time",
+        [
+            [
+                {
+                    "key": "0",
+                    "body": []
+                },
+                {
+                    "key": "1",
+                    "body": [
+                        {
+                            "name": "Vaggas1",
+                            "message": [
+                                {
+                                    "type": "write",
+                                    "body": "hi there"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            [
+                {
+                    "key": "0",
+                    "body": []
+                },
+                {
+                    "key": "1",
+                    "body": [
+                        {
+                            "name": "Vaggas1",
+                            "message": [
+                                {
+                                    "type": "write",
+                                    "body": "hi there"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "2",
+                    "body": [
+                        {
+                            "name": "Sotiris2",
+                            "message": [
+                                {
+                                    "type": "write",
+                                    "body": "interrupt"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        ],
+        d[3].mom
+    )
     test.printResults()
     if (test.getFails() !== 0) process.exit(1)
 }
