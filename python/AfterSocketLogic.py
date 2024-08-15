@@ -49,11 +49,17 @@ class DbMock:
                                       "' already exists")
         self.rooms[name] = RoomMoments(name, [[]])
 
-    def get_room(self, name):
+    def get_room(self, name) -> RoomMoments:
         if not name in self.rooms:
             raise RoomDoesntExistException("[DbMock] room '" + name +
                                            "' doesn't exist")
         return self.rooms[name]
+
+    def get_rooms_and_their_last_moment_times(self):
+        res = []
+        for name in self.rooms:
+            res.append((name, 0.0))
+        return res
 
 
 class ConnRoomData:
@@ -148,6 +154,8 @@ class AfterSocketLogic:
         self.last_id = -1
         self.conns = {}
         self.rooms_ram = {}
+        for n, t in self.db.get_rooms_and_their_last_moment_times():
+            self.rooms_ram[n] = ConnRoomData(t, n, db.get_room(n))
 
     def create_room(self, time, name):
         try:

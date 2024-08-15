@@ -142,5 +142,29 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(1, len(after[0][1]["last"]))
 
 
+class DbInterfaceTest(unittest.TestCase):
+
+    def get_logic(self, db_mock):
+        return AfterSocketPublicLogic(AfterSocketLogic(
+            time=8.0,
+            db=db_mock,
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            )))
+
+    def test_empty_db_get_no_rooms(self):
+        logic = self.get_logic(DbMock())
+        self.assertEqual(([], []), logic.get_rooms(10.0, None))
+
+    def test_one_room_db_init_right_and_get_one_room(self):
+        db = DbMock()
+        db.create_room(10.0, "mock-room")
+        logic = self.get_logic(db)
+        self.assertEqual(
+            ([], ["mock-room"]),
+            logic.get_rooms(11.0, None))
+
+
 if __name__ == "__main__":
     unittest.main()
