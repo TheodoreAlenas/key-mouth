@@ -34,7 +34,7 @@ class DbMock:
         return RoomMoments(name, [[]])
 
 
-class Room:
+class ConnRoomData:
 
     def __init__(self, time, name, moments):
         self.name = name
@@ -53,7 +53,7 @@ class ConfTiming:
 
 class Conn:
 
-    def __init__(self, conn_id, room: Room, room_moments: RoomMoments, conf_timing: ConfTiming):
+    def __init__(self, conn_id, room: ConnRoomData, room_moments: RoomMoments, conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
         self._moments = room_moments
@@ -80,8 +80,10 @@ class Conn:
         return self._get_last_moment_broadcast_list()
 
     def _interrupted_conversation(self, time):
-        started_speaking = (time - self.last_spoke > self._conf_timing.min_silence)
-        moment_lasted = (time - self.room.last_moment_time > self._conf_timing.min_moment)
+        started_speaking = (time - self.last_spoke >
+                            self._conf_timing.min_silence)
+        moment_lasted = (time - self.room.last_moment_time >
+                         self._conf_timing.min_moment)
         return started_speaking and moment_lasted
 
     def _bake_moment_to_be_stored(self, time):
@@ -127,7 +129,7 @@ class AfterSocketLogic:
         if name in self.rooms:
             raise LogicHttpException("room " + name + " exists",
                                      status_code=409)
-        self.rooms[name] = Room(time, name, self.db.create_room(time, name))
+        self.rooms[name] = ConnRoomData(time, name, self.db.create_room(time, name))
         return ([], None)
 
     def get_rooms(self, _time, _arg):
