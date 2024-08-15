@@ -30,33 +30,18 @@ class RoomMoments:
 
 class Moments:
 
-    def __init__(self, time):
-        self.last_time = time
-        self.rooms = {}
-
-    def add_room(self, _, name):
-        self.rooms[name] = RoomMoments(name, [[]])
-
-    def add_moment(self, time, room, moment):
-        self.rooms[room].add_moment(moment, time)
-
-    def get_last_few(self, room):
-        return self.rooms[room].get_last_few()
-
-    def get_len(self, room):
-        return self.rooms[room].get_len()
-
-    def get_range(self, room, start, end):
-        return self.rooms[room].get_range(start, end)
+    def create_room(self, _, name):
+        return RoomMoments(name, [[]])
 
 
 class Room:
 
-    def __init__(self, time, name):
+    def __init__(self, time, name, moments):
         self.name = name
         self.last_moment = []
         self.conns = []
         self.last_moment_time = time
+        self.moments = moments
 
 
 class ConfTiming:
@@ -142,8 +127,7 @@ class AfterSocketLogic:
         if name in self.rooms:
             raise LogicHttpException("room " + name + " exists",
                                      status_code=409)
-        self.rooms[name] = Room(time, name)
-        self.moments.add_room(time, name)
+        self.rooms[name] = Room(time, name, self.moments.create_room(time, name))
         return ([], None)
 
     def get_rooms(self, _time, _arg):
@@ -152,9 +136,10 @@ class AfterSocketLogic:
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end
         try:
+            r = self.rooms[room]
             if start is None and end is None:
-                return ([], self.moments.get_last_few(room))
-            return ([], self.moments.get_range(room, start, end))
+                return ([], r.moments.get_last_few())
+            return ([], r.moments.get_range(start, end))
         except Exception as e:
             raise Exception("(room, start, end) = (" +
                             room + ', ' +
@@ -169,9 +154,9 @@ class AfterSocketLogic:
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, self.rooms[room], self.moments.rooms[room], self._conf_timing)
+        self.conns[i] = Conn(i, self.rooms[room], self.rooms[room].moments, self._conf_timing)
         self.rooms[room].conns.append(i)
-        s = {"n": self.moments.get_len(room),
+        s = {"n": self.rooms[room].moments.get_len(),
              "last": [e for _, e in self.rooms[room].last_moment]}
         return ([(i, s)], self.conns[i])
 

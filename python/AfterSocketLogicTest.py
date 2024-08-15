@@ -6,7 +6,7 @@ class AfterSocketLogicTest(unittest.TestCase):
 
     def setUp(self):
         self.logic = AfterSocketPublicLogic(AfterSocketLogic(
-            8.0, Moments(9.0), ConfTiming(min_silence=3.0, min_moment=0.5)))
+            8.0, Moments(), ConfTiming(min_silence=3.0, min_moment=0.5)))
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
 
