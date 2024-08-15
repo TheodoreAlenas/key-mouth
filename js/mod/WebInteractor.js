@@ -51,7 +51,7 @@ export default class WebInteractor {
         })
     }
     _setMomentsOnceFetchedInner({start, end, moments}) {
-        const p = moments.map(m => presentMoment(getConnName, m))
+        const p = moments.map(m => presentMoment(getConnName, m.moment))
         for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
         this.lastMomentN = end
         this._setMomentsFromCached()
@@ -81,12 +81,12 @@ export default class WebInteractor {
         const oldLastMomentN = this.lastMomentN
         this.lastMomentN = n
         this.io.withMomentsRange(oldLastMomentN, n, function(moments) {
-            self._updateOldMomentsInner(oldLastMomentN, n, moments)
+            self._updateOldMomentsInner(oldLastMomentN, moments)
         })
     }
-    _updateOldMomentsInner(oldLastMomentN, n,  moments) {
+    _updateOldMomentsInner(oldLastMomentN,  moments) {
         const p = moments.map(
-            m => presentMoment(getConnName, m))
+            m => presentMoment(getConnName, m.moment))
         const start = oldLastMomentN
         for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
         this._setMomentsFromCached()

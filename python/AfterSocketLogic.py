@@ -26,7 +26,7 @@ class RoomMoments:
         self.moments = moments
 
     def add_moment(self, time, moment):
-        self.moments.append(moment)
+        self.moments.append({"time": time, "moment": moment})
         self.last_moment_time = time
 
     def get_last_few(self):
@@ -49,7 +49,8 @@ class DbMock:
         if name in self.rooms:
             raise RoomExistsException("[DbMoct] room '" + name +
                                       "' already exists")
-        self.rooms[name] = RoomMoments(time, name, [[]])
+        self.rooms[name] = RoomMoments(
+            time, name, [{"time": time, "moment": []}])
 
     def get_room(self, name) -> RoomMoments:
         if not name in self.rooms:

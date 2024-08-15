@@ -141,7 +141,8 @@ class AfterSocketLogicTest(unittest.TestCase):
     def test_database_starts_empty(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, moments = self.logic.get_moments_range(10.2, ("room0", None, None))
-        self.assertEqual({"start": 0, "end": 1, "moments": [[]]},
+        self.assertEqual({"start": 0, "end": 1,
+                          "moments": [{'moment': [], 'time': 10.0}]},
                          moments)
 
     def test_interrupt_and_fetch_moments_get_socket_moments(self):
@@ -150,8 +151,9 @@ class AfterSocketLogicTest(unittest.TestCase):
         before, _ = conn_1.handle_input(10.2, "+1")
         after, _ = conn_2.handle_input(10.8, "+2")
         _, m = self.logic.get_moments_range(10.9, ("room0", 0, 2))
-        self.assertEqual(before[0][1]["last"], m[1])
+        self.assertEqual(before[0][1]["last"], m[1]["moment"])
         self.assertEqual(1, len(after[0][1]["last"]))
+        self.assertEqual(10.8, m[1]["time"])
 
 
 class DbLoadRoomTest(unittest.TestCase):
