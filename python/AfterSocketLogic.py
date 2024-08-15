@@ -79,31 +79,40 @@ class Conn:
         if len(data) < 2:
             return ([], None)
         if data[0] == '+':
-            return self._consider_baking(time, "write", data[1:])
+            return self._handle_parsed(time, "write", data[1:])
         elif data[0] == '-':
-            return self._consider_baking(time, "delete", data[1:])
+            return self._handle_parsed(time, "delete", data[1:])
         return ([], None)
 
-    def _consider_baking(self, time, inp_type, data):
+    def _handle_parsed(self, time, inp_type, body):
+        if self._interrupted_conversation(time):
+            self._bake_moment_to_be_stored(time)
+        self._append_and_update(time, inp_type, body)
+        return self._get_last_moment_broadcast_list()
+
+    def _interrupted_conversation(self, time):
         started_speaking = (time - self.last_spoke > self._logic.min_silence)
         moment_lasted = (time - self.room.last_moment_time > self._logic.min_moment)
-        if started_speaking and moment_lasted:
-            baked_moment = [e for _, e in self.room.last_moment]
-            self._moments.add_moment(time, baked_moment)
-            self.room.last_moment = []
-            self.room.last_moment_time = time
+        return started_speaking and moment_lasted
+
+    def _bake_moment_to_be_stored(self, time):
+        baked_moment = [e for _, e in self.room.last_moment]
+        self._moments.add_moment(time, baked_moment)
+        self.room.last_moment = []
+        self.room.last_moment_time = time
+
+    def _append_and_update(self, time, inp_type, body):
         self.last_spoke = time
         self.room.last_moment.append((time, {
             "connId": self.conn_id,
             "type": inp_type,
-            "body": data
+            "body": body
         }))
-        return (self._update(time), None)
 
-    def _update(self, time):
+    def _get_last_moment_broadcast_list(self):
         s = {"n": self._moments.get_len(),
              "last": [e for _, e in self.room.last_moment]}
-        return [(conn, s) for conn in self.room.conns]
+        return ([(conn, s) for conn in self.room.conns], None)
 
 
 class AfterSocketPublicLogic:
