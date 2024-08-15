@@ -14,6 +14,9 @@ class RoomMoments:
         self.name = name
         self.moments = moments
 
+    def add_moment(self, moment):
+        self.moments.append(moment)
+
     def get_last_few(self):
         m = self.moments
         return {"start": 0, "end": len(m), "moments": m}
@@ -32,20 +35,19 @@ class Moments:
         self.rooms = {}
 
     def add_room(self, _, name):
-        self.rooms[name] = [[]]
+        self.rooms[name] = RoomMoments(name, [[]])
 
     def add_moment(self, _, room, moment):
-        self.rooms[room].append(moment)
+        self.rooms[room].add_moment(moment)
 
     def get_last_few(self, room):
-        r = self.rooms[room]
-        return {"start": 0, "end": len(r), "moments": r}
+        return self.rooms[room].get_last_few()
 
     def get_len(self, room):
-        return len(self.rooms[room])
+        return self.rooms[room].get_len()
 
     def get_range(self, room, start, end):
-        return self.rooms[room][start:end]
+        return self.rooms[room].get_range(start, end)
 
 
 class Room:
