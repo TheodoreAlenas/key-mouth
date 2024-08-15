@@ -14,7 +14,7 @@ class RoomMoments:
         self.name = name
         self.moments = moments
 
-    def add_moment(self, moment):
+    def add_moment(self, _, moment):
         self.moments.append(moment)
 
     def get_last_few(self):
@@ -37,8 +37,8 @@ class Moments:
     def add_room(self, _, name):
         self.rooms[name] = RoomMoments(name, [[]])
 
-    def add_moment(self, _, room, moment):
-        self.rooms[room].add_moment(moment)
+    def add_moment(self, time, room, moment):
+        self.rooms[room].add_moment(moment, time)
 
     def get_last_few(self, room):
         return self.rooms[room].get_last_few()
@@ -61,7 +61,7 @@ class Room:
 
 class Conn:
 
-    def __init__(self, conn_id, room, logic, room_moments):
+    def __init__(self, conn_id, room: Room, logic, room_moments: RoomMoments):
         self.conn_id = conn_id
         self.room = room
         self._logic = logic
@@ -76,7 +76,34 @@ class Conn:
         return s
 
     def handle_input(self, time, data):
-        return self._logic.handle_input(time, (self, data))
+        if len(data) < 2:
+            return ([], None)
+        if data[0] == '+':
+            return self._consider_baking(time, "write", data[1:])
+        elif data[0] == '-':
+            return self._consider_baking(time, "delete", data[1:])
+        return ([], None)
+
+    def _consider_baking(self, time, inp_type, data):
+        started_speaking = (time - self.last_spoke > self._logic.min_silence)
+        moment_lasted = (time - self.room.last_moment_time > self._logic.min_moment)
+        if started_speaking and moment_lasted:
+            baked_moment = [e for _, e in self.room.last_moment]
+            self._moments.add_moment(time, baked_moment)
+            self.room.last_moment = []
+            self.room.last_moment_time = time
+        self.last_spoke = time
+        self.room.last_moment.append((time, {
+            "connId": self.conn_id,
+            "type": inp_type,
+            "body": data
+        }))
+        return (self._update(time), None)
+
+    def _update(self, time):
+        s = {"n": self._moments.get_len(),
+             "last": [e for _, e in self.room.last_moment]}
+        return [(conn, s) for conn in self.room.conns]
 
 
 class AfterSocketPublicLogic:
@@ -130,49 +157,17 @@ class AfterSocketLogic:
                                      "doesn't exist", status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, room, self, self.moments.rooms[room])
+        self.conns[i] = Conn(i, self.rooms[room], self, self.moments.rooms[room])
         self.rooms[room].conns.append(i)
         s = {"n": self.moments.get_len(room),
              "last": [e for _, e in self.rooms[room].last_moment]}
         return ([(i, s)], self.conns[i])
 
     def disconnect(self, _, conn_id):
-        room = self.rooms[self.conns[conn_id].room]
+        room = self.rooms[self.conns[conn_id].room.name]
         room.conns.remove(conn_id)
         self.conns.pop(conn_id)
         return ([], None)
-
-    def handle_input(self, time, conn_and_data):
-        conn, data = conn_and_data
-        if len(data) < 2:
-            return ([], None)
-        if data[0] == '+':
-            return self._consider_baking(time, conn, "write", data[1:])
-        elif data[0] == '-':
-            return self._consider_baking(time, conn, "delete", data[1:])
-        return ([], None)
-
-    def _consider_baking(self, time, conn, inp_type, data):
-        room = self.rooms[conn.room]
-        started_speaking = (time - conn.last_spoke > self.min_silence)
-        moment_lasted = (time - room.last_moment_time > self.min_moment)
-        if started_speaking and moment_lasted:
-            baked_moment = [e for _, e in room.last_moment]
-            self.moments.add_moment(time, conn.room, baked_moment)
-            room.last_moment = []
-            room.last_moment_time = time
-        conn.last_spoke = time
-        room.last_moment.append((time, {
-            "connId": conn.conn_id,
-            "type": inp_type,
-            "body": data
-        }))
-        return (self._update(time, room), None)
-
-    def _update(self, time, room):
-        s = {"n": self.moments.get_len(room.name),
-             "last": [e for _, e in room.last_moment]}
-        return [(conn, s) for conn in room.conns]
 
 
 """
