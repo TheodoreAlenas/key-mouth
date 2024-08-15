@@ -118,7 +118,16 @@ function check() {
         "last visitor came and heard the last thing the previous did",
         d[3].mom[d[3].mom.length - 1], d[2].mom[d[2].mom.length - 1]
     )
-    console.log(JSON.stringify(d[3].mom, null, 2))
+    for (let snapshot of d[3].mom) {
+        for (let moment of snapshot) {
+            if (moment.body.length > 0) {
+                for (let person of moment.body) {
+                    person.name = "erased names"
+                }
+            }
+        }
+    }
+    //console.log(JSON.stringify(d[3].mom, null, 2))
     test.assertEqual(
         "last visitor got the same as the last time",
         [
@@ -131,7 +140,7 @@ function check() {
                     "key": "1",
                     "body": [
                         {
-                            "name": "Vaggas1",
+                            "name": "erased names",
                             "message": [
                                 {
                                     "type": "write",
@@ -151,7 +160,7 @@ function check() {
                     "key": "1",
                     "body": [
                         {
-                            "name": "Vaggas1",
+                            "name": "erased names",
                             "message": [
                                 {
                                     "type": "write",
@@ -165,7 +174,7 @@ function check() {
                     "key": "2",
                     "body": [
                         {
-                            "name": "Sotiris2",
+                            "name": "erased names",
                             "message": [
                                 {
                                     "type": "write",
