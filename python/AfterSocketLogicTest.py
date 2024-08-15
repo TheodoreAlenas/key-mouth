@@ -142,7 +142,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(1, len(after[0][1]["last"]))
 
 
-class DbInterfaceTest(unittest.TestCase):
+class DbLoadRoomTest(unittest.TestCase):
 
     def get_logic(self, time, db_mock):
         return AfterSocketPublicLogic(AfterSocketLogic(
@@ -172,6 +172,7 @@ class DbInterfaceTest(unittest.TestCase):
 
     def test_use_same_db_see_stored_moment_and_not_last(self):
         db = DbMock()
+
         logic_1 = self.get_logic(10.0, db)
         logic_1.create_room(10.1, "room0")
         _, conn = logic_1.connect(10.2, "room0")
@@ -187,6 +188,42 @@ class DbInterfaceTest(unittest.TestCase):
         res, _ = logic_3.connect(99.2, "room0")
         self.assertEqual({'last': [], 'n': 2}, res[0][1])
         self.assertEqual(1, len(res))
+
+
+class DbLoadLastMomentTimeTest(unittest.TestCase):
+
+    def get_logic(self, time, db_mock):
+        return AfterSocketPublicLogic(AfterSocketLogic(
+            time=time,
+            db=db_mock,
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            )))
+
+    def setUp(self):
+
+        self.db = DbMock()
+
+        logic = self.get_logic(10.0, self.db)
+        logic.create_room(10.1, "room0")
+        _, conn = logic.connect(10.2, "room0")
+        conn.handle_input(10.3, "+will be stored later")
+        conn.handle_input(99.0, "+started speaking again, stored old")
+
+        logic = self.get_logic(99.1, self.db)
+        _, conn = logic.connect(99.2, "room0")
+        self.conn = conn
+
+    def test_merge_new_fast(self):
+        res, _ = self.conn.handle_input(99.4, "+should merge")
+        self.assertEqual(2, res[0][1]['n'])
+
+    def test_dont_merge_new_slow(self):
+        res, _ = self.conn.handle_input(99.6, "+shouldn't merge")
+        self.assertEqual(3, res[0][1]['n'])
+
+# TODO many consecutive fast messages still split eventually
 
 
 if __name__ == "__main__":

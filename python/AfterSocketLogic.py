@@ -20,12 +20,14 @@ class RoomDoesntExistException(Exception):
 
 class RoomMoments:
 
-    def __init__(self, name, moments):
+    def __init__(self, last_moment_time, name, moments):
+        self.last_moment_time = last_moment_time
         self.name = name
         self.moments = moments
 
-    def add_moment(self, _, moment):
+    def add_moment(self, time, moment):
         self.moments.append(moment)
+        self.last_moment_time = time
 
     def get_last_few(self):
         m = self.moments
@@ -43,11 +45,11 @@ class DbMock:
     def __init__(self):
         self.rooms = {}
 
-    def create_room(self, _, name):
+    def create_room(self, time, name):
         if name in self.rooms:
             raise RoomExistsException("[DbMoct] room '" + name +
                                       "' already exists")
-        self.rooms[name] = RoomMoments(name, [[]])
+        self.rooms[name] = RoomMoments(time, name, [[]])
 
     def get_room(self, name) -> RoomMoments:
         if not name in self.rooms:
@@ -58,7 +60,7 @@ class DbMock:
     def get_rooms_and_their_last_moment_times(self):
         res = []
         for name in self.rooms:
-            res.append((name, 0.0))
+            res.append((name, self.rooms[name].last_moment_time))
         return res
 
 
