@@ -28,7 +28,7 @@ class RoomMoments:
         return self.moments[start:end]
 
 
-class Moments:
+class DbMock:
 
     def create_room(self, _, name):
         return RoomMoments(name, [[]])
@@ -116,9 +116,9 @@ class AfterSocketPublicLogic:
 
 class AfterSocketLogic:
 
-    def __init__(self, time, moments_db, conf_timing):
+    def __init__(self, time, db, conf_timing):
         self._conf_timing = conf_timing
-        self.moments = moments_db
+        self.db = db
         self.last_id = -1
         self.conns = {}
         self.rooms = {}
@@ -127,7 +127,7 @@ class AfterSocketLogic:
         if name in self.rooms:
             raise LogicHttpException("room " + name + " exists",
                                      status_code=409)
-        self.rooms[name] = Room(time, name, self.moments.create_room(time, name))
+        self.rooms[name] = Room(time, name, self.db.create_room(time, name))
         return ([], None)
 
     def get_rooms(self, _time, _arg):

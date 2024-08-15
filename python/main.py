@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, Conn, Moments, LogicHttpException, ConfTiming
+from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, Conn, DbMock, LogicHttpException, ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
@@ -22,7 +22,7 @@ id_to_sock = {}
 mutex = threading.Lock()
 logic = AfterSocketPublicLogic(AfterSocketLogic(
     time=time(),
-    moments_db=Moments(),
+    db=DbMock(),
     conf_timing=ConfTiming(
         min_silence=1.0,
         min_moment=0.5
