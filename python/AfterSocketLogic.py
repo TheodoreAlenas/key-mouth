@@ -100,9 +100,12 @@ class Conn:
         }))
 
     def _get_last_moment_broadcast_list(self):
-        s = {"n": self.room.moments.get_len(),
-             "last": [e for _, e in self.room.last_moment]}
+        s = self.get_last_moment_json_list()
         return ([(conn, s) for conn in self.room.conns], None)
+
+    def get_last_moment_json_list(self):
+        return {"n": self.room.moments.get_len(),
+                "last": [e for _, e in self.room.last_moment]}
 
 
 class AfterSocketPublicLogic:
@@ -149,7 +152,8 @@ class AfterSocketLogic:
 
     def connect(self, _, room):
         if type(room) != str:
-            raise Exception("can't connect with non-string room")
+            raise Exception("can't connect with non-string room " +
+                            str(room))
         if not room in self.rooms:
             raise LogicHttpException("room " + str(room) +
                                      "doesn't exist", status_code=404)
@@ -157,8 +161,7 @@ class AfterSocketLogic:
         i = self.last_id
         self.conns[i] = Conn(i, self.rooms[room], self._conf_timing)
         self.rooms[room].conns.append(i)
-        s = {"n": self.rooms[room].moments.get_len(),
-             "last": [e for _, e in self.rooms[room].last_moment]}
+        s = self.conns[i].get_last_moment_json_list()
         return ([(i, s)], self.conns[i])
 
 
