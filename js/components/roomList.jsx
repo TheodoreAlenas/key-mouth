@@ -18,9 +18,8 @@ export default function RoomList({rooms}) {
 
 function roomToLiLink(s, i) {
     return <li key={i}>
-               <Link className={colors.bubbleColors + ' ' +
-                                shapes.bubbleSpacing + ' ' +
-                                shapes.bubbleWrap}
+               <Link className={colors.bubble + ' ' +
+                                shapes.bubble}
                      href={s.href}
                >{s.text}</Link>
            </li>
