@@ -26,7 +26,7 @@ class RoomMoments:
         return self.moments[start:end]
 
 
-class DbMock:
+class Db:
 
     def __init__(self):
         self.rooms = {}
