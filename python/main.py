@@ -33,8 +33,7 @@ logic = AfterSocketPublicLogic(AfterSocketLogic(
         min_silence=1.0,
         min_moment=0.5
     )))
-logic.create_room(time(), "0")
-logic.create_room(time(), "hello")
+logic.create_room(time(), str(time()))
 
 
 def do_nothing(_):
