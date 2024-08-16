@@ -40,10 +40,10 @@ with your message at the top of the new lump.
 - [x] interrupting breaks the moment
 - [x] silence breaks the moment
 - [x] isolated chat rooms
-- [ ] visible deletions
+- [x] visible deletions
 - [ ] visible dates
 - [ ] a new message can reference an old one, creating links both ways
-- [ ] persistent storage (likely a database for learning purposes)
+- [x] persistent storage
 - [ ] authentication
 - [ ] locked rooms that require an invitation
 - [ ] administration bans
