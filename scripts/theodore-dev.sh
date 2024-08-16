@@ -16,11 +16,13 @@ tmux send-keys  -t key-mouth:1 "export KEYMOUTH_WS=ws://$ip:8000" C-m
 tmux send-keys  -t key-mouth:1 "cd js" C-m
 tmux send-keys  -t key-mouth:1 "npm run dev" C-m
 
-cmd="KEYMOUTH_CORS_ALL=yes uvicorn main:app --host $ip --port 8000 --reload"
 
 tmux new-window -t key-mouth:2
 tmux send-keys  -t key-mouth:2 "cd python" C-m
 tmux send-keys  -t key-mouth:2 ". venv/bin/activate" C-m
+tmux send-keys  -t key-mouth:2 "export KEYMOUTH_RAM_DB=yes" C-m
+tmux send-keys  -t key-mouth:2 "export KEYMOUTH_CORS_ALL=yes" C-m
+cmd="uvicorn main:app --host $ip --port 8000 --reload"
 tmux send-keys  -t key-mouth:2 "$cmd" C-m
 
 tmux new-window -t key-mouth:3

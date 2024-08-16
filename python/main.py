@@ -2,12 +2,17 @@
 # License at the bottom
 
 from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, LogicHttpException, ConfTiming
-from DbMock import Db
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
 import threading
 from os import environ
+
+a = 'KEYMOUTH_RAM_DB'
+if a in environ and environ[a] == 'yes':
+    from db_mock import Db
+else:
+    from db_mongo import Db
 
 app = FastAPI()
 a = 'KEYMOUTH_CORS_ALL'

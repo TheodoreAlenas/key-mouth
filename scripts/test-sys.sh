@@ -3,6 +3,7 @@
 (
     cd ./python
     . venv/bin/activate
+    export KEYMOUTH_RAM_DB=yes
     timeout 3s uvicorn                          \
             --host localhost                    \
             --port 8001                         \
