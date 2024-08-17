@@ -23,12 +23,10 @@ function withWebInteractor(buf, room, callback) {
     const wi = new WebInteractor(uri)
 
     wi.setSetInputValue(function(m) {
-        buf.all.push({t: "inp", i: buf.inp.length})
         buf.inp.push(m)
     })
     wi.setSetMoments(function(m) {
-        buf.all.push({t: "mom", i: buf.mom.length})
-        buf.mom.push(m)
+        buf.snap.push(m)
     })
     const close = wi.getDestructor()
     wi.setOnReadySocket(function(unlocked) {
@@ -36,7 +34,7 @@ function withWebInteractor(buf, room, callback) {
     })
 }
 
-const d = [0,0,0,0].map(_ => ({inp: [], mom: [], all: []}))
+const d = [0,0,0,0].map(_ => ({inp: [], snap: []}))
 
 withNoError.then(function() {
     withWebInteractor(d[0], "my\nroom", function(unlocked, close) {
@@ -79,7 +77,7 @@ function writeNewResults(r) {
 function check() {
     const test = new TestCase()
     for (let person of d) {
-        for (let snapshot of person.mom) {
+        for (let snapshot of person.snap) {
             for (let moment of snapshot) {
                 if (moment.time) {
                     moment.time = "erased times"
@@ -92,8 +90,7 @@ function check() {
             }
         }
     }
-    //console.log(JSON.stringify(d[3].mom, null, 2))
-    const last = d[3].mom
+    const last = d[3].snap
     writeNewResults(last)
     for (let i = 0; i < last.length; i++) {
         for (let j = 0; j < last[i].length; j++) {

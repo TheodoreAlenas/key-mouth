@@ -17,7 +17,7 @@ class RoomMoments:
         self._db = db
 
     def add_moment(self, time, moment):
-        mom = {"time": time, "moment": moment}
+        mom = {"time": time, "diffs": moment}
         self._db['rooms'].update_one(
             {"_id": self.name},
             {"$push": {"moments": mom}}
@@ -66,7 +66,7 @@ class Db:
 
     def create_room(self, time, name):
         try:
-            first_moment = {"time": time, "moment": []}
+            first_moment = {"time": time, "diffs": []}
             room = RoomMoments(
                 r={'_id': name, 'last': first_moment, 'n': 1},
                 db=self._db

@@ -32,19 +32,6 @@ export default class WebInteractor {
     getDestructor() {
         return this.io.getDestructor()
     }
-    _setMomentsFromCached() {
-        const keys = Object.keys(this.cached)
-        const s = keys.map(k => this._keyToMoment(k))
-        this.setMoments(s)
-    }
-    _keyToMoment(k) {
-        const e = this.cached[k]
-        if (e.time) return {
-            key: k, body: e.people,
-            time: (new Date(e.time)).toLocaleString()
-        }
-        return {key: k, body: e.people}
-    }
     _setMomentsOnceFetched() {
         const self = this
         this.io.withLastMoments(function(res) {
@@ -57,29 +44,6 @@ export default class WebInteractor {
                 throw err
             }
         })
-    }
-    _setMomentsOnceFetchedInner({start, end, moments}) {
-        //const p = moments.map(m => presentMoment(getConnName, m.moment))
-        const p = moments.map(m => ({
-            people: presentMoment(getConnName, m.moment),
-            time: m.time
-        }))
-        for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
-        this.lastMomentN = end
-        this._setMomentsFromCached()
-    }
-    _setLast(n, last) {
-        try {
-            const p = presentMoment(getConnName, last)
-            this.cached[n] = {people: p, time: undefined}
-            this._setMomentsFromCached()
-            this._updateOldMoments(n)
-        }
-        catch (e) {
-            console.error("Error setting last moment, " +
-                          JSON.stringify({n, last}))
-            throw e
-        }
     }
     _updateOldMoments(n) {
         if (this.lastMomentN === undefined) return
@@ -96,21 +60,55 @@ export default class WebInteractor {
             self._updateOldMomentsInner(oldLastMomentN, moments)
         })
     }
+    _setMomentsOnceFetchedInner({start, end, moments}) {
+        const p = moments.map(m => ({
+            people: presentMoment(getConnName, m.diffs),
+            time: m.time
+        }))
+        for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
+        this.lastMomentN = end
+        this._setMomentsFromCached()
+    }
     _updateOldMomentsInner(oldLastMomentN, moments) {
         const p = moments.map(m => ({
-            people: presentMoment(getConnName, m.moment),
+            people: presentMoment(getConnName, m.diffs),
             time: m.time
         }))
         const start = oldLastMomentN
         for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
         this._setMomentsFromCached()
     }
+    _setMomentsFromCached() {
+        const keys = Object.keys(this.cached)
+        const s = keys.map(k => this._keyToMoment(k))
+        this.setMoments(s)
+    }
+    _keyToMoment(k) {
+        const e = this.cached[k]
+        if (e.time) return {
+            key: k, body: e.people,
+            time: (new Date(e.time)).toLocaleString()
+        }
+        return {key: k, body: e.people}
+    }
+    _setLast(n, last) {
+        try {
+            const p = presentMoment(getConnName, last)
+            this.cached[n] = {people: p, time: undefined}
+            this._setMomentsFromCached()
+            this._updateOldMoments(n)
+        }
+        catch (e) {
+            console.error("Error setting last moment, " +
+                          JSON.stringify({n, last}))
+            throw e
+        }
+    }
 
 }
 
 function getConnName(conn) {
-    if (conn % 2) return "Vaggas" + conn
-    return "Sotiris" + conn
+    return "Visitor#" + conn
 }
 
 class Unlocked {

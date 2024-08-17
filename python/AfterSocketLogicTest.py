@@ -159,7 +159,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, moments = self.logic.get_moments_range(10.2, ("room0", None, None))
         self.assertEqual({"start": 0, "end": 1,
-                          "moments": [{'moment': [], 'time': 10.0}]},
+                          "moments": [{'diffs': [], 'time': 10.0}]},
                          moments)
 
     def test_interrupt_and_fetch_moments_get_socket_moments(self):
@@ -168,7 +168,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         before, _ = conn_1.handle_input(100.0, "+1")
         conn_2.handle_input(100.6, "+2")
         _, m = self.logic.get_moments_range(100.7, ("room0", 0, 4))
-        self.assertEqual(before[0][1]["last"], m[2]["moment"])
+        self.assertEqual(before[0][1]["last"], m[2]["diffs"])
         self.assertEqual(100.6, m[2]["time"])
 
 
