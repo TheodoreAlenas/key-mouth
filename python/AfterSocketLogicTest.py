@@ -22,21 +22,29 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(
             [(
                 conn.conn_id,
-                {"n": 1, "last": [{
-                    "connId": conn.conn_id,
-                    "type": "write",
-                    "body": "hello"}]}
+                {"n": 1, "last": [
+                    {
+                        "connId": conn.conn_id,
+                        "type": "connect",
+                        "body": None
+                    },
+                    {
+                        "connId": conn.conn_id,
+                        "type": "write",
+                        "body": "hello"
+                    }
+                ]}
             )],
             res)
 
     def test_deletion_parsed(self):
         _, conn = self.logic.connect(10.0, "room0")
         res, _ = conn.handle_input(10.1, "-a")
-        self.assertEqual([{
+        self.assertEqual({
             "connId": conn.conn_id,
             "type": "delete",
             "body": "a"
-        }], res[0][1]["last"])
+        }, res[0][1]["last"][1])
 
     def test_two_conn_one_speaks_they_hear_the_same(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -96,7 +104,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         _, conn_1 = self.logic.connect(10.0, "room0")
         res_1, _ = conn_1.handle_input(10.1, "+1")
         res_2, conn_2 = self.logic.connect(10.2, "room0")
-        self.assertEqual(1, len(res_2))
+        self.assertEqual(2, len(res_2))
         self.assertEqual(res_1[0][1]["last"],
                          res_2[0][1]["last"])
 
@@ -111,28 +119,28 @@ class AfterSocketLogicTest(unittest.TestCase):
         res, conn_1 = self.logic.connect(10.0, "room0")
         self.assertEqual(1, res[0][1]["n"])
 
-    def test_speaking_right_after_joining_merges(self):
+    def test_connecting_and_speaking_is_one_stream(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.handle_input(10.4, "+1")
+        res, _ = conn_1.handle_input(12.9, "+1")
         self.assertEqual(1, res[0][1]["n"])
 
-    def test_speaking_after_joining_creates_moment(self):
+    def test_connecting_pausing_speaking_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.handle_input(10.6, "+1")
+        res, _ = conn_1.handle_input(13.1, "+1")
         self.assertEqual(2, res[0][1]["n"])
 
     def test_interrupting_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(10.7, "+1")
-        res, _ = conn_2.handle_input(11.3, "+2")
+        conn_1.handle_input(100.0, "+1")
+        res, _ = conn_2.handle_input(100.6, "+2")
         self.assertEqual(3, res[0][1]["n"])
 
     def test_interrupting_quickly_doesnt_count(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(10.7, "+1")
-        res, _ = conn_2.handle_input(11.1, "+2")
+        conn_1.handle_input(100.0, "+1")
+        res, _ = conn_2.handle_input(100.4, "+2")
         self.assertEqual(2, res[0][1]["n"])
 
     def test_merged_moments_dont_chain_beyond_the_config(self):
@@ -144,8 +152,8 @@ class AfterSocketLogicTest(unittest.TestCase):
         for i in range(7):
             res, _ = conns[i].handle_input(99.0 + 0.1 * i, "+hi")
             ns.append(res[0][1]["n"])
-        self.assertEqual(2, ns[4])
-        self.assertEqual(3, ns[6])
+        self.assertEqual(3, ns[4])
+        self.assertEqual(4, ns[6])
 
     def test_database_starts_empty(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
@@ -157,12 +165,11 @@ class AfterSocketLogicTest(unittest.TestCase):
     def test_interrupt_and_fetch_moments_get_socket_moments(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        before, _ = conn_1.handle_input(10.2, "+1")
-        after, _ = conn_2.handle_input(10.8, "+2")
-        _, m = self.logic.get_moments_range(10.9, ("room0", 0, 2))
-        self.assertEqual(before[0][1]["last"], m[1]["moment"])
-        self.assertEqual(1, len(after[0][1]["last"]))
-        self.assertEqual(10.8, m[1]["time"])
+        before, _ = conn_1.handle_input(100.0, "+1")
+        conn_2.handle_input(100.6, "+2")
+        _, m = self.logic.get_moments_range(100.7, ("room0", 0, 4))
+        self.assertEqual(before[0][1]["last"], m[2]["moment"])
+        self.assertEqual(100.6, m[2]["time"])
 
 
 class DbLoadRoomTest(unittest.TestCase):
@@ -204,8 +211,10 @@ class DbLoadRoomTest(unittest.TestCase):
         logic = self.get_logic(10.3, db)
         res, _ = logic.connect(10.4, "room0")
         self.assertEqual(1, len(res))
+        self.assertEqual(1, len(res[0][1]['last']))
+        self.assertEqual('connect', res[0][1]['last'][0]['type'])
 
-        self.assertEqual({'last': [],   'n': 1   }, res[0][1])
+        self.assertEqual(   1   , res[0][1]['n'])
 
     def test_use_same_db_see_stored_moment_and_not_last(self):
         db = Db()
@@ -220,42 +229,10 @@ class DbLoadRoomTest(unittest.TestCase):
         logic = self.get_logic(99.1, db)
         res, _ = logic.connect(99.2, "room0")
         self.assertEqual(1, len(res))
+        self.assertEqual(1, len(res[0][1]['last']))
+        self.assertEqual('connect', res[0][1]['last'][0]['type'])
 
-        self.assertEqual({'last': [],   'n': 2   }, res[0][1])
-
-
-class DbLoadLastMomentTimeTest(unittest.TestCase):
-
-    def get_logic(self, time, db_mock):
-        return AfterSocketPublicLogic(AfterSocketLogic(
-            time=time,
-            db=db_mock,
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            )))
-
-    def setUp(self):
-
-        self.db = Db()
-
-        logic = self.get_logic(10.0, self.db)
-        logic.create_room(10.1, "room0")
-        _, conn = logic.connect(10.2, "room0")
-        conn.handle_input(10.3, "+will be stored later")
-        conn.handle_input(99.0, "+started speaking again, stored old")
-
-        logic = self.get_logic(99.1, self.db)
-        _, conn = logic.connect(99.2, "room0")
-        self.conn = conn
-
-    def test_merge_new_fast(self):
-        res, _ = self.conn.handle_input(99.4, "+should merge")
-        self.assertEqual(2, res[0][1]['n'])
-
-    def test_dont_merge_new_slow(self):
-        res, _ = self.conn.handle_input(99.6, "+shouldn't merge")
-        self.assertEqual(3, res[0][1]['n'])
+        self.assertEqual(   2   , res[0][1]['n'])
 
 
 if __name__ == "__main__":

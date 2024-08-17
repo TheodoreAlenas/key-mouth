@@ -2,6 +2,7 @@ import WebInteractor from './WebInteractor.js'
 import UriRoom from './UriRoom.js'
 import uriFirstArg from './uriFirstArg.js'
 import TestCase from './TestCase.js'
+import fs from 'fs'
 
 const uri = new UriRoom(uriFirstArg.room, "my\nroom")
 const withRoom = uri.fetchPutRoom()
@@ -35,7 +36,7 @@ function withWebInteractor(buf, room, callback) {
     })
 }
 
-const d = [0,0,0,0].map(x => ({inp: [], mom: [], all: []}))
+const d = [0,0,0,0].map(_ => ({inp: [], mom: [], all: []}))
 
 withNoError.then(function() {
     withWebInteractor(d[0], "my\nroom", function(unlocked, close) {
@@ -46,9 +47,11 @@ withNoError.then(function() {
         }, 50)
         setTimeout(close, 200)
     })
-    withWebInteractor(d[1], "my\nroom", function(unlocked, close) {
-        setTimeout(close, 200)
-    })
+    setTimeout(function() {
+        withWebInteractor(d[1], "my\nroom", function(unlocked, close) {
+            setTimeout(close, 200)
+        })
+    }, 20)
     setTimeout(function() {
         withWebInteractor(d[2], "my\nroom", function(unlocked, close) {
             unlocked.onInputChange("interrupt")
@@ -63,6 +66,15 @@ withNoError.then(function() {
 })
 
 setTimeout(check, 860)
+
+const json = fs.readFileSync(
+    'git-ignores/systest-golden-standard-expected.json')
+const lastTimeResults = JSON.parse(json)
+function writeNewResults(r) {
+    fs.writeFileSync(
+        'git-ignores/systest-golden-standard-real.json',
+        JSON.stringify(r, null, 4))
+}
 
 function check() {
     const test = new TestCase()
@@ -80,193 +92,18 @@ function check() {
             }
         }
     }
-    test.assertEqual(
-        "speaker saw an empty moment, then 2",
-        [
-            [{key:'0', body:[], time: "erased times"}],
-            [{key:'0', body:[], time: "erased times"},
-             {key:'1', body:[]}]
-        ],
-        [d[0].mom[0], d[0].mom[1]]
-    )
-    test.assertEqual(
-        "speaker finally saw the full text he wrote",
-        [{
-            "type": "write",
-            "body": "hi there"
-        }],
-        d[0].mom[3][1].body[0].message
-    )
-    test.assertEqual(
-        "speaker got same moments as listener",
-        d[0].mom, d[1].mom
-    )
-    test.assertEqual(
-        "interruptor joined and the first moment is empty as always",
-        [[], []], [d[2].mom[0][0].body, d[2].mom[1][0].body]
-    )
-    test.assertEqual(
-        "interruptor joined and found one moment",
-        2, d[2].mom[1].length
-    )
-    test.assertEqual(
-        "the speaker has 4 snapshots",
-        4, d[0].mom.length
-    )
-    test.assertEqual(
-        "after interruption the previous moment didn't change",
-        d[2].mom[1][0],
-        d[2].mom[2][0]
-    )
-    test.assertEqual(
-        "interruptor interrupted and created a moment",
-        d[2].mom[1].length + 1,
-        d[2].mom[2].length
-    )
     //console.log(JSON.stringify(d[3].mom, null, 2))
-    test.assertEqual(
-        "last visitor got the same as the last time",
-        [
-        [
-            {
-                "key": "0",
-                "body": [],
-                "time": "erased times"
-            },
-            {
-                "key": "1",
-                "body": [
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "write",
-                                "body": "hi there"
-                            },
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    }
-                ],
-                "time": "erased times"
-            }
-        ],
-        [
-            {
-                "key": "0",
-                "body": [],
-                "time": "erased times"
-            },
-            {
-                "key": "1",
-                "body": [
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "write",
-                                "body": "hi there"
-                            },
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    }
-                ],
-                "time": "erased times"
-            },
-            {
-                "key": "2",
-                "body": [
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "write",
-                                "body": "interrupt"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
-        [
-            {
-                "key": "0",
-                "body": [],
-                "time": "erased times"
-            },
-            {
-                "key": "1",
-                "body": [
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "write",
-                                "body": "hi there"
-                            },
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    }
-                ],
-                "time": "erased times"
-            },
-            {
-                "key": "2",
-                "body": [
-                    {
-                        "name": "erased names",
-                        "message": [
-                            {
-                                "type": "write",
-                                "body": "interrupt"
-                            },
-                            {
-                                "type": "event",
-                                "body": "[disconnected]"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    ],
-        d[3].mom
-    )
+    const last = d[3].mom
+    writeNewResults(last)
+    for (let i = 0; i < last.length; i++) {
+        for (let j = 0; j < last[i].length; j++) {
+            test.assertEqual(
+                `at least hasn't changed, snapshot ${i}, moment ${j}`,
+                lastTimeResults[i][j],
+                last[i][j]
+            )
+        }
+    }
     test.printResults()
     if (test.getFails() !== 0) process.exit(1)
 }

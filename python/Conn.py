@@ -13,13 +13,13 @@ class Conn:
         self.last_spoke = 0.0
 
     def connect(self, time, _):
-        self._handle_parsed(time, "connect")
-        return self._get_last_moment_broadcast_list()
+        self.room.conns.append(self.conn_id)
+        res, _ = self._handle_parsed(time, "connect")
+        return (res, self)
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
-        self._handle_parsed(time, "disconnect")
-        return self._get_last_moment_broadcast_list()
+        return self._handle_parsed(time, "disconnect")
 
     def handle_input(self, time, data):
         if len(data) < 2:
@@ -62,6 +62,9 @@ class Conn:
                 "last": self.room.last_moment}
         return ([(conn, s) for conn in self.room.conns], None)
 
+    def _a(self):
+        return {"n": self.room.moments.get_len(),
+                "last": self.room.last_moment}
 
 """
 Copyright 2024 <dimakopt732@gmail.com>

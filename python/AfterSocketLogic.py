@@ -71,9 +71,7 @@ class AfterSocketLogic:
         self.last_id += 1
         i = self.last_id
         self.conns[i] = Conn(i, self.rooms_ram[room], self._conf_timing)
-        self.rooms_ram[room].conns.append(i)
-        res, _ = self.conns[i].connect(time, None)
-        return (res, self.conns[i])
+        return self.conns[i].connect(time, None)
 
 
 """
