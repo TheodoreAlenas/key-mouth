@@ -1,4 +1,3 @@
-import styles from './inputAndButton.module.css'
 import colors from './colors.module.css'
 import shapes from './shapes.module.css'
 import { useEffect, useRef, useState } from "react"
@@ -40,7 +39,7 @@ export default function InputAndButton({o, className}) {
     return (
         <form onSubmit={hooks.onClear}
               className={className + ' ' +
-                         styles.messengerInputForm + ' ' +
+                         shapes.inputForm + ' ' +
                          colors.inputForm}>
             <Input o={o}
                    onChange={hooks.onChange}
@@ -68,13 +67,13 @@ function Input({o, onChange, onKeyDown}) {
         t.style.height = t.scrollHeight + 'px'
     }, [])
     return (
-        <div className={styles.messengerInputContainer + ' ' +
+        <div className={shapes.inputContainer + ' ' +
                         colors.inputContainer}>
             <textarea
                 ref={inpRef}
                 name="message"
                 placeholder="Think and type"
-                className={styles.messengerInput + ' ' +
+                className={shapes.input + ' ' +
                            colors.input}
                 value={inputValue}
                 onChange={onChange}

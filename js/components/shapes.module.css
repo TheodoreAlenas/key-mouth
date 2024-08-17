@@ -52,3 +52,30 @@
 .stickyBottom {position: sticky; bottom: 0;}
 .menuWrapper {position: sticky; top: 0}
 
+
+.inputForm {
+    display: grid;
+    grid-auto-columns: auto max-content;
+    grid-auto-flow: column;
+    gap: 0.8em;
+    padding: 0.8em;
+}
+
+.inputContainer {
+    border-radius: 5px;
+}
+
+.input {
+    box-sizing: border-box;
+    width: 100%;
+    resize: none;
+    padding: 1em;
+    margin: 0;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.input::placeholder {
+    text-align: center;
+}
