@@ -1,22 +1,42 @@
-.thinCentered {
-    max-width: 20cm;
-    margin: 0 auto;
-}
-
-.link, .links a {
-    text-underline-offset: 5px;
-    text-decoration-thickness: 2px;
-}
-
 .bubbleGroupSpacing {
     padding: 0 0;
     margin: 0.8em;
 }
+.menu {
+    margin: 0;
+    padding: 0.8em 0;
+}
+.inputForm {
+    gap: 0.8em;
+    padding: 0.8em;
+}
+.bubble {
+    padding: 0.3em 0.8em;
+    margin: 0.1em 0;
+}
+.erase, .delete {
+    padding: 0 0.2em;
+    margin: 0 0.2em;
+}
+.input {
+    padding: 1em;
+    margin: 0;
+}
+.button {
+    padding: 0.2em 1em;
+}
+
+.thinCentered {
+    max-width: 20cm;
+    margin: 0 auto;
+}
+.link, .links a {
+    text-underline-offset: 5px;
+    text-decoration-thickness: 2px;
+}
 .noBullets li {list-style: none;}
 .menu li {list-style: none;}
 .menu {
-    margin: 0;
-    padding: 1em 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,8 +44,6 @@
 }
 .bubble {
     border-radius: 5px;
-    padding: 0.3em 0.8em;
-    margin: 0.1em 0;
     display: inline-block;
     font-family: inherit;
     max-width: 100%;
@@ -35,42 +53,34 @@
 
 .erase, .delete {
     text-decoration: none;
-    padding: 0 0.2em;
-    margin: 0 0.2em;
 }
 .delete {
     font-weight: bold;
-}
-.button {
-    border-radius: 5px;
-    padding: 1em;
-    font-family: inherit;
-    font-size: inherit;
 }
 .stretch, .menuWrapper {padding: 1px}
 
 .stickyBottom {position: sticky; bottom: 0;}
 .menuWrapper {position: sticky; top: 0}
 
-
 .inputForm {
     display: grid;
     grid-auto-columns: auto max-content;
     grid-auto-flow: column;
-    gap: 0.8em;
-    padding: 0.8em;
 }
 
 .inputContainer {
     border-radius: 5px;
 }
 
+.button {
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: inherit;
+}
 .input {
     box-sizing: border-box;
     width: 100%;
     resize: none;
-    padding: 1em;
-    margin: 0;
     border-radius: 4px;
     font-family: inherit;
     font-size: inherit;
