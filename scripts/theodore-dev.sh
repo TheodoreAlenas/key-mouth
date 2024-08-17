@@ -29,7 +29,7 @@ tmux new-window -t key-mouth:3
 tmux send-keys  -t key-mouth:3 ". python/venv/bin/activate" C-m
 tmux send-keys  -t key-mouth:3 "emacs" C-m
 
-(firefox localhost:3000 2>&1 \
+(firefox $ip:3000 2>&1 \
      | grep --line-buffered -v mesa_glthread \
             > git-ignores/logs-firefox) &
 
