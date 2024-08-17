@@ -41,7 +41,7 @@ class AfterSocketLogic:
             self.rooms_ram[name] = ConnRoomData(
                 time, name, self.db.get_room(name))
         except RoomExistsException:
-            raise LogicHttpException("room " + name + " exists",
+            raise LogicHttpException(f"room '{name}' exists",
                                      status_code=409)
         return ([], None)
 
@@ -58,7 +58,7 @@ class AfterSocketLogic:
                 return ([], r.moments.get_last_few())
             return ([], r.moments.get_range(start, end))
         except RoomDoesntExistException:
-            raise LogicHttpException("room " + room + " doesn't exist",
+            raise LogicHttpException(f"room '{room}' doesn't exist",
                                      status_code=404)
 
     def connect(self, time, room):
