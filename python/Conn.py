@@ -40,18 +40,18 @@ class Conn:
         return started_speaking and moment_lasted
 
     def _bake_moment_to_be_stored(self, time):
-        baked_moment = [e for _, e in self.room.last_moment]
+        baked_moment = self.room.last_moment
         self.room.moments.add_moment(time, baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
 
     def _append_and_update(self, time, inp_type, body):
         self.last_spoke = time
-        self.room.last_moment.append((time, {
+        self.room.last_moment.append({
             "connId": self.conn_id,
             "type": inp_type,
             "body": body
-        }))
+        })
 
     def _get_last_moment_broadcast_list(self):
         s = self.get_last_moment_json_list()
@@ -59,7 +59,7 @@ class Conn:
 
     def get_last_moment_json_list(self):
         return {"n": self.room.moments.get_len(),
-                "last": [e for _, e in self.room.last_moment]}
+                "last": self.room.last_moment}
 
 
 """
