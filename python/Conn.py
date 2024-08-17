@@ -14,20 +14,19 @@ class Conn:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        res, _ = self._handle_parsed(time, "connect")
-        return (res, self)
+        return (self._handle_parsed(time, "connect"), self)
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
-        return self._handle_parsed(time, "disconnect")
+        return (self._handle_parsed(time, "disconnect"), None)
 
     def handle_input(self, time, data):
         if len(data) < 2:
             return ([], None)
         if data[0] == '+':
-            return self._handle_parsed(time, "write", data[1:])
+            return (self._handle_parsed(time, "write", data[1:]), None)
         elif data[0] == '-':
-            return self._handle_parsed(time, "delete", data[1:])
+            return (self._handle_parsed(time, "delete", data[1:]), None)
         return ([], None)
 
     def _handle_parsed(self, time, inp_type, body=None):
@@ -60,11 +59,8 @@ class Conn:
     def _get_last_moment_broadcast_list(self):
         s = {"n": self.room.moments.get_len(),
                 "last": self.room.last_moment}
-        return ([(conn, s) for conn in self.room.conns], None)
+        return [(conn, s) for conn in self.room.conns]
 
-    def _a(self):
-        return {"n": self.room.moments.get_len(),
-                "last": self.room.last_moment}
 
 """
 Copyright 2024 <dimakopt732@gmail.com>

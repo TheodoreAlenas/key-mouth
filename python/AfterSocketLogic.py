@@ -62,12 +62,9 @@ class AfterSocketLogic:
                                      status_code=404)
 
     def connect(self, time, room):
-        if type(room) != str:
-            raise Exception("can't connect with non-string room " +
-                            str(room))
         if not room in self.rooms_ram:
-            raise LogicHttpException("room '" + str(room) +
-                                     "' doesn't exist", status_code=404)
+            raise LogicHttpException(f"room '{room}' doesn't exist",
+                                     status_code=404)
         self.last_id += 1
         i = self.last_id
         self.conns[i] = Conn(i, self.rooms_ram[room], self._conf_timing)
