@@ -22,6 +22,9 @@ export default function presentMoment(getNames, diffs) {
 }
 
 function manipulateOne(conn, diff) {
+    if (diff.type === "connect") {
+        conn.message.push({type: "event", body: "[connected]"})
+    }
     if (diff.type === "disconnect") {
         conn.message.push({type: "event", body: "[disconnected]"})
     }

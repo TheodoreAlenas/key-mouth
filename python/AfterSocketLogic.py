@@ -61,7 +61,7 @@ class AfterSocketLogic:
             raise LogicHttpException("room " + room + " doesn't exist",
                                      status_code=404)
 
-    def connect(self, _, room):
+    def connect(self, time, room):
         if type(room) != str:
             raise Exception("can't connect with non-string room " +
                             str(room))
@@ -72,8 +72,8 @@ class AfterSocketLogic:
         i = self.last_id
         self.conns[i] = Conn(i, self.rooms_ram[room], self._conf_timing)
         self.rooms_ram[room].conns.append(i)
-        s = self.conns[i].get_last_moment_json_list()
-        return ([(i, s)], self.conns[i])
+        res, _ = self.conns[i].connect(time, None)
+        return (res, self.conns[i])
 
 
 """

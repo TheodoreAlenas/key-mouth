@@ -12,6 +12,10 @@ class Conn:
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
 
+    def connect(self, time, _):
+        self._handle_parsed(time, "connect")
+        return self._get_last_moment_broadcast_list()
+
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
         self._handle_parsed(time, "disconnect")
@@ -54,12 +58,9 @@ class Conn:
         })
 
     def _get_last_moment_broadcast_list(self):
-        s = self.get_last_moment_json_list()
-        return ([(conn, s) for conn in self.room.conns], None)
-
-    def get_last_moment_json_list(self):
-        return {"n": self.room.moments.get_len(),
+        s = {"n": self.room.moments.get_len(),
                 "last": self.room.last_moment}
+        return ([(conn, s) for conn in self.room.conns], None)
 
 
 """
