@@ -50,7 +50,7 @@ function momentAndIdToUl(momentAndId) {
                                colors.moment}>
                     {m.body.map(personToLi)}
                 </ul>
-                <h2 className={shapes.time}>time</h2>
+                {m.time ? <h2 className={shapes.time}>{m.time}</h2> :''}
             </React.Fragment>
         )
     }

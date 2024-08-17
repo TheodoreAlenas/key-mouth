@@ -34,10 +34,18 @@ export default class WebInteractor {
     }
     _setMomentsFromCached() {
         const keys = Object.keys(this.cached)
-        const s = keys.map(k => ({key: k, body: this.cached[k]}))
+        const s = keys.map(k => this._keyToMoment(k))
         this.setMoments(s)
     }
-    _setMomentsOnceFetched(io) {
+    _keyToMoment(k) {
+        const e = this.cached[k]
+        if (e.time) return {
+            key: k, body: e.people,
+            time: (new Date(e.time)).toLocaleString()
+        }
+        return {key: k, body: e.people}
+    }
+    _setMomentsOnceFetched() {
         const self = this
         this.io.withLastMoments(function(res) {
             try {
@@ -51,7 +59,11 @@ export default class WebInteractor {
         })
     }
     _setMomentsOnceFetchedInner({start, end, moments}) {
-        const p = moments.map(m => presentMoment(getConnName, m.moment))
+        //const p = moments.map(m => presentMoment(getConnName, m.moment))
+        const p = moments.map(m => ({
+            people: presentMoment(getConnName, m.moment),
+            time: m.time
+        }))
         for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
         this.lastMomentN = end
         this._setMomentsFromCached()
@@ -59,7 +71,7 @@ export default class WebInteractor {
     _setLast(n, last) {
         try {
             const p = presentMoment(getConnName, last)
-            this.cached[n] = p
+            this.cached[n] = {people: p, time: undefined}
             this._setMomentsFromCached()
             this._updateOldMoments(n)
         }
@@ -84,9 +96,11 @@ export default class WebInteractor {
             self._updateOldMomentsInner(oldLastMomentN, moments)
         })
     }
-    _updateOldMomentsInner(oldLastMomentN,  moments) {
-        const p = moments.map(
-            m => presentMoment(getConnName, m.moment))
+    _updateOldMomentsInner(oldLastMomentN, moments) {
+        const p = moments.map(m => ({
+            people: presentMoment(getConnName, m.moment),
+            time: m.time
+        }))
         const start = oldLastMomentN
         for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
         this._setMomentsFromCached()

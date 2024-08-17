@@ -66,10 +66,27 @@ setTimeout(check, 860)
 
 function check() {
     const test = new TestCase()
+    for (let person of d) {
+        for (let snapshot of person.mom) {
+            for (let moment of snapshot) {
+                if (moment.time) {
+                    moment.time = "erased times"
+                }
+                if (moment.body.length > 0) {
+                    for (let person of moment.body) {
+                        person.name = "erased names"
+                    }
+                }
+            }
+        }
+    }
     test.assertEqual(
         "speaker saw an empty moment, then 2",
-        [[{key:'0', body:[]}],
-         [{key:'0', body:[]}, {key:'1', body:[]}]],
+        [
+            [{key:'0', body:[], time: "erased times"}],
+            [{key:'0', body:[], time: "erased times"},
+             {key:'1', body:[]}]
+        ],
         [d[0].mom[0], d[0].mom[1]]
     )
     test.assertEqual(
@@ -118,15 +135,6 @@ function check() {
         "last visitor came and heard the last thing the previous did",
         d[3].mom[d[3].mom.length - 1], d[2].mom[d[2].mom.length - 1]
     )
-    for (let snapshot of d[3].mom) {
-        for (let moment of snapshot) {
-            if (moment.body.length > 0) {
-                for (let person of moment.body) {
-                    person.name = "erased names"
-                }
-            }
-        }
-    }
     //console.log(JSON.stringify(d[3].mom, null, 2))
     test.assertEqual(
         "last visitor got the same as the last time",
@@ -134,7 +142,8 @@ function check() {
             [
                 {
                     "key": "0",
-                    "body": []
+                    "body": [],
+                    "time": "erased times"
                 },
                 {
                     "key": "1",
@@ -148,13 +157,15 @@ function check() {
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "time": "erased times"
                 }
             ],
             [
                 {
                     "key": "0",
-                    "body": []
+                    "body": [],
+                    "time": "erased times"
                 },
                 {
                     "key": "1",
@@ -168,7 +179,8 @@ function check() {
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "time": "erased times"
                 },
                 {
                     "key": "2",
