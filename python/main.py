@@ -44,14 +44,13 @@ async def wrap(f, args, before_sending=do_nothing):
     mutex.acquire()
     try:
         to_send, to_return = f(time(), args)
-        mutex.release()
         before_sending(to_return)
         for conn, json in to_send:
             await id_to_sock[conn].send_json(json)
         return to_return
     except LogicHttpException as e:
-        mutex.release()
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+    mutex.release()
 
 
 @app.get("/")
