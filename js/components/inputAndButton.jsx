@@ -73,6 +73,7 @@ function Input({o, onChange, onKeyDown}) {
                 ref={inpRef}
                 name="message"
                 placeholder="Think and type"
+                rows="1"
                 className={shapes.input + ' ' +
                            colors.input}
                 value={inputValue}
