@@ -1,6 +1,10 @@
 .bubbleGroupSpacing {
     padding: 0 0;
-    margin: 0.8em;
+    margin: 0 0.8em;
+}
+.time {
+    margin: 0;
+    padding: 0 0.8em;
 }
 .menu {
     margin: 0;
@@ -85,7 +89,12 @@
     font-family: inherit;
     font-size: inherit;
 }
-
 .input::placeholder {
     text-align: center;
+}
+
+.time {
+    font-size: inherit;
+    text-align: right;
+    font-weight: normal;
 }

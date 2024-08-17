@@ -1,6 +1,6 @@
 import shapes from './shapes.module.css'
 import colors from './colors.module.css'
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 export default function Moments({o}) {
     const [state, setState] = useState({atBottom: true, moments: []})
@@ -43,12 +43,16 @@ function momentAndIdToUl(momentAndId) {
     try {
         const m = momentAndId
         if (m.length === 0) return
-        return <ul key={m.key}
-                   className={shapes.bubbleGroupSpacing + ' ' +
-                              shapes.noBullets + ' ' +
-                              colors.moment}>
-                   {m.body.map(personToLi)}
-               </ul>
+        return (
+            <React.Fragment key={m.key}>
+                <ul className={shapes.bubbleGroupSpacing + ' ' +
+                               shapes.noBullets + ' ' +
+                               colors.moment}>
+                    {m.body.map(personToLi)}
+                </ul>
+                <h2 className={shapes.time}>time</h2>
+            </React.Fragment>
+        )
     }
     catch (e) {
         console.error("error rendering moment and id:")
