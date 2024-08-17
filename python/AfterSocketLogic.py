@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from db_exceptions import RoomExistsException
+from db_exceptions import RoomExistsException, RoomDoesntExistException
 from Conn import Conn
 from logic_and_conn import ConnRoomData, ConfTiming
 
@@ -51,15 +51,15 @@ class AfterSocketLogic:
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end
         try:
+            if not room in self.rooms_ram:
+                raise RoomDoesntExistException()
             r = self.rooms_ram[room]
             if start is None and end is None:
                 return ([], r.moments.get_last_few())
             return ([], r.moments.get_range(start, end))
-        except Exception as e:
-            raise Exception("(room, start, end) = (" +
-                            room + ', ' +
-                            str(start) + ', ' +
-                            str(end) + ')')
+        except RoomDoesntExistException:
+            raise LogicHttpException("room " + room + " doesn't exist",
+                                     status_code=404)
 
     def connect(self, _, room):
         if type(room) != str:
