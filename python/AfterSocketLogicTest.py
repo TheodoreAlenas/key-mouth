@@ -1,5 +1,5 @@
 from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, ConfTiming, RoomExistsException
-from DbMock import DbMock
+from db_mock import Db
 import unittest
 
 
@@ -8,7 +8,7 @@ class AfterSocketLogicTest(unittest.TestCase):
     def setUp(self):
         self.logic = AfterSocketPublicLogic(AfterSocketLogic(
             time=8.0,
-            db=DbMock(),
+            db=Db(),
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
@@ -169,9 +169,9 @@ class DbLoadRoomTest(unittest.TestCase):
             )))
 
     def test_use_other_db_start_blank(self):
-        logic_1 = self.get_logic(10.0, DbMock())
+        logic_1 = self.get_logic(10.0, Db())
         logic_1.create_room(10.1, "room0")
-        logic_2 = self.get_logic(10.2, DbMock())
+        logic_2 = self.get_logic(10.2, Db())
         try:
             logic_2.connect(10.3, "room0")
             self.assertFalse("should have thrown an error")
@@ -179,14 +179,14 @@ class DbLoadRoomTest(unittest.TestCase):
             pass
 
     def test_use_same_db_dont_start_blank(self):
-        db = DbMock()
+        db = Db()
         logic_1 = self.get_logic(10.0, db)
         logic_1.create_room(10.1, "room0")
         logic_2 = self.get_logic(10.2, db)
         logic_2.connect(10.3, "room0")
 
     def test_use_same_db_dont_see_last_moment(self):
-        db = DbMock()
+        db = Db()
 
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
@@ -200,7 +200,7 @@ class DbLoadRoomTest(unittest.TestCase):
         self.assertEqual({'last': [],   'n': 1   }, res[0][1])
 
     def test_use_same_db_see_stored_moment_and_not_last(self):
-        db = DbMock()
+        db = Db()
 
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
@@ -229,7 +229,7 @@ class DbLoadLastMomentTimeTest(unittest.TestCase):
 
     def setUp(self):
 
-        self.db = DbMock()
+        self.db = Db()
 
         logic = self.get_logic(10.0, self.db)
         logic.create_room(10.1, "room0")
