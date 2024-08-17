@@ -1,11 +1,11 @@
-[data-sch=dark] .bgPale {background-color: #222;}
+[data-sch=dark] .bg {background-color: #222;}
 [data-sch=dark] .bubble {background-color: #000;}
 [data-sch=dark] .inputForm {background-color: #000;}
 [data-sch=dark] .button {background-color: #000;}
 [data-sch=dark] .input {background-color: #000;}
 [data-sch=dark] .menuWrapper {background-color: #000;}
 
-.bgPale {background-color: #eee;}
+.bg {background-color: #eee;}
 .bubble {background-color: #fff;}
 .inputForm {background-color: #fff;}
 .button {background-color: #fff;}

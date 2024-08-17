@@ -5,7 +5,7 @@ import Link from "next/link"
 export default function RoomList({rooms}) {
     if (rooms === null) return <code>Loading...</code>
     return (
-        <main className={shapes.thinCentered + ' ' + colors.bgPale + ' ' + shapes.stretch}>
+        <main className={shapes.bg + ' ' + colors.bg}>
             <h1 style={{textAlign: "center"}}>Rooms</h1>
             <ul className={shapes.bubbleGroupSpacing + ' ' +
                            shapes.noBullets + ' ' +

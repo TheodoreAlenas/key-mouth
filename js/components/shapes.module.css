@@ -2,6 +2,9 @@
     padding: 0 0;
     margin: 0 0.8em;
 }
+.bubbleGroupSpacing:last-child {
+    margin-bottom: 0.8em;
+}
 .time {
     margin: 0;
     padding: 0 0.8em;
@@ -30,7 +33,7 @@
     padding: 0.8em 1em;
 }
 
-.thinCentered {
+.bg {
     max-width: 20cm;
     margin: 0 auto;
 }
@@ -52,6 +55,7 @@
     font-family: inherit;
     max-width: 100%;
     box-sizing: border-box;
+    white-space: pre-wrap;
     word-wrap: break-word;
 }
 

@@ -5,7 +5,7 @@ import colors from './colors.module.css'
 
 export default function Room({o}) {
     return (
-        <main className={shapes.thinCentered + ' ' + colors.bgPale}>
+        <main className={shapes.bg + ' ' + colors.bg}>
             <Moments o={o} />
             <InputAndButton
                 o={o}
