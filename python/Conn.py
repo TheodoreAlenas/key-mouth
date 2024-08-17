@@ -14,7 +14,8 @@ class Conn:
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
-        return ([], None)
+        self._handle_parsed(time, "disconnect")
+        return self._get_last_moment_broadcast_list()
 
     def handle_input(self, time, data):
         if len(data) < 2:
@@ -25,7 +26,7 @@ class Conn:
             return self._handle_parsed(time, "delete", data[1:])
         return ([], None)
 
-    def _handle_parsed(self, time, inp_type, body):
+    def _handle_parsed(self, time, inp_type, body=None):
         if self._interrupted_conversation(time):
             self._bake_moment_to_be_stored(time)
         self._append_and_update(time, inp_type, body)

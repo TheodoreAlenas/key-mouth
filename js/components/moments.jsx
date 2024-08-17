@@ -67,7 +67,7 @@ function personToLi(person, i) {
                    <pre className={colors.bubble + ' ' +
                                    shapes.bubble}>
                        <strong key="name">{person.name + ': '}</strong>
-                       {person.message.map(pieceToSpan)}
+                       {person.message.map(diffToSpan)}
                    </pre>
                </li>
     }
@@ -78,17 +78,20 @@ function personToLi(person, i) {
     }
  }
 
-function pieceToSpan(piece, i) {
-    if (piece.type === "write") {
-        return <span key={i}>{piece.body}</span>
+function diffToSpan(diff, i) {
+    if (diff.type === "write") {
+        return <span key={i}>{diff.body}</span>
     }
-    if (piece.type === "delete") {
+    if (diff.type === "delete") {
         return <del className={colors.delete + ' ' + shapes.delete}
-                    key={i}>{piece.body}</del>
+                    key={i}>{diff.body}</del>
     }
-    if (piece.type === "erase") {
+    if (diff.type === "erase") {
         return <del className={colors.erase + ' ' + shapes.erase}
-                    key={i}>{piece.body}</del>
+                    key={i}>{diff.body}</del>
     }
-    else return <span key={i}>ERROR</span>
+    if (diff.type === "event") {
+        return <code key={i}>{diff.body}</code>
+    }
+    else return <code key={i}>ERROR</code>
 }

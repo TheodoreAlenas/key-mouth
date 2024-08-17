@@ -110,10 +110,6 @@ function check() {
         2, d[2].mom[1].length
     )
     test.assertEqual(
-        "interruptor found the last snapshot of the speaker",
-        d[2].mom[1], d[0].mom[3]
-    )
-    test.assertEqual(
         "the speaker has 4 snapshots",
         4, d[0].mom.length
     )
@@ -127,77 +123,148 @@ function check() {
         d[2].mom[1].length + 1,
         d[2].mom[2].length
     )
-    test.assertEqual(
-        "last visitor set the view twice",
-        2, d[3].mom.length
-    )
-    test.assertEqual(
-        "last visitor came and heard the last thing the previous did",
-        d[3].mom[d[3].mom.length - 1], d[2].mom[d[2].mom.length - 1]
-    )
     //console.log(JSON.stringify(d[3].mom, null, 2))
     test.assertEqual(
         "last visitor got the same as the last time",
         [
-            [
-                {
-                    "key": "0",
-                    "body": [],
-                    "time": "erased times"
-                },
-                {
-                    "key": "1",
-                    "body": [
-                        {
-                            "name": "erased names",
-                            "message": [
-                                {
-                                    "type": "write",
-                                    "body": "hi there"
-                                }
-                            ]
-                        }
-                    ],
-                    "time": "erased times"
-                }
-            ],
-            [
-                {
-                    "key": "0",
-                    "body": [],
-                    "time": "erased times"
-                },
-                {
-                    "key": "1",
-                    "body": [
-                        {
-                            "name": "erased names",
-                            "message": [
-                                {
-                                    "type": "write",
-                                    "body": "hi there"
-                                }
-                            ]
-                        }
-                    ],
-                    "time": "erased times"
-                },
-                {
-                    "key": "2",
-                    "body": [
-                        {
-                            "name": "erased names",
-                            "message": [
-                                {
-                                    "type": "write",
-                                    "body": "interrupt"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
+        [
+            {
+                "key": "0",
+                "body": [],
+                "time": "erased times"
+            },
+            {
+                "key": "1",
+                "body": [
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "write",
+                                "body": "hi there"
+                            },
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    }
+                ],
+                "time": "erased times"
+            }
         ],
+        [
+            {
+                "key": "0",
+                "body": [],
+                "time": "erased times"
+            },
+            {
+                "key": "1",
+                "body": [
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "write",
+                                "body": "hi there"
+                            },
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    }
+                ],
+                "time": "erased times"
+            },
+            {
+                "key": "2",
+                "body": [
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "write",
+                                "body": "interrupt"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        [
+            {
+                "key": "0",
+                "body": [],
+                "time": "erased times"
+            },
+            {
+                "key": "1",
+                "body": [
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "write",
+                                "body": "hi there"
+                            },
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    }
+                ],
+                "time": "erased times"
+            },
+            {
+                "key": "2",
+                "body": [
+                    {
+                        "name": "erased names",
+                        "message": [
+                            {
+                                "type": "write",
+                                "body": "interrupt"
+                            },
+                            {
+                                "type": "event",
+                                "body": "[disconnected]"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    ],
         d[3].mom
     )
     test.printResults()
