@@ -78,6 +78,11 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(1, len(res))
         self.assertEqual(conn_1.conn_id, res[0][0])
 
+    def test_deleted_room_not_listed(self):
+        self.logic.delete_room(10.0, "room0")
+        _, ans = self.logic.get_rooms(10.1, None)
+        self.assertEqual(["room1"], ans)
+
     def test_create_room_twice_get_409(self):
         try:
             self.logic.create_room(10.0, "room0")

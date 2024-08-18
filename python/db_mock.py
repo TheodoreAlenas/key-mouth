@@ -38,6 +38,12 @@ class Db:
         self.rooms[name] = RoomMoments(
             time, name, [{"time": time, "diffs": []}])
 
+    def delete_room(self, name):
+        if not name in self.rooms:
+            raise RoomDoesntExistException("[DbMoct] room '" + name +
+                                           "' doesnt exist")
+        self.rooms.pop(name)
+
     def get_room(self, name) -> RoomMoments:
         if not name in self.rooms:
             raise RoomDoesntExistException("[DbMock] room '" + name +

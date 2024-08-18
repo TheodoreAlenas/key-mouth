@@ -24,32 +24,49 @@ class AfterSocketLogic:
             self.rooms_ram[n] = ConnRoomData(t, n, db.get_room(n))
 
     def create_room(self, time, name):
-        try:
+        def create_and_set():
             self.db.create_room(time, name)
-            if name in self.rooms_ram:
-                raise RoomExistsException()
             self.rooms_ram[name] = ConnRoomData(
                 time, name, self.db.get_room(name))
+            return ([], None)
+        return self._if_room_doesnt_exist(name, create_and_set)
+
+    def delete_room(self, time, name):
+        def delete():
+            self.db.delete_room(name)
+            self.rooms_ram.pop(name)
+            return ([], None)
+        return self._if_room_exists(name, delete)
+
+    def _if_room_doesnt_exist(self, name, callback):
+        try:
+            if name in self.rooms_ram:
+                raise RoomExistsException()
+            return callback()
         except RoomExistsException:
             raise LogicHttpException(f"room '{name}' exists",
                                      status_code=409)
-        return ([], None)
+
+    def _if_room_exists(self, name, callback):
+        try:
+            if not name in self.rooms_ram:
+                raise RoomDoesntExistException()
+            return callback()
+        except RoomDoesntExistException:
+            raise LogicHttpException(f"room '{name}' doesn't exist",
+                                     status_code=404)
 
     def get_rooms(self, _time, _arg):
         return ([], [r for r in self.rooms_ram])
 
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end
-        try:
-            if not room in self.rooms_ram:
-                raise RoomDoesntExistException()
+        def f():
             r = self.rooms_ram[room]
             if start is None and end is None:
                 return ([], r.moments.get_last_few())
             return ([], r.moments.get_range(start, end))
-        except RoomDoesntExistException:
-            raise LogicHttpException(f"room '{room}' doesn't exist",
-                                     status_code=404)
+        return self._if_room_exists(room, f)
 
     def connect(self, time, room):
         if not room in self.rooms_ram:

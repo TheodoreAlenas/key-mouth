@@ -77,9 +77,18 @@ class Db:
             })
             self._rooms[name] = room
         except DuplicateKeyError:
-            self._rooms.pop(name)
-            raise RoomExistsException("[DbMoct] room '" + name +
+            raise RoomExistsException("[Db] room '" + name +
                                       "' already exists")
+
+    def delete_room(self, name):
+        try:
+            if not name in self._rooms:
+                raise RoomDoesntExistException("")
+            self._db['rooms'].drop_collection(name)
+            self._rooms.pop(name)
+        except Exception:
+            raise RoomDoesntExistException(
+                "[Db] room '" + name + "' doesn't exist")
 
     def get_room(self, name) -> RoomMoments:
         if not name in self._rooms:
