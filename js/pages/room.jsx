@@ -16,7 +16,7 @@ export default function PageRoom({env}) {
             const uri = new UriRoom(env.room, roomName)
             const newO = new WebInteractor(uri)
             setO(newO)
-            return newO.getDestructor()
+            return function() { newO.close() }
         }
     }, [router.isReady])
     return <Layout env={env} showHome>

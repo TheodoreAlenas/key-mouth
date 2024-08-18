@@ -28,7 +28,7 @@ function withWebInteractor(buf, room, callback) {
     wi.setSetMoments(function(m) {
         buf.snap.push(m)
     })
-    const close = wi.getDestructor()
+    function close() { wi.close() }
     wi.setOnReadySocket(function(unlocked) {
         callback(unlocked, close)
     })

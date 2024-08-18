@@ -29,8 +29,8 @@ export default class WebInteractor {
         function setLast(n, last) {self._setLast(n, last)}
         this.io.onLastMomentUpdate(setLast)
     }
-    getDestructor() {
-        return this.io.getDestructor()
+    close() {
+        this.io.close()
     }
     _setMomentsOnceFetched() {
         const self = this

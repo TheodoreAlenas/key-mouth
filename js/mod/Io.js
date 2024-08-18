@@ -14,9 +14,8 @@ export default class Io {
         this.socket = new WebSocket(uri.webSocket())
         onOpenSendVersionAnd(this.socket, onReadySocket, this)
     }
-    getDestructor() {
-        const socket = this.socket
-        return function() {socket.close()}
+    close() {
+        this.socket.close()
     }
     sendList(list) {
         const socket = this.socket
