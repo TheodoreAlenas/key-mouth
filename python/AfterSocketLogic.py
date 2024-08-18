@@ -12,16 +12,6 @@ class LogicHttpException(Exception):
         super().__init__(detail)
 
 
-class AfterSocketPublicLogic:
-
-    def __init__(self, logic):
-        self._logic = logic
-        self.create_room = self._logic.create_room
-        self.get_rooms = self._logic.get_rooms
-        self.get_moments_range = self._logic.get_moments_range
-        self.connect = self._logic.connect
-
-
 class AfterSocketLogic:
 
     def __init__(self, time, db, conf_timing):

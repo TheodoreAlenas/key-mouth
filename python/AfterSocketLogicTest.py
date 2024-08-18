@@ -1,4 +1,4 @@
-from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, ConfTiming, RoomExistsException
+from AfterSocketLogic import AfterSocketLogic, ConfTiming, RoomExistsException
 from db_mock import Db
 import unittest
 
@@ -6,13 +6,13 @@ import unittest
 class AfterSocketLogicTest(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketPublicLogic(AfterSocketLogic(
+        self.logic = AfterSocketLogic(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            )))
+            ))
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
 
@@ -175,13 +175,13 @@ class AfterSocketLogicTest(unittest.TestCase):
 class DbLoadRoomTest(unittest.TestCase):
 
     def get_logic(self, time, db_mock):
-        return AfterSocketPublicLogic(AfterSocketLogic(
+        return AfterSocketLogic(
             time=time,
             db=db_mock,
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            )))
+            ))
 
     def test_use_other_db_start_blank(self):
         logic_1 = self.get_logic(10.0, Db())

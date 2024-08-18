@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from AfterSocketLogic import AfterSocketLogic, AfterSocketPublicLogic, LogicHttpException, ConfTiming
+from AfterSocketLogic import AfterSocketLogic, LogicHttpException, ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
@@ -26,13 +26,13 @@ if a in environ and environ[a] == 'yes':
     )
 id_to_sock = {}
 mutex = threading.Lock()
-logic = AfterSocketPublicLogic(AfterSocketLogic(
+logic = AfterSocketLogic(
     time=time(),
     db=Db(),
     conf_timing=ConfTiming(
         min_silence=1.0,
         min_moment=0.5
-    )))
+    ))
 logic.create_room(time(), str(time()))
 
 
@@ -65,6 +65,11 @@ async def root_get():
 @app.put("/{room}")
 async def room_put(room: str):
     await wrap(logic.create_room, room)
+
+
+@app.delete("/{room}")
+async def room_delete(room: str):
+    await wrap(logic.delete_room, room)
 
 
 @app.get("/{room}")
