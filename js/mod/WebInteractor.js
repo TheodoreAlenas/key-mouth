@@ -5,9 +5,9 @@ import Io from './Io.js'
 import presentMoment from './presentMoment.js'
 
 export default class WebInteractor {
-    setSetMoments(v) {this.setMoments = v}
-    setSetInputValue(v) {this.setInputValue = v}
-    setOnReadySocket(f) {this.onReadySocket = f}
+    setMoments(m) {throw new Error("setMoments unset, arg: " + m)}
+    setInputValue(v) {throw new Error("setInputValue unset, arg: " + v)}
+    onReadySocket(v) {throw new Error("onReadySocket unset, arg: " + v)}
     constructor(uri) {
         try {
             this.constructorUnhandled(uri)

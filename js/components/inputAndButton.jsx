@@ -10,7 +10,7 @@ export default function InputAndButton({o, className}) {
     }
     const [hooks, setHooks] = useState(defaultHooks)
     if (o !== null) {
-        o.setOnReadySocket(function(unlocked) {
+        o.onReadySocket = function(unlocked) {
             setHooks({
                 onClear: function(event) {
                     event.preventDefault()
@@ -34,7 +34,7 @@ export default function InputAndButton({o, className}) {
                     unlocked.onClear()
                 }
             })
-        })
+        }
     }
     return (
         <form onSubmit={hooks.onClear}
@@ -59,7 +59,7 @@ function getIsOnMobile() {
 
 function Input({o, onChange, onKeyDown}) {
     const [inputValue, setInputValue] = useState('')
-    if (o !== null) o.setSetInputValue(setInputValue)
+    if (o !== null) o.setInputValue = setInputValue
     const inpRef = useRef(null)
     useEffect(function() {
         const t = inpRef.current

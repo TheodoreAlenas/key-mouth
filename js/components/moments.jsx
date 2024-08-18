@@ -10,9 +10,9 @@ export default function Moments({o}) {
     if (o === null || o === undefined) {
         return <code>{"Loading..."}</code>
     }
-    o.setSetMoments(function(v) {
+    o.setMoments = function(v) {
         setState({atBottom: getIsAtBottom(), moments: v})
-    })
+    }
     let finalPres = <code>{"ERROR"}</code>
     try {
         const pres = state.moments.map(momentAndIdToUl)

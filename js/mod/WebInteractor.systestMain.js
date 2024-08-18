@@ -22,16 +22,16 @@ const withNoError = withRoom.then(function(res) {
 function withWebInteractor(buf, room, callback) {
     const wi = new WebInteractor(uri)
 
-    wi.setSetInputValue(function(m) {
+    wi.setInputValue = function(m) {
         buf.inp.push(m)
-    })
-    wi.setSetMoments(function(m) {
+    }
+    wi.setMoments = function(m) {
         buf.snap.push(m)
-    })
+    }
     function close() { wi.close() }
-    wi.setOnReadySocket(function(unlocked) {
+    wi.onReadySocket = function(unlocked) {
         callback(unlocked, close)
-    })
+    }
 }
 
 const d = [0,0,0,0].map(_ => ({inp: [], snap: []}))
