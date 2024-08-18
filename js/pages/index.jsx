@@ -8,15 +8,15 @@ export default function Home({env}) {
     const [rooms, setRooms] = useState(null)
     const uri = new UriHome(env.home)
     useEffect(function() {
-        getRooms(uri).then(setRooms)
+        getRooms(uri, setRooms)
     }, [])
     return <Layout env={env}><RoomList rooms={rooms} /></Layout>
 }
 
-function getRooms(uri) {
+function getRooms(uri, setRooms) {
     const with200 = fetch(uri.rooms()).then(function(res) {
         if (res.status !== 200) {
-            setRooms(<code>ERROR</code>)
+            setRooms("error")
             throw new Error("couldn't fetch " + uri.rooms())
         }
         return res.json()
@@ -26,9 +26,12 @@ function getRooms(uri) {
         throw err
     })
     const withJson = with200.then(
-        json => json.map(e => ({text: e, href: uri.room(e)})))
+        json => json.map(e => ({
+            text: e.name || '<unnamed>',
+            href: uri.room(e.id)
+        })))
 
-    return withJson
+    withJson.then(setRooms)
 }
 
 export async function getStaticProps() {

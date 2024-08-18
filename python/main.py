@@ -69,6 +69,11 @@ async def room_put(room: str):
     await wrap(logic.create_room, room)
 
 
+@app.put("/{room_id}/name/{name}")
+async def room_name_post(room_id: str, name: str):
+    await wrap(logic.rename_room, (room_id, name))
+
+
 @app.delete("/{room}")
 async def room_delete(room: str):
     await wrap(logic.delete_room, room)

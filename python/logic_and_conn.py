@@ -1,11 +1,16 @@
 class ConnRoomData:
 
-    def __init__(self, time, name, moments):
-        self.name = name
+    def __init__(self, last_moment_time, room_id, db_room, name=None):
+        self.name = room_id
+        self.namename = name
         self.last_moment = []
         self.conns = []
-        self.last_moment_time = time
-        self.moments = moments
+        self.last_moment_time = last_moment_time
+        self.moments = db_room
+
+    def rename(self, name):
+        self.moments.rename(name)
+        self.namename = name
 
 
 class ConfTiming:

@@ -3,7 +3,11 @@ import colors from './colors.module.css'
 import Link from "next/link"
 
 export default function RoomList({rooms}) {
-    if (rooms === null) return <code>Loading...</code>
+    let inside = <code>Error</code>
+    if (rooms === null) inside = <code>Loading...</code>
+    else if (rooms === 'error') inside = <code>Error</code>
+    else inside = rooms.map(roomToLiLink)
+
     return (
         <main className={shapes.bg + ' ' + colors.bg}>
             <h1 style={{textAlign: "center"}}>Rooms</h1>
@@ -11,7 +15,7 @@ export default function RoomList({rooms}) {
                            shapes.noBullets + ' ' +
                            colors.links + ' ' +
                            shapes.links}
-            >{rooms.map(roomToLiLink)}</ul>
+            >{inside}</ul>
         </main>
     )
 }

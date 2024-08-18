@@ -20,8 +20,12 @@ class AfterSocketLogic:
         self.last_id = -1
         self.conns = {}
         self.rooms_ram = {}
-        for n, t in self.db.get_rooms_and_their_last_moment_times():
-            self.rooms_ram[n] = ConnRoomData(t, n, db.get_room(n))
+        for d in self.db.get_restart_data():
+            self.rooms_ram[d.room_id] = ConnRoomData(
+                last_moment_time=d.last_moment_time,
+                room_id=d.room_id,
+                name=d.name,
+                db_room=db.get_room(d.room_id))
 
     def create_room(self, time, name):
         def create_and_set():
@@ -37,6 +41,13 @@ class AfterSocketLogic:
             self.rooms_ram.pop(name)
             return ([], None)
         return self._if_room_exists(name, delete)
+
+    def rename_room(self, time, room_and_name):
+        room_id, name = room_and_name
+        def rename():
+            self.rooms_ram[room_id].rename(name)
+            return ([], None)
+        return self._if_room_exists(room_id, rename)
 
     def _if_room_doesnt_exist(self, name, callback):
         try:
@@ -57,7 +68,10 @@ class AfterSocketLogic:
                                      status_code=404)
 
     def get_rooms(self, _time, _arg):
-        return ([], [r for r in self.rooms_ram])
+        ans = []
+        for r in self.rooms_ram:
+            ans.append({"id": r, "name": self.rooms_ram[r].namename})
+        return ([], ans)
 
     def get_moments_range(self, _, room_start_end):
         room, start, end = room_start_end

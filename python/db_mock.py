@@ -9,7 +9,11 @@ class RoomMoments:
     def __init__(self, last_moment_time, name, moments):
         self.last_moment_time = last_moment_time
         self.name = name
+        self.namename = None
         self.moments = moments
+
+    def rename(self, name):
+        self.namename = name
 
     def add_moment(self, time, moment):
         self.moments.append({"time": time, "diffs": moment})
@@ -24,6 +28,14 @@ class RoomMoments:
 
     def get_range(self, start, end):
         return self.moments[start:end]
+
+
+class RoomRestartData:
+
+    def __init__(self, room_id, name, last_moment_time):
+        self.room_id = room_id
+        self.name = name
+        self.last_moment_time = last_moment_time
 
 
 class Db:
@@ -50,10 +62,14 @@ class Db:
                                            "' doesn't exist")
         return self.rooms[name]
 
-    def get_rooms_and_their_last_moment_times(self):
+    def get_restart_data(self):
         res = []
-        for name in self.rooms:
-            res.append((name, self.rooms[name].last_moment_time))
+        for room_id in self.rooms:
+            r = self.rooms[room_id]
+            res.append(RoomRestartData(
+                room_id=room_id,
+                name=r.namename,
+                last_moment_time=r.last_moment_time))
         return res
 
 

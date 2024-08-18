@@ -81,7 +81,13 @@ class AfterSocketLogicTest(unittest.TestCase):
     def test_deleted_room_not_listed(self):
         self.logic.delete_room(10.0, "room0")
         _, ans = self.logic.get_rooms(10.1, None)
-        self.assertEqual(["room1"], ans)
+        self.assertEqual([{'id': 'room1', 'name': None}], ans)
+
+    def test_renamed_room_listed_renamed(self):
+        self.logic.rename_room(10.0, ("room0", "a name"))
+        self.logic.delete_room(10.0, "room1")
+        _, ans = self.logic.get_rooms(10.1, None)
+        self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
 
     def test_create_room_twice_get_409(self):
         try:
@@ -238,6 +244,17 @@ class DbLoadRoomTest(unittest.TestCase):
         self.assertEqual('connect', res[0][1]['last'][0]['type'])
 
         self.assertEqual(   2   , res[0][1]['n'])
+
+    def test_room_names_reload(self):
+        db = Db()
+
+        logic = self.get_logic(10.0, db)
+        logic.create_room(10.1, "room0")
+        logic.rename_room(10.0, ("room0", "a name"))
+
+        logic = self.get_logic(10.0, db)
+        _, ans = logic.get_rooms(10.1, None)
+        self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
 
 
 if __name__ == "__main__":
