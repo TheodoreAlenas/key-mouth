@@ -54,7 +54,7 @@ export default class Io {
             }
         })
     }
-    onMomentsMessage(callback) {
+    onLastMomentUpdate(callback) {
         const self = this
         this.socket.addEventListener("message", function(event) {
             try {

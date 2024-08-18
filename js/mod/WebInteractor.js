@@ -27,7 +27,7 @@ export default class WebInteractor {
         this.cached = {}
         this._setMomentsOnceFetched()
         function setLast(n, last) {self._setLast(n, last)}
-        this.io.onMomentsMessage(setLast)
+        this.io.onLastMomentUpdate(setLast)
     }
     getDestructor() {
         return this.io.getDestructor()
