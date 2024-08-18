@@ -52,6 +52,8 @@ async def wrap(f, args, before_sending=do_nothing):
             await id_to_sock[conn].send_json(json)
         return to_return
     except LogicHttpException as e:
+        if not released_the_mutex:
+            mutex.release()
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     if not released_the_mutex:
         mutex.release()
