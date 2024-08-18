@@ -70,7 +70,7 @@ class AfterSocketLogic:
     def get_rooms(self, _time, _arg):
         ans = []
         for r in self.rooms_ram:
-            ans.append({"id": r, "name": self.rooms_ram[r].namename})
+            ans.append({"id": r, "name": self.rooms_ram[r].name})
         return ([], ans)
 
     def get_moments_range(self, _, room_start_end):

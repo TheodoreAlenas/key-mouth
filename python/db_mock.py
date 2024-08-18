@@ -6,14 +6,14 @@ from db_exceptions import RoomExistsException, RoomDoesntExistException
 
 class RoomMoments:
 
-    def __init__(self, last_moment_time, name, moments):
+    def __init__(self, last_moment_time, room_id, moments):
         self.last_moment_time = last_moment_time
-        self.name = name
-        self.namename = None
+        self.room_id = room_id
+        self.name = None
         self.moments = moments
 
     def rename(self, name):
-        self.namename = name
+        self.name = name
 
     def add_moment(self, time, moment):
         self.moments.append({"time": time, "diffs": moment})
@@ -68,7 +68,7 @@ class Db:
             r = self.rooms[room_id]
             res.append(RoomRestartData(
                 room_id=room_id,
-                name=r.namename,
+                name=r.name,
                 last_moment_time=r.last_moment_time))
         return res
 
