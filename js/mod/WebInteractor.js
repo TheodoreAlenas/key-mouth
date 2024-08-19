@@ -87,7 +87,7 @@ export default class WebInteractor {
         const e = this.cached[k]
         if (e.time) return {
             key: k, body: e.people,
-            time: (new Date(e.time)).toLocaleString()
+            time: (new Date(Math.ceil(e.time * 1000))).toLocaleString()
         }
         return {key: k, body: e.people}
     }
