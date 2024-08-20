@@ -85,11 +85,21 @@ export default class WebInteractor {
     }
     _keyToMoment(k) {
         const e = this.cached[k]
-        if (e.time) return {
-            key: k, body: e.people,
-            time: (new Date(Math.ceil(e.time * 1000))).toLocaleString()
+        let time = null
+        if (e.time) {
+            time = this._presentTimeFromSecondsSince1970(e.time)
+       }
+        return {key: k, body: e.people, time: time}
+    }
+    _presentTimeFromSecondsSince1970(secondsSince1970) {
+        const msSince1970 = Math.ceil(secondsSince1970 * 1000)
+        const msOf24h = 1000 * 60 * 60 * 24
+        const now = Date.now()
+        const date = new Date(msSince1970)
+        if (now - msSince1970 < msOf24h) {
+            return date.toLocaleTimeString()
         }
-        return {key: k, body: e.people}
+        return date.toLocaleString()
     }
     _setLast(n, last) {
         try {
