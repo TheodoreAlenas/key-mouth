@@ -31,7 +31,7 @@ tmux send-keys  -t key-mouth:3 "emacs" C-m
 
 (firefox $ip:3000 2>&1 \
      | grep --line-buffered -v mesa_glthread \
-            > git-ignores/logs-firefox) &
+            > git-ignores/logs-firefox.gitig) &
 
 tmux select-window -t key-mouth:0
 tmux attach-session -t key-mouth

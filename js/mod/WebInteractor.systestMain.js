@@ -66,11 +66,11 @@ withNoError.then(function() {
 setTimeout(check, 860)
 
 const json = fs.readFileSync(
-    'git-ignores/systest-golden-standard-expected.json')
+    'test-results/integr-front-golden-std-exp.json')
 const lastTimeResults = JSON.parse(json)
 function writeNewResults(r) {
     fs.writeFileSync(
-        'git-ignores/systest-golden-standard-real.json',
+        'test-results/integr-front-golden-std-real.gitig.json',
         JSON.stringify(r, null, 4))
 }
 

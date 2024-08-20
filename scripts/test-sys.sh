@@ -21,12 +21,12 @@ sleep 1
     node js/mod/WebInteractor.systestMain.js
     err=$?
     if [ 0 = $err ]
-    then echo passed > git-ignores/systest-front-result
-    else echo failed > git-ignores/systest-front-result
+    then echo passed > git-ignores/systest-front-result.gitig
+    else echo failed > git-ignores/systest-front-result.gitig
     fi
 ) &
 
 wait
 
-test passed = "$(head git-ignores/systest-front-result)" || exit 1
-python python/systest-check.py || exit 2
+test passed = "$(head git-ignores/systest-front-result.gitig)" || exit 1
+python python/systest_check.py || exit 2

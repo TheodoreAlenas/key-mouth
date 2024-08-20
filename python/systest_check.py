@@ -5,7 +5,7 @@ class BackCheck(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(BackCheck, self).__init__(*args, **kwargs)
-        with open("git-ignores/systest-logs-back") as f:
+        with open("git-ignores/systest-logs-back.gitig") as f:
             self.lines = f.readlines()
 
     def test_open_connections_closed(self):
@@ -26,6 +26,7 @@ class BackCheck(unittest.TestCase):
             self.lines[-2], "Application shutdown complete.\n")
         self.assertEqual(
             self.lines[-1][:25], "Finished server process [")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,7 @@
 const deployConf = {
     output: 'export',
     //skipTrailingSlashRedirect: true,
-    distDir: '../git-ignores/front-static-serve',
+    distDir: '../git-ignores/front-static-serve.gitig',
     basePath: '/key-mouth'
 }
 

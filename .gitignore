@@ -1,5 +1,8 @@
 node_modules
-git-ignores
+*.gitig
+*.gitig.*
+*-gitig.*
+*_gitig.*
 .next
 __pycache__
 venv
