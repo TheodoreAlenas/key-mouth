@@ -93,11 +93,14 @@ class Db:
         n_last = self._db['rooms'].aggregate([{'$project': projection}])
         names = self._db['rooms'].find({}, ['name'])
         for nl, nm in zip(n_last, names):
+            name = None
+            if 'name' in nm:
+                name = nm['name']
             self._rooms[nl['_id']] = RoomMoments(
                 room_id=nl['_id'],
                 n=nl['n'],
                 last=nl['last'],
-                name=nm['name'],
+                name=name,
                 db=self._db
             )
 
