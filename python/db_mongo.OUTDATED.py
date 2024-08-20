@@ -53,8 +53,12 @@ class RoomMoments:
 
 class Db:
 
-    def __init__(self):
-        self._db = MongoClient(server_only.db_uri)['keymouth']
+    def __init__(self, is_test=False):
+        db_name = 'keymouth'
+        if is_test:
+            db_name += 'Test'
+        self._client = MongoClient(server_only.db_uri)
+        self._db = self._client[db_name]
         self._rooms = {}
         projection = {
             'n': {'$size': '$moments'},
@@ -63,6 +67,10 @@ class Db:
         rs = self._db['rooms'].aggregate([{'$project': projection}])
         for r in rs:
             self._rooms[r['_id']] = RoomMoments(r=r, db=self._db)
+
+    def drop_keymouth_test(self):
+        self._client.drop_db('keymouthTest')
+        self._client.close()
 
     def create_room(self, time, name):
         try:
