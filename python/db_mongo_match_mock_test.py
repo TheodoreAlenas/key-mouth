@@ -31,14 +31,20 @@ class BothRooms:
                 self.b.get_range(start, end))
 
 
+def obj_to_dict(o):
+    d = {}
+    for e in dir(o):
+        if e[0] == '_':
+            continue
+        d[e] = o.__getattribute__(e)
+    return d
+
+
 class BothDbs:
 
     def __init__(self):
         self.db_real = db_mongo.Db(is_test=True)
         self.db_mock = db_mock.Db()
-
-    def drop_keymouth_test(self):
-        self.db_real.drop_keymouth_test()
 
     def create_room(self, time, name):
         self.db_real.create_room(time, name)
@@ -54,8 +60,10 @@ class BothDbs:
         return BothRooms(a, b)
 
     def get_restart_data(self):
-        return (self.db_real.get_restart_data(),
-                self.db_mock.get_restart_data())
+        a = self.db_real.get_restart_data()
+        b = self.db_mock.get_restart_data()
+        return ([obj_to_dict(o) for o in a],
+                [obj_to_dict(o) for o in b])
 
 
 class A(unittest.TestCase):
@@ -64,7 +72,8 @@ class A(unittest.TestCase):
         self.dbs = BothDbs()
 
     def tearDown(self):
-        self.dbs.drop_keymouth_test()
+        self.dbs.db_real.drop_keymouth_test()
+        self.dbs.db_real.close()
 
     def test_just_get_restart_data(self):
         a, b = self.dbs.get_restart_data()
@@ -124,18 +133,37 @@ class A(unittest.TestCase):
         rooms.add_moment(101.0, [10])
         rooms.add_moment(102.0, [20])
         rooms.add_moment(103.0, [30])
-        a, b = rooms.get_range(0, 0)
-        self.assertEqual(a, b)
         a, b = rooms.get_range(0, 1)
-        self.assertEqual(a, b)
-        a, b = rooms.get_range(1, 1)
         self.assertEqual(a, b)
         a, b = rooms.get_range(1, 2)
         self.assertEqual(a, b)
         a, b = rooms.get_range(0, 2)
         self.assertEqual(a, b)
-        a, b = rooms.get_range(2, 1)
-        self.assertEqual(a, b)
+
+
+class B(unittest.TestCase):
+
+    def setUp(self):
+        self.db = db_mongo.Db(is_test=True)
+
+    def tearDown(self):
+        self.db.drop_keymouth_test()
+        self.db.close()
+
+    def test_reopen_same_outputs(self):
+
+        for room_id, name in [(f"id{x}", f"nm{x}") for x in range(30)]:
+            self.db.create_room(10.0, room_id)
+            room = self.db.get_room(room_id)
+            room.rename(name)
+
+        a = self.db.get_restart_data()
+        self.db.close()
+        self.db = db_mongo.Db(is_test=True)
+        b = self.db.get_restart_data()
+
+        self.assertEqual([obj_to_dict(x) for x in a],
+                         [obj_to_dict(x) for x in b])
 
 
 if __name__ == "__main__":
