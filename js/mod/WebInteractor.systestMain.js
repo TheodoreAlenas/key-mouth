@@ -66,11 +66,11 @@ withNoError.then(function() {
 setTimeout(check, 860)
 
 const json = fs.readFileSync(
-    'test-results/integr-front-golden-std-exp.json')
+    'js/mod/integr-golden-standard/exp.json')
 const lastTimeResults = JSON.parse(json)
 function writeNewResults(r) {
     fs.writeFileSync(
-        'test-results/integr-front-golden-std-real.gitig.json',
+        'js/mod/integr-golden-standard/real.gitig.json',
         JSON.stringify(r, null, 4))
 }
 
