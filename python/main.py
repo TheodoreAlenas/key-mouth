@@ -10,9 +10,9 @@ from os import environ
 
 a = 'KEYMOUTH_RAM_DB'
 if a in environ and environ[a] == 'yes':
-    from db_mock import Db
+    from db.mock import Db
 else:
-    from db_mongo import Db
+    from db.mongo import Db
 
 app = FastAPI()
 a = 'KEYMOUTH_CORS_ALL'

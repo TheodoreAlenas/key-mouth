@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from db_exceptions import RoomExistsException, RoomDoesntExistException
+from db.exceptions import RoomExistsException, RoomDoesntExistException
 from Connection import Connection
 from logic_and_conn import ConnRoomData, ConfTiming
 

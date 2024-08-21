@@ -1,5 +1,5 @@
 from AfterSocketLogic import AfterSocketLogic, ConfTiming, RoomExistsException
-from db_mock import Db
+from db.mock import Db
 import unittest
 
 

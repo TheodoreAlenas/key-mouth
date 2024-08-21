@@ -1,8 +1,8 @@
 
 # License at the bottom
 
-from db_exceptions import RoomExistsException, RoomDoesntExistException
-import server_only
+from exceptions import RoomExistsException, RoomDoesntExistException
+import server_only_gitig
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
