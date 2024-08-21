@@ -28,18 +28,6 @@ export default class Io {
             }
         }
     }
-    withLastMoments(callback) {
-        withJsonFetched(this.uri.lastMoments(), function(res) {
-            try {
-                callback(res)
-            }
-            catch (err) {
-                console.error("Error on last moments callback, res = " +
-                              JSON.stringify(res))
-                throw err
-            }
-        })
-    }
     withMomentsRange(start, end, callback) {
         const u = this.uri.momentsRange(start, end)
         withJsonFetched(u, function(res) {
@@ -54,15 +42,12 @@ export default class Io {
         })
     }
     onLastMomentUpdate(callback) {
-        const self = this
         this.socket.addEventListener("message", function(event) {
             try {
-                const {n, last} = JSON.parse(event.data)
-                callback(n, last)
+                callback(JSON.parse(event.data))
             }
             catch (e) {
-                console.error("Error JSON parsing " +
-                              event.data +
+                console.error("Error JSON parsing " + event +
                               " or calling moments message callback")
                 throw e
             }

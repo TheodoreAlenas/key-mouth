@@ -25,11 +25,11 @@ export default class WebInteractor {
         }
         this.io = new Io(uri, onReadySocket)
         this.presenter = null
-        this.io.onLastMomentUpdate(function(n, last) {
+        this.io.onLastMomentUpdate(function(event) {
             if (self.presenter === null) {
-                self.presenter = new EventPresenter(n)
+                self.presenter = new EventPresenter(event.momentIdx)
             }
-            self.presenter.push(last[last.length - 1])
+            self.presenter.push(event)
             self.setMoments(self.presenter.getMomentViews(getConnName))
         })
     }

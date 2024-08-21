@@ -2,6 +2,15 @@
 # License at the bottom
 
 from logic_and_conn import ConnRoomData, ConfTiming
+from event_adapter import events_to_socket_model
+
+
+class ViewEvent:
+
+    def __init__(self, event_type, conn_id, body):
+        self.event_type = event_type
+        self.conn_id = conn_id
+        self.body = body
 
 
 class Connection:
@@ -30,10 +39,30 @@ class Connection:
         return ([], None)
 
     def _handle_parsed(self, time, inp_type, body=None):
+        to_bcast = []
+        l = self.room.db.get_len()
         if self._interrupted_conversation(time):
-            self._bake_moment_to_be_stored(time)
-        self._append_and_update(time, inp_type, body)
-        return self._get_last_moment_broadcast_list()
+            self._store_last_moment(time)
+            ve = ViewEvent(
+                conn_id=self.conn_id,
+                event_type='endOfMoment',
+                body=time
+            )
+            v = events_to_socket_model(
+                [ve], first_moment_idx=l, first_diff_idx=0)
+            to_bcast += ([(conn, v[0]) for conn in self.room.conns])
+        self.last_spoke = time
+        ve = ViewEvent(
+            conn_id=self.conn_id,
+            event_type=inp_type,
+            body=body
+        )
+        self.room.last_moment.append(ve)
+        v = events_to_socket_model(
+            [ve], first_moment_idx=l, first_diff_idx=0)
+        to_bcast += [(conn, v[0]) for conn in self.room.conns]
+        print(to_bcast)
+        return to_bcast
 
     def _interrupted_conversation(self, time):
         started_speaking = (time - self.last_spoke >
@@ -42,19 +71,11 @@ class Connection:
                          self._conf_timing.min_moment)
         return started_speaking and moment_lasted
 
-    def _bake_moment_to_be_stored(self, time):
+    def _store_last_moment(self, time):
         baked_moment = self.room.last_moment
         self.room.db.add_moment(time, baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
-
-    def _append_and_update(self, time, inp_type, body):
-        self.last_spoke = time
-        self.room.last_moment.append({
-            "connId": self.conn_id,
-            "type": inp_type,
-            "body": body
-        })
 
     def _get_last_moment_broadcast_list(self):
         s = {"n": self.room.db.get_len(),
