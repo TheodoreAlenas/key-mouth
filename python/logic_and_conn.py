@@ -6,10 +6,10 @@ class ConnRoomData:
         self.last_moment = []
         self.conns = []
         self.last_moment_time = last_moment_time
-        self.moments = db_room
+        self.db = db_room
 
     def rename(self, name):
-        self.moments.rename(name)
+        self.db.rename(name)
         self.name = name
 
 

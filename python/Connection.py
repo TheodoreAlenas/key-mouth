@@ -44,7 +44,7 @@ class Connection:
 
     def _bake_moment_to_be_stored(self, time):
         baked_moment = self.room.last_moment
-        self.room.moments.add_moment(time, baked_moment)
+        self.room.db.add_moment(time, baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
 
@@ -57,7 +57,7 @@ class Connection:
         })
 
     def _get_last_moment_broadcast_list(self):
-        s = {"n": self.room.moments.get_len(),
+        s = {"n": self.room.db.get_len(),
                 "last": self.room.last_moment}
         return [(conn, s) for conn in self.room.conns]
 

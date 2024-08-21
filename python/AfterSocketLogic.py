@@ -78,8 +78,8 @@ class AfterSocketLogic:
         def f():
             r = self.rooms_ram[room]
             if start is None and end is None:
-                return ([], r.moments.get_last_few())
-            return ([], r.moments.get_range(start, end))
+                return ([], r.db.get_last_few())
+            return ([], r.db.get_range(start, end))
         return self._if_room_exists(room, f)
 
     def connect(self, time, room):
