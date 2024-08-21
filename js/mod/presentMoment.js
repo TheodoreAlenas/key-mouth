@@ -8,7 +8,7 @@ export default function presentMoment(getNames, diffs) {
     const r = accumulateDiffs(asEvts)
     const ans = r.map(({connId, message}) => ({
         name: getNames(connId),
-        message: massageMessage(message)
+        message
     }))
     return ans
 }
@@ -17,27 +17,14 @@ function massageDiff(diff) {
     if (diff.type === 'connect') return {
         connId: diff.connId,
         type: 'event',
-        body: 'connect'
+        body: '[connected]'
     }
     if (diff.type === 'disconnect') return {
         connId: diff.connId,
         type: 'event',
-        body: 'disconnect'
+        body: '[disconnected]'
     }
     return diff
-}
-
-function massageMessage(message) {
-    return message.map(({type, body}) => ({
-        type,
-        body: type === 'event' ? to_pres(body) : body
-    }))
-}
-
-function to_pres(body) {
-    if (body === 'connect') return '[connected]'
-    if (body === 'disconnect') return '[disconnected]'
-    return "[ERROR: unknown type '" + body + "']"
 }
 
 /*
