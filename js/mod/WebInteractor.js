@@ -25,7 +25,7 @@ export default class WebInteractor {
         }
         this.io = new Io(uri, onReadySocket)
         this.presenter = null
-        this.io.onLastMomentUpdate(function(event) {
+        this.io.onEvent(function(event) {
             if (self.presenter === null) {
                 self.presenter = new EventPresenter(event.momentIdx)
             }

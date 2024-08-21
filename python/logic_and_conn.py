@@ -1,9 +1,12 @@
+from db.event_adapter import EventAdapter
+
+
 class ConnRoomData:
 
     def __init__(self, last_moment_time, room_id, db_room, name=None):
         self.room_id = room_id
         self.name = name
-        self.last_moment = []
+        self.adapter = EventAdapter()
         self.conns = []
         self.last_moment_time = last_moment_time
         self.db = db_room

@@ -3,6 +3,7 @@
 
 from logic_and_conn import ConnRoomData, ConfTiming
 from event_adapter import events_to_socket_model
+from db.event_adapter import db_model_to_events
 
 
 class ViewEvent:
@@ -23,7 +24,14 @@ class Connection:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        return (self._handle_parsed(time, "connect"), self)
+        l = self.room.db.get_last_few()
+        print("l (last few):")
+        print(l)
+        events = db_model_to_events(l['moments'])
+        vs = events_to_socket_model(
+            events, first_moment_idx=l['start'], first_diff_idx=0)
+        catch_up = [(self.conn_id, v) for v in vs]
+        return (catch_up + self._handle_parsed(time, "connect"), self)
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
@@ -57,10 +65,11 @@ class Connection:
             event_type=inp_type,
             body=body
         )
-        self.room.last_moment.append(ve)
+        self.room.adapter.push_event(ve)
         v = events_to_socket_model(
             [ve], first_moment_idx=l, first_diff_idx=0)
         to_bcast += [(conn, v[0]) for conn in self.room.conns]
+        print("to_bcast:")
         print(to_bcast)
         return to_bcast
 
@@ -72,15 +81,12 @@ class Connection:
         return started_speaking and moment_lasted
 
     def _store_last_moment(self, time):
-        baked_moment = self.room.last_moment
+        baked_moment = self.room.adapter.pop_moment()
+        print("baked_moment:")
+        print(baked_moment)
         self.room.db.add_moment(time, baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
-
-    def _get_last_moment_broadcast_list(self):
-        s = {"n": self.room.db.get_len(),
-                "last": self.room.last_moment}
-        return [(conn, s) for conn in self.room.conns]
 
 
 """

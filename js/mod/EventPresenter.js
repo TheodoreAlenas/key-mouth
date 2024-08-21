@@ -6,6 +6,10 @@ import accumulateDiffs from './accumulateDiffs.js'
 export default class EventPresenter {
 
     constructor(firstMomentIdx) {
+        if (typeof(firstMomentIdx) !== 'number') {
+            throw new Error(
+                "firstMomentIdx isn't number: " + firstMomentIdx)
+        }
         this.firstMomentIdx = firstMomentIdx
         this.moments = []
         this.last = []

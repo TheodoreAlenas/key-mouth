@@ -41,7 +41,7 @@ export default class Io {
             }
         })
     }
-    onLastMomentUpdate(callback) {
+    onEvent(callback) {
         this.socket.addEventListener("message", function(event) {
             try {
                 callback(JSON.parse(event.data))

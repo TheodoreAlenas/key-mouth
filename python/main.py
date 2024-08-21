@@ -42,10 +42,12 @@ def do_nothing(_):
 
 async def wrap(f, args, before_sending=do_nothing):
     mutex.acquire()
+    print("mutex acquired")
     released_the_mutex = False
     try:
         to_send, to_return = f(time(), args)
         mutex.release()
+        print("mutex released (normal case)")
         released_the_mutex = True
         before_sending(to_return)
         for conn, json in to_send:
@@ -54,9 +56,16 @@ async def wrap(f, args, before_sending=do_nothing):
     except LogicHttpException as e:
         if not released_the_mutex:
             mutex.release()
+            print("mutex released (incide http exception)")
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        if not released_the_mutex:
+            mutex.release()
+            print("mutex released (incide non http exception)")
+        raise e
     if not released_the_mutex:
         mutex.release()
+        print("mutex released (outside exception)")
 
 
 @app.get("/")
