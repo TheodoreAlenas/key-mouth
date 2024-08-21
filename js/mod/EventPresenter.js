@@ -5,7 +5,8 @@ import accumulateDiffs from './accumulateDiffs.js'
 
 export default class EventPresenter {
 
-    constructor() {
+    constructor(firstMomentIdx) {
+        this.firstMomentIdx = firstMomentIdx
         this.moments = []
         this.last = []
     }
@@ -22,13 +23,16 @@ export default class EventPresenter {
         }
     }
     getMomentViews(getNames) {
+        let i = this.firstMomentIdx
         const views = this.moments.map(({time, raw}) => ({
+            key: i++,
             time: presentTimeFromSecondsSince1970(time),
-            diffs: getViewModel(getNames, raw)
+            body: getViewModel(getNames, raw)
         }))
         if (this.last.length !== 0) views.push({
+            key: i,
             time: null,
-            diffs: getViewModel(getNames, this.last)
+            body: getViewModel(getNames, this.last)
         })
         return views
     }

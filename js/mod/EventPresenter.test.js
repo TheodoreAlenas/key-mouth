@@ -4,14 +4,14 @@ import TestCase from './TestCase.js'
 const test = new TestCase()
 let ep = null
 
-ep = new EventPresenter()
+ep = new EventPresenter(0)
 test.assertEqual(
     "none is none",
     [],
     ep.getMomentViews(x => x)
 )
 
-ep = new EventPresenter()
+ep = new EventPresenter(7)
 ep.push({connId: 4, type: "write", body: "llo"})
 ep.push({connId: 4, type: "delete", body: "llo"})
 ep.push({connId: 4, type: "delete", body: "e"})
@@ -19,7 +19,7 @@ ep.push({connId: 4, type: "delete", body: "h"})
 ep.push({connId: 4, type: "disconnect", body: null})
 test.assertEqual(
     "write 2 delete 1 delete 1 delete 1 disconnect",
-    [{time: null, diffs: [
+    [{key: 7, time: null, body: [
         {name: "con4", message: [
             {type: "delete", body: "he"},
             {type: "erase", body: "llo"},
@@ -29,30 +29,30 @@ test.assertEqual(
     ep.getMomentViews(x => "con" + x)
 )
 
-ep = new EventPresenter()
+ep = new EventPresenter(7)
 ep.push({connId: 4, type: "write", body: "h"})
 ep.push({connId: 5, type: "write", body: "HELLO"})
 ep.push({connId: 4, type: "write", body: "i"})
 test.assertEqual(
     "a writes, b writes, a writes",
-    [{time: null, diffs: [
+    [{key: 7, time: null, body: [
         {name: "con4", message: [{type: "write", body: "hi"}]},
         {name: "con5", message: [{type: "write", body: "HELLO"}]}
     ]}],
     ep.getMomentViews(x => "con" + x)
 )
 
-ep = new EventPresenter()
+ep = new EventPresenter(7)
 ep.push({connId: 0, type: "endOfMoment", body: 732})
 let v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "only end of moment",
-    [{"time": "times erased", "diffs": []}],
+    [{key: 7, time: "times erased", body: []}],
     v
 )
 
-ep = new EventPresenter()
+ep = new EventPresenter(7)
 ep.push({connId: 4, type: "write", body: "HELLO"})
 ep.push({connId: 0, type: "endOfMoment", body: 732})
 ep.push({connId: 4, type: "write", body: "hi again"})
@@ -61,13 +61,13 @@ for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "only end of moment",
     [
-        {"time": "times erased", "diffs": [{
-            "name": "con4",
-            "message": [{"type": "write", "body": "HELLO"}]
+        {key: 7, time: "times erased", body: [{
+            name: "con4",
+            message: [{type: "write", body: "HELLO"}]
         }]},
-        {"time": null, "diffs": [{
-            "name": "con4",
-            "message": [{"type": "write", "body": "hi again"}]
+        {key: 8, time: null, body: [{
+            name: "con4",
+            message: [{type: "write", body: "hi again"}]
         }]},
     ],
     v
