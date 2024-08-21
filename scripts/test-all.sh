@@ -5,7 +5,10 @@ f=git-ignores/test-result.gitig
 echo
 echo " ===  front end tests  ==="
 echo
+echo js/mod/presentMoment.test.js
 node js/mod/presentMoment.test.js
+echo js/mod/accumulateDiffs.test.js
+node js/mod/accumulateDiffs.test.js
 echo $? > $f.front
 echo
 echo " ===  back end tests  ==="

@@ -1,101 +1,43 @@
 
 // License at the bottom
 
+import accumulateDiffs from './accumulateDiffs.js'
+
 export default function presentMoment(getNames, diffs) {
-    let conns = {}
-    let order = []
-    for (let i = 0; i < diffs.length; i++) {
-        const diff = diffs[i]
-        if (conns[diff.connId] === undefined) {
-            conns[diff.connId] = {prevType: null, message: []}
-            order.push(diff.connId)
-        }
-        const conn = conns[diff.connId]
-        manipulateOne(conn, diff)
-    }
-    let result = []
-    order.forEach(function(e) {result.push({
-        name: getNames(e),
-        message: conns[e].message
-    })})
-    return result
+    const asEvts = diffs.map(massageDiff)
+    const r = accumulateDiffs(asEvts)
+    const ans = r.map(({connId, message}) => ({
+        name: getNames(connId),
+        message: massageMessage(message)
+    }))
+    return ans
 }
 
-function manipulateOne(conn, diff) {
-    if (diff.type === "connect") {
-        conn.message.push({type: "event", body: "[connected]"})
+function massageDiff(diff) {
+    if (diff.type === 'connect') return {
+        connId: diff.connId,
+        type: 'event',
+        body: 'connect'
     }
-    if (diff.type === "disconnect") {
-        conn.message.push({type: "event", body: "[disconnected]"})
+    if (diff.type === 'disconnect') return {
+        connId: diff.connId,
+        type: 'event',
+        body: 'disconnect'
     }
-    else if (diff.type === "write" && conn.prevType === "write") {
-        const m = conn.message
-        m[m.length - 1].body += diff.body
-    }
-    else if (diff.type === "write") {
-        conn.message.push({
-            type: "write",
-            body: diff.body
-        })
-    }
-    else if (diff.type === "delete") {
-        pushOrPrependDeletionOr(
-            theresEraseOrWriteAfterDelete, conn, diff)
-    }
-    conn.prevType = diff.type
+    return diff
 }
 
-function pushOrPrependDeletionOr(callback, conn, diff) {
-    const m = conn.message
-    if (m.length === 0) {
-        m.push({
-            type: "delete",
-            body: diff.body
-        })
-    }
-    else if (m[m.length - 1].type == "delete") {
-        m[m.length - 1].body = diff.body + m[m.length - 1].body
-    }
-    else {
-        callback(conn, diff)
-    }
+function massageMessage(message) {
+    return message.map(({type, body}) => ({
+        type,
+        body: type === 'event' ? to_pres(body) : body
+    }))
 }
 
-function theresEraseOrWriteAfterDelete(conn, diff) {
-    const m = conn.message
-    let toPushInTheEnd = null
-    let erasedSome = false
-    if (m[m.length - 1].type === "erase") {
-        toPushInTheEnd = m.pop()
-    }
-    pushOrPrependDeletionOr(function(conn, diff) {
-        thereWasAWrite(conn, diff)
-        erasedSome = true
-    }, conn, diff)
-    if (toPushInTheEnd === null) {
-        conn.message.push({
-            type: "erase",
-            body: diff.body
-        })
-    }
-    else if (!erasedSome) {
-        m.push(toPushInTheEnd)
-    }
-    else {
-        toPushInTheEnd.body = diff.body + toPushInTheEnd.body
-        m.push(toPushInTheEnd)
-    }
-}
-
-function thereWasAWrite(conn, diff) {
-    const m = conn.message
-    const last = m[m.length - 1]
-    if (last.type == "write" && last.body.endsWith(diff.body)) {
-
-        const end = last.body.length - diff.body.length
-        if (end > 0) last.body = last.body.substr(0, end)
-        else conn.message.pop()
-    }
+function to_pres(body) {
+    if (body === 'connect') return '[connected]'
+    if (body === 'disconnect') return '[disconnected]'
+    return "[ERROR: unknown type '" + body + "']"
 }
 
 /*
