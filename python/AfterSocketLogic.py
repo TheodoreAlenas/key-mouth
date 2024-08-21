@@ -2,7 +2,7 @@
 # License at the bottom
 
 from db_exceptions import RoomExistsException, RoomDoesntExistException
-from Conn import Conn
+from Connection import Connection
 from logic_and_conn import ConnRoomData, ConfTiming
 
 class LogicHttpException(Exception):
@@ -88,7 +88,7 @@ class AfterSocketLogic:
                                      status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Conn(i, self.rooms_ram[room], self._conf_timing)
+        self.conns[i] = Connection(i, self.rooms_ram[room], self._conf_timing)
         return self.conns[i].connect(time, None)
 
 

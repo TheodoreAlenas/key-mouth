@@ -4,7 +4,7 @@
 from logic_and_conn import ConnRoomData, ConfTiming
 
 
-class Conn:
+class Connection:
 
     def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
         self.conn_id = conn_id
