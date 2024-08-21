@@ -2,7 +2,7 @@
 // License at the bottom
 
 import Io from './Io.js'
-import presentMoment from './presentMoment.js'
+import EventPresenter from './EventPresenter.js'
 
 export default class WebInteractor {
     setMoments(m) {throw new Error("setMoments unset, arg: " + m)}
@@ -24,97 +24,18 @@ export default class WebInteractor {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
         }
         this.io = new Io(uri, onReadySocket)
-        this.cached = {}
-        this._setMomentsOnceFetched()
-        function setLast(n, last) {self._setLast(n, last)}
-        this.io.onLastMomentUpdate(setLast)
+        this.presenter = null
+        this.io.onLastMomentUpdate(function(n, last) {
+            if (self.presenter === null) {
+                self.presenter = new EventPresenter(n)
+            }
+            self.presenter.push(last[last.length - 1])
+            self.setMoments(self.presenter.getMomentViews(getConnName))
+        })
     }
     close() {
         this.io.close()
     }
-    _setMomentsOnceFetched() {
-        const self = this
-        this.io.withLastMoments(function(res) {
-            try {
-                self._setMomentsOnceFetchedInner(res)
-            }
-            catch (err) {
-                console.error("Error setting last moments from " +
-                              JSON.stringify(res))
-                throw err
-            }
-        })
-    }
-    _updateOldMoments(n) {
-        if (this.lastMomentN === undefined) return
-        if (n == this.lastMomentN) return
-        if (n < this.lastMomentN) {
-            throw new Error("Error updating old moments, got n = " +
-                            n + " < self.lastMomentN = " +
-                            this.lastMomentN)
-        }
-        const self = this
-        const oldLastMomentN = this.lastMomentN
-        this.lastMomentN = n
-        this.io.withMomentsRange(oldLastMomentN, n, function(moments) {
-            self._updateOldMomentsInner(oldLastMomentN, moments)
-        })
-    }
-    _setMomentsOnceFetchedInner({start, end, moments}) {
-        const p = moments.map(m => ({
-            people: presentMoment(getConnName, m.diffs),
-            time: m.time
-        }))
-        for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
-        this.lastMomentN = end
-        this._setMomentsFromCached()
-    }
-    _updateOldMomentsInner(oldLastMomentN, moments) {
-        const p = moments.map(m => ({
-            people: presentMoment(getConnName, m.diffs),
-            time: m.time
-        }))
-        const start = oldLastMomentN
-        for (let i = 0; i < p.length; i++) this.cached[i + start] = p[i]
-        this._setMomentsFromCached()
-    }
-    _setMomentsFromCached() {
-        const keys = Object.keys(this.cached)
-        const s = keys.map(k => this._keyToMoment(k))
-        this.setMoments(s)
-    }
-    _keyToMoment(k) {
-        const e = this.cached[k]
-        let time = null
-        if (e.time) {
-            time = this._presentTimeFromSecondsSince1970(e.time)
-       }
-        return {key: k, body: e.people, time: time}
-    }
-    _presentTimeFromSecondsSince1970(secondsSince1970) {
-        const msSince1970 = Math.ceil(secondsSince1970 * 1000)
-        const msOf24h = 1000 * 60 * 60 * 24
-        const now = Date.now()
-        const date = new Date(msSince1970)
-        if (now - msSince1970 < msOf24h) {
-            return date.toLocaleTimeString()
-        }
-        return date.toLocaleString()
-    }
-    _setLast(n, last) {
-        try {
-            const p = presentMoment(getConnName, last)
-            this.cached[n] = {people: p, time: undefined}
-            this._setMomentsFromCached()
-            this._updateOldMoments(n)
-        }
-        catch (e) {
-            console.error("Error setting last moment, " +
-                          JSON.stringify({n, last}))
-            throw e
-        }
-    }
-
 }
 
 function getConnName(conn) {
