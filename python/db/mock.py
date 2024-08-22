@@ -15,9 +15,9 @@ class RoomMoments:
     def rename(self, name):
         self.name = name
 
-    def add_moment(self, time, moment):
-        self.moments.append({"time": time, "diffs": moment})
-        self.last_moment_time = time
+    def add_moment(self, moment):
+        self.moments.append(moment)
+        self.last_moment_time = moment['time']
 
     def get_last_few(self):
         m = self.moments

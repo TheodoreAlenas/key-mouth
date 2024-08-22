@@ -55,79 +55,79 @@ class AfterSocketLogicTest(unittest.TestCase):
         res, _ = conn_1.handle_input(12.0, "+hello")
         self.assertEqual(res[0][1], res[1][1])
 
-#    def test_two_conn_one_speaks_exactly_they_get_notified(self):
-#        _, conn_1 = self.logic.connect(10.0, "room0")
-#        _, conn_2 = self.logic.connect(11.0, "room0")
-#        res, _ = conn_1.handle_input(12.0, "+hello")
-#        self.assertEqual(2, len(res))
-#        a = [conn_1.conn_id, conn_2.conn_id]
-#        b = [res[0][0], res[1][0]]
-#        a.sort()
-#        b.sort()
-#        self.assertEqual(a, b)
-#
-#    def test_a_comes_b_comes_a_goes_one_msg(self):
-#        _, conn_1 = self.logic.connect(10.0, "room0")
-#        _, conn_2 = self.logic.connect(11.0, "room0")
-#        conn_1.disconnect(12.0, None)
-#        res, _ = conn_2.handle_input(13.0, "+hello")
-#        self.assertEqual(1, len(res))
-#        self.assertEqual(conn_2.conn_id, res[0][0])
-#
-#    def test_message_in_one_room_is_isolated(self):
-#        _, conn_1 = self.logic.connect(10.0, "room0")
-#        _, conn_2 = self.logic.connect(11.0, "room1")
-#        res, _ = conn_1.handle_input(12.0, "+1")
-#        self.assertEqual(1, len(res))
-#        self.assertEqual(conn_1.conn_id, res[0][0])
-#
-#    def test_deleted_room_not_listed(self):
-#        self.logic.delete_room(10.0, "room0")
-#        _, ans = self.logic.get_rooms(10.1, None)
-#        self.assertEqual([{'id': 'room1', 'name': None}], ans)
-#
-#    def test_renamed_room_listed_renamed(self):
-#        self.logic.rename_room(10.0, ("room0", "a name"))
-#        self.logic.delete_room(10.0, "room1")
-#        _, ans = self.logic.get_rooms(10.1, None)
-#        self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
-#
-#    def test_create_room_twice_get_409(self):
-#        try:
-#            self.logic.create_room(10.0, "room0")
-#            self.assertFalse("should have thrown error")
-#        except Exception as e:
-#            self.assertEqual(409, e.status_code)
-#
-#    def test_if_room_doesnt_exist_connect_404(self):
-#        try:
-#            self.logic.connect(10.0, "nonexistent")
-#            self.assertFalse("should have thrown error")
-#        except Exception as e:
-#            self.assertEqual(404, e.status_code)
-#
-#    def test_if_room_doesnt_exist_get_moments_range_404(self):
-#        try:
-#            self.logic.get_moments_range(
-#                10.0, ("nonexistent", None, None))
-#            self.assertFalse("should have thrown error")
-#        except Exception as e:
-#            self.assertEqual(404, e.status_code)
-#
-#    def test_connect_get_others_last_moment(self):
-#        _, conn_1 = self.logic.connect(10.0, "room0")
-#        res_1, _ = conn_1.handle_input(10.1, "+1")
-#        res_2, conn_2 = self.logic.connect(10.2, "room0")
-#        self.assertEqual(2, len(res_2))
-#        self.assertEqual(res_1[0][1]["last"],
-#                         res_2[0][1]["last"])
-#
+    def test_two_conn_one_speaks_exactly_they_get_notified(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(11.0, "room0")
+        res, _ = conn_1.handle_input(12.0, "+hello")
+        self.assertEqual(2, len(res))
+        a = [conn_1.conn_id, conn_2.conn_id]
+        b = [res[0][0], res[1][0]]
+        a.sort()
+        b.sort()
+        self.assertEqual(a, b)
+
+    def test_a_comes_b_comes_a_goes_one_msg(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(11.0, "room0")
+        conn_1.disconnect(12.0, None)
+        res, _ = conn_2.handle_input(13.0, "+hello")
+        self.assertEqual(1, len(res))
+        self.assertEqual(conn_2.conn_id, res[0][0])
+
+    def test_message_in_one_room_is_isolated(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(11.0, "room1")
+        res, _ = conn_1.handle_input(12.0, "+1")
+        self.assertEqual(1, len(res))
+        self.assertEqual(conn_1.conn_id, res[0][0])
+
+    def test_deleted_room_not_listed(self):
+        self.logic.delete_room(10.0, "room0")
+        _, ans = self.logic.get_rooms(10.1, None)
+        self.assertEqual([{'id': 'room1', 'name': None}], ans)
+
+    def test_renamed_room_listed_renamed(self):
+        self.logic.rename_room(10.0, ("room0", "a name"))
+        self.logic.delete_room(10.0, "room1")
+        _, ans = self.logic.get_rooms(10.1, None)
+        self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
+
+    def test_create_room_twice_get_409(self):
+        try:
+            self.logic.create_room(10.0, "room0")
+            self.assertFalse("should have thrown error")
+        except Exception as e:
+            self.assertEqual(409, e.status_code)
+
+    def test_if_room_doesnt_exist_connect_404(self):
+        try:
+            self.logic.connect(10.0, "nonexistent")
+            self.assertFalse("should have thrown error")
+        except Exception as e:
+            self.assertEqual(404, e.status_code)
+
+    def test_if_room_doesnt_exist_get_moments_range_404(self):
+        try:
+            self.logic.get_moments_range(
+                10.0, ("nonexistent", None, None))
+            self.assertFalse("should have thrown error")
+        except Exception as e:
+            self.assertEqual(404, e.status_code)
+
+    def test_connect_get_others_last_moment(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        res_1, _ = conn_1.handle_input(10.1, "+1")
+        res_2, conn_2 = self.logic.connect(10.2, "room0")
+        self.assertEqual(res_1[0][1], res_2[2][1])
+
 #    def test_on_connect_get_up_to_date(self):
-#        _, conn_1 = self.logic.connect(10.0, "room0")
-#        conn_1.handle_input(10.1, "+old")
-#        res_1, _ = conn_1.handle_input(99.0, "+new")
-#        res_2, conn_2 = self.logic.connect(99.1, "room0")
-#        self.assertEqual(res_1[0][1], res_2[0][1])
+#        res_1, conn_1 = self.logic.connect(10.0, "room0")
+#        res_2, _ = conn_1.handle_input(10.1, "+old")
+#        res_3, _ = conn_1.handle_input(99.0, "+new")
+#        res_4, conn_2 = self.logic.connect(99.1, "room0")
+#        a = [x for _, x in res_1 + res_2 + res_3]
+#        b = [x for c, x in res_4 if c == conn_2.conn_id]
+#        self.assertEqual(a, b)
 #
 #    def test_connect_get_no_moments(self):
 #        res, conn_1 = self.logic.connect(10.0, "room0")

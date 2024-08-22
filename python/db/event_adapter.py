@@ -14,22 +14,25 @@ class EventDbAdapter:
         self._clear_m()
 
     def _clear_m(self):
-        self.m = {'time': None, 'moments': []}
+        self.m = {'time': None, 'diffs': []}
 
-    def push_event(self, event):
+    def push(self, event):
         t = event.event_type
         if t == 'endOfMoment':
             self.m['time'] = event.body
             self.return_on_pop = self.m
             self._clear_m()
         else:
-            self.m['moments'].append({
+            self.m['diffs'].append({
                 'connId': event.conn_id,
                 'type': t,
                 'body': event.body
             })
 
     def pop_moment(self):
+        if self.return_on_pop is None:
+            raise Exception('popped moment before endOfMoment: ' +
+                            str(self.m))
         p = self.return_on_pop
         self.return_on_pop = None
         return p

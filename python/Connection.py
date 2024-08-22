@@ -27,11 +27,12 @@ class Connection:
         l = self.room.db.get_last_few()
         events = db_model_to_events(l['moments'])
         a = EventStreamAdapter(l['start'], 0)
-        stream = []
         for e in events:
-            stream.append(a.to_db_model(e))
+            a.push(e)
+        stream = a.stream_models + self.room.evt_stream.stream_models
         catch_up = [(self.conn_id, e) for e in stream]
-        return (catch_up + self._handle_parsed(time, "connect"), self)
+        conn_msg = self._handle_parsed(time, "connect")
+        return (catch_up + conn_msg, self)
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
@@ -49,10 +50,10 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
         if self._interrupted_conversation(time):
+            to_bcast += self._push('endOfMoment', time)
             self._store_last_moment(time)
-            to_bcast += self._get_bcast_list('endOfMoment', time)
         self.last_spoke = time
-        to_bcast += self._get_bcast_list(inp_type, body)
+        to_bcast += self._push(inp_type, body)
         return to_bcast
 
     def _interrupted_conversation(self, time):
@@ -64,17 +65,18 @@ class Connection:
 
     def _store_last_moment(self, time):
         baked_moment = self.room.evt_db.pop_moment()
-        self.room.db.add_moment(time, baked_moment)
+        self.room.db.add_moment(baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
 
-    def _get_bcast_list(self, event_type, body):
+    def _push(self, event_type, body):
         ve = ViewEvent(
             conn_id=self.conn_id,
             event_type=event_type,
             body=body
         )
-        v = self.room.evt_stream.to_db_model(ve)
+        self.room.evt_db.push(ve)
+        v = self.room.evt_stream.push(ve)
         return [(conn, v) for conn in self.room.conns]
 
 
