@@ -25,8 +25,6 @@ class Connection:
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
         l = self.room.db.get_last_few()
-        #print("l (last few):")
-        #print(l)
         events = db_model_to_events(l['moments'])
         a = EventStreamAdapter(l['start'], 0)
         stream = []
@@ -52,25 +50,9 @@ class Connection:
         to_bcast = []
         if self._interrupted_conversation(time):
             self._store_last_moment(time)
-            ve = ViewEvent(
-                conn_id=self.conn_id,
-                event_type='endOfMoment',
-                body=time
-            )
-            v = self.room.evt_stream.to_db_model(ve)
-            to_bcast += ([(conn, v) for conn in self.room.conns])
+            to_bcast += self._get_bcast_list('endOfMoment', time)
         self.last_spoke = time
-        ve = ViewEvent(
-            conn_id=self.conn_id,
-            event_type=inp_type,
-            body=body
-        )
-        self.room.evt_db.push_event(ve)
-        v = self.room.evt_stream.to_db_model(
-            ve)
-        to_bcast += [(conn, v) for conn in self.room.conns]
-        #print("to_bcast:")
-        #print(to_bcast)
+        to_bcast += self._get_bcast_list(inp_type, body)
         return to_bcast
 
     def _interrupted_conversation(self, time):
@@ -82,11 +64,18 @@ class Connection:
 
     def _store_last_moment(self, time):
         baked_moment = self.room.evt_db.pop_moment()
-        #print("baked_moment:")
-        #print(baked_moment)
         self.room.db.add_moment(time, baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
+
+    def _get_bcast_list(self, event_type, body):
+        ve = ViewEvent(
+            conn_id=self.conn_id,
+            event_type=event_type,
+            body=body
+        )
+        v = self.room.evt_stream.to_db_model(ve)
+        return [(conn, v) for conn in self.room.conns]
 
 
 """
