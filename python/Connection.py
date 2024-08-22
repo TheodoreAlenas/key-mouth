@@ -57,9 +57,8 @@ class Connection:
                 event_type='endOfMoment',
                 body=time
             )
-            v = events_to_socket_model(
-                [ve], first_moment_idx=l, first_diff_idx=0)
-            to_bcast += ([(conn, v[0]) for conn in self.room.conns])
+            v = self.room.evt_stream.to_db_model(ve)
+            to_bcast += ([(conn, v) for conn in self.room.conns])
         self.last_spoke = time
         ve = ViewEvent(
             conn_id=self.conn_id,
@@ -82,7 +81,7 @@ class Connection:
         return started_speaking and moment_lasted
 
     def _store_last_moment(self, time):
-        baked_moment = self.room.adapter.pop_moment()
+        baked_moment = self.room.evt_db.pop_moment()
         #print("baked_moment:")
         #print(baked_moment)
         self.room.db.add_moment(time, baked_moment)

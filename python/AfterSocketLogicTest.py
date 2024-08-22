@@ -49,12 +49,12 @@ class AfterSocketLogicTest(unittest.TestCase):
             "body": "a"
         }, res[0][1])
 
-#    def test_two_conn_one_speaks_they_hear_the_same(self):
-#        _, conn_1 = self.logic.connect(10.0, "room0")
-#        _, conn_2 = self.logic.connect(11.0, "room0")
-#        res, _ = conn_1.handle_input(12.0, "+hello")
-#        self.assertEqual(res[0][1], res[1][1])
-#
+    def test_two_conn_one_speaks_they_hear_the_same(self):
+        _, conn_1 = self.logic.connect(10.0, "room0")
+        _, conn_2 = self.logic.connect(11.0, "room0")
+        res, _ = conn_1.handle_input(12.0, "+hello")
+        self.assertEqual(res[0][1], res[1][1])
+
 #    def test_two_conn_one_speaks_exactly_they_get_notified(self):
 #        _, conn_1 = self.logic.connect(10.0, "room0")
 #        _, conn_2 = self.logic.connect(11.0, "room0")
