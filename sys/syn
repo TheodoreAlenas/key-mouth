@@ -15,16 +15,21 @@ cd ..
     cd git-ignores
     mkdir -p deploy.gitig
     cd deploy.gitig
-    mkdir -p python/db static sys
+    if [ -e tmp-py ]; then rm -rf tmp-py; fi
+    mkdir -p tmp-py/db python static sys
 )
 
 d=git-ignores/deploy.gitig
 
-rsync --delete python/*.py $d/python/
-rsync --delete python/db/*.py $d/python/db/
+rsync python/*.py $d/tmp-py/
+rsync python/*.ini $d/tmp-py/
+rsync python/db/*.py $d/tmp-py/db/
+rsync -r --delete $d/tmp-py/ $d/python/
+rm -r $d/tmp-py
 rsync -r --delete git-ignores/front-static-serve.gitig/ $d/static/
+rsync -r --delete server-scripts/ $d/sys/
 
 echo "rsync to remote..."
-rsync -rz $d "$secret_upload"
+rsync -rz --delete $d/ "$secret_upload"/
 
 echo "done"

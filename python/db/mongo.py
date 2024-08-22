@@ -1,8 +1,8 @@
 
 # License at the bottom
 
-from exceptions import RoomExistsException, RoomDoesntExistException
-import server_only_gitig
+from db.exceptions import RoomExistsException, RoomDoesntExistException
+import db.server_only_gitig
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
@@ -24,15 +24,14 @@ class RoomMoments:
         )
         self.name = name
 
-    def add_moment(self, time, moment):
-        mom = {"time": time, "diffs": moment}
+    def add_moment(self, moment):
         self._db['rooms'].update_one(
             {"_id": self.room_id},
-            {"$push": {"moments": mom}}
+            {"$push": {"moments": moment}}
         )
         self.n += 1
-        self.last_moment_time = time
-        self._cached_last_moment = mom
+        self.last_moment_time = moment['time']
+        self._cached_last_moment = moment
 
     def get_last_few(self):
         ms = self._db['rooms'].find_one(
@@ -73,7 +72,7 @@ class Db:
         db_name = 'keymouth'
         if is_test:
             db_name += 'Test'
-        self._client = MongoClient(server_only.db_uri)
+        self._client = MongoClient(db.server_only_gitig.db_uri)
         self._db = self._client[db_name]
         self._rooms = {}
         projection = {

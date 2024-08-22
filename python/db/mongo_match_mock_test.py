@@ -1,6 +1,5 @@
-import db_mock
-import db_mongo
-import server_only
+import db.mock
+import db.mongo
 import unittest
 
 
@@ -14,9 +13,9 @@ class BothRooms:
         self.a.rename(name)
         self.b.rename(name)
 
-    def add_moment(self, time, moment):
-        self.a.add_moment(time, moment)
-        self.b.add_moment(time, moment)
+    def add_moment(self, moment):
+        self.a.add_moment(moment)
+        self.b.add_moment(moment)
 
     def get_last_few(self):
         return (self.a.get_last_few(),
@@ -43,25 +42,25 @@ def obj_to_dict(o):
 class BothDbs:
 
     def __init__(self):
-        self.db_real = db_mongo.Db(is_test=True)
-        self.db_mock = db_mock.Db()
+        self.real = db.mongo.Db(is_test=True)
+        self.mock = db.mock.Db()
 
     def create_room(self, time, name):
-        self.db_real.create_room(time, name)
-        self.db_mock.create_room(time, name)
+        self.real.create_room(time, name)
+        self.mock.create_room(time, name)
 
     def delete_room(self, name):
-        self.db_real.delete_room(name)
-        self.db_mock.delete_room(name)
+        self.real.delete_room(name)
+        self.mock.delete_room(name)
 
     def get_room(self, name):
-        a = self.db_real.get_room(name)
-        b = self.db_mock.get_room(name)
+        a = self.real.get_room(name)
+        b = self.mock.get_room(name)
         return BothRooms(a, b)
 
     def get_restart_data(self):
-        a = self.db_real.get_restart_data()
-        b = self.db_mock.get_restart_data()
+        a = self.real.get_restart_data()
+        b = self.mock.get_restart_data()
         return ([obj_to_dict(o) for o in a],
                 [obj_to_dict(o) for o in b])
 
@@ -72,8 +71,8 @@ class A(unittest.TestCase):
         self.dbs = BothDbs()
 
     def tearDown(self):
-        self.dbs.db_real.drop_keymouth_test()
-        self.dbs.db_real.close()
+        self.dbs.real.drop_keymouth_test()
+        self.dbs.real.close()
 
     def test_just_get_restart_data(self):
         a, b = self.dbs.get_restart_data()
@@ -119,7 +118,7 @@ class A(unittest.TestCase):
     def test_create_get_addmoment_get(self):
         self.dbs.create_room(10.0, "thanasis")
         rooms = self.dbs.get_room("thanasis")
-        rooms.add_moment(11.0, ['whatever'])
+        rooms.add_moment({'time': 11.0, 'diffs': ['whatever']})
         a, b = rooms.get_last_few()
         self.assertEqual(a, b)
         a, b = rooms.get_len()
@@ -130,9 +129,9 @@ class A(unittest.TestCase):
     def test_add_3_moments_get_ranges(self):
         self.dbs.create_room(10.0, "thanasis")
         rooms = self.dbs.get_room("thanasis")
-        rooms.add_moment(101.0, [10])
-        rooms.add_moment(102.0, [20])
-        rooms.add_moment(103.0, [30])
+        rooms.add_moment({'time': 101.0, 'diffs': [10]})
+        rooms.add_moment({'time': 102.0, 'diffs': [20]})
+        rooms.add_moment({'time': 103.0, 'diffs': [30]})
         a, b = rooms.get_range(0, 1)
         self.assertEqual(a, b)
         a, b = rooms.get_range(1, 2)
@@ -144,7 +143,7 @@ class A(unittest.TestCase):
 class B(unittest.TestCase):
 
     def setUp(self):
-        self.db = db_mongo.Db(is_test=True)
+        self.db = db.mongo.Db(is_test=True)
 
     def tearDown(self):
         self.db.drop_keymouth_test()
@@ -159,12 +158,8 @@ class B(unittest.TestCase):
 
         a = self.db.get_restart_data()
         self.db.close()
-        self.db = db_mongo.Db(is_test=True)
+        self.db = db.mongo.Db(is_test=True)
         b = self.db.get_restart_data()
 
         self.assertEqual([obj_to_dict(x) for x in a],
                          [obj_to_dict(x) for x in b])
-
-
-if __name__ == "__main__":
-    unittest.main()
