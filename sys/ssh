@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+if ! [ $# = 0 ]; then
+    echo "no args, shorthand for the full ssh command"
+    exit 1
+fi
+
+. ./secrets.gitig.sh
+
+exec ssh "$secret_ssh_addr"

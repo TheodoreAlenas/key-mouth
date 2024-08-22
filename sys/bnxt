@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e
+
+test -e ./syn || echo "HELP OUT OF DATE, ./syn not here"
+if ! [ $# = 0 ]; then
+    echo "no args, stands for 'build next (js)', build used by ./syn"
+    exit 1
+fi
+
+. ./secrets.gitig.sh
+
+cd ../js
+export KEYMOUTH_DEPLOY=yes
+export KEYMOUTH_UI="$secret_kmui"
+export KEYMOUTH_API="$secret_kmapi"
+export KEYMOUTH_WS="$secret_kmws"
+exec node_modules/.bin/next build
+
+

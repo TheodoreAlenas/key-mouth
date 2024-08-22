@@ -1,6 +1,7 @@
 #!/bin/sh
 
 f=git-ignores/test-result.gitig
+cd ..
 
 echo
 echo " ===  front end tests  ==="
@@ -18,9 +19,9 @@ echo
 python python/AfterSocketLogicTest.py
 echo $? > $f.back
 echo
-echo " ===  system tests  ==="
+echo " ===  non-db integration tests  ==="
 echo
-sh scripts/test-sys.sh
+sh sys/test-front-back-integ
 echo $? > $f.sys
 
 test 0 = "$(head $f.front)" || exit 1

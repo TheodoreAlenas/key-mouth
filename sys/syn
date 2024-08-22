@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+if ! [ $# = 0 ]; then
+    echo "no args, shorthand for 2 rsync commands. DOESN'T DEPLOY" >&2
+    exit 1
+fi
+
+. ./secrets.gitig.sh
+
+cd ..
+
+(
+    cd git-ignores
+    mkdir -p deploy.gitig
+    cd deploy.gitig
+    mkdir -p python/db static sys
+)
+
+d=git-ignores/deploy.gitig
+
+rsync --delete python/*.py $d/python/
+rsync --delete python/db/*.py $d/python/db/
+rsync -r --delete git-ignores/front-static-serve.gitig/ $d/static/
+
+echo "rsync to remote..."
+rsync -rz $d "$secret_upload"
+
+echo "done"

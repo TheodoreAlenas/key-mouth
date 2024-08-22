@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if ! [ $# = 0 ]; then
+    echo "no args, test and deploy" >&2
+    exit 1
+fi
+
+. ./secrets.gitig.sh
+
+cd "$secret_uploaded"/python
+python db/mongo_match_mock_test.py
+
+secret_kill_with kill -s TERM
+secret_wrapper uvicorn main:app
+
+echo "done"
