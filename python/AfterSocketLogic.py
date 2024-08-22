@@ -80,13 +80,8 @@ class AfterSocketLogic:
         room, start, end = room_start_end
         def f():
             r = self.rooms_ram[room]
-            if start is None and end is None:
-                res = r.db.get_last_few()
-                db_model = res['moments']
-                first = res['start']
-            else:
-                db_model = r.db.get_range(start, end)
-                first = start
+            db_model = r.db.get_range(start, end)
+            first = start
             events = db_model_to_events(db_model)
             to_stream = EventStreamAdapter(first, 0)
             for e in events:

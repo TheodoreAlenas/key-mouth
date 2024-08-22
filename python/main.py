@@ -84,9 +84,7 @@ async def room_delete(room: str):
 
 
 @app.get("/{room}")
-async def room_get(room: str,
-                   start: int|None = None,
-                   end: int|None = None):
+async def room_get(room: str, start: int, end: int):
     return await wrap(logic.get_moments_range, (room, start, end))
 
 

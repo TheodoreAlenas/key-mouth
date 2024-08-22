@@ -188,7 +188,7 @@ class AfterSocketLogicTest(unittest.TestCase):
 
     def test_database_starts_empty(self):
         self.logic.connect(10.0, "room0")
-        _, moments = self.logic.get_moments_range(10.2, ("room0", None, None))
+        _, moments = self.logic.get_moments_range(10.2, ("room0", 0, 100))
         self.assertEqual(
             [{
                 'momentIdx': 0,
