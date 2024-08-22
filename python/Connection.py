@@ -50,10 +50,10 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
         if self._interrupted_conversation(time):
-            to_bcast += self._push('endOfMoment', time)
+            to_bcast += self._push(0, 'endOfMoment', time)
             self._store_last_moment(time)
         self.last_spoke = time
-        to_bcast += self._push(inp_type, body)
+        to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
 
     def _interrupted_conversation(self, time):
@@ -70,9 +70,9 @@ class Connection:
         self.room.last_moment = []
         self.room.last_moment_time = time
 
-    def _push(self, event_type, body):
+    def _push(self, conn_id, event_type, body):
         ve = ViewEvent(
-            conn_id=self.conn_id,
+            conn_id=conn_id,
             event_type=event_type,
             body=body
         )

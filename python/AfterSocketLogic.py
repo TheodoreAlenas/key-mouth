@@ -4,6 +4,9 @@
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from Connection import Connection
 from ConnRoomData import ConnRoomData, ConfTiming
+from db.event_adapter import db_model_to_events
+from EventStreamAdapter import EventStreamAdapter
+
 
 class LogicHttpException(Exception):
     def __init__(self, detail, status_code):
@@ -78,8 +81,17 @@ class AfterSocketLogic:
         def f():
             r = self.rooms_ram[room]
             if start is None and end is None:
-                return ([], r.db.get_last_few())
-            return ([], r.db.get_range(start, end))
+                res = r.db.get_last_few()
+                db_model = res['moments']
+                first = res['start']
+            else:
+                db_model = r.db.get_range(start, end)
+                first = start
+            events = db_model_to_events(db_model)
+            to_stream = EventStreamAdapter(first, 0)
+            for e in events:
+                to_stream.push(e)
+            return ([], to_stream.stream_models)
         return self._if_room_exists(room, f)
 
     def connect(self, time, room):
