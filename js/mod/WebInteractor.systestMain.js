@@ -19,7 +19,7 @@ const withNoError = withRoom.then(function(res) {
     })
 })
 
-function withWebInteractor(buf, room, callback) {
+function withWebInteractor(buf, callback) {
     const wi = new WebInteractor(uri)
 
     wi.setInputValue = function(m) {
@@ -37,7 +37,7 @@ function withWebInteractor(buf, room, callback) {
 const d = [0,0,0,0].map(_ => ({inp: [], snap: []}))
 
 withNoError.then(function() {
-    withWebInteractor(d[0], "my\nroom", function(unlocked, close) {
+    withWebInteractor(d[0], function(unlocked, close) {
         setTimeout(function() {
             unlocked.onInputChange("hi")
             unlocked.onInputChange("hi there")
@@ -46,36 +46,46 @@ withNoError.then(function() {
         setTimeout(close, 200)
     })
     setTimeout(function() {
-        withWebInteractor(d[1], "my\nroom", function(unlocked, close) {
+        withWebInteractor(d[1], function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 20)
     setTimeout(function() {
-        withWebInteractor(d[2], "my\nroom", function(unlocked, close) {
+        withWebInteractor(d[2], function(unlocked, close) {
             unlocked.onInputChange("interrupt")
             setTimeout(close, 200)
         })
     }, 600)
     setTimeout(function() {
-        withWebInteractor(d[3], "my\nroom", function(unlocked, close) {
+        withWebInteractor(d[3], function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 650)
 })
 
-setTimeout(check, 860)
-
-const json = fs.readFileSync(
-    'js/mod/integr-golden-standard/exp.json')
-const lastTimeResults = JSON.parse(json)
+function getLastTimeResults() {
+    const j = fs.readFileSync('js/mod/integr-golden-standard/exp.json')
+    return JSON.parse(j)
+}
 function writeNewResults(r) {
     fs.writeFileSync(
         'js/mod/integr-golden-standard/real.gitig.json',
         JSON.stringify(r, null, 4))
 }
 
+setTimeout(check, 860)
 function check() {
+    eraseUnstableFields()
+    const lastTimeResults = getLastTimeResults()
     const test = new TestCase()
+    const last = d[3].snap[d[3].snap.length - 1]
+    writeNewResults(last)
+    compareToGoldenStandard(lastTimeResults, last, test)
+    test.printResults()
+    if (test.getFails() !== 0) process.exit(1)
+}
+
+function eraseUnstableFields() {
     for (let person of d) {
         for (let snapshot of person.snap) {
             for (let moment of snapshot) {
@@ -90,17 +100,14 @@ function check() {
             }
         }
     }
-    const last = d[3].snap
-    writeNewResults(last)
+}
+
+function compareToGoldenStandard(lastTimeResults, last, test) {
     for (let i = 0; i < last.length; i++) {
-        for (let j = 0; j < last[i].length; j++) {
-            test.assertEqual(
-                `at least hasn't changed, snapshot ${i}, moment ${j}`,
-                lastTimeResults[i][j],
-                last[i][j]
-            )
-        }
+        test.assertEqual(
+            `at least hasn't changed, moment ${i}`,
+            lastTimeResults[i],
+            last[i]
+        )
     }
-    test.printResults()
-    if (test.getFails() !== 0) process.exit(1)
 }
