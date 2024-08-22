@@ -7,7 +7,7 @@ class ViewEvent:
         self.body = body
 
 
-class EventAdapter:
+class EventDbAdapter:
 
     def __init__(self):
         self.return_on_pop = None
