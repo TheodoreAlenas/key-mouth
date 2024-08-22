@@ -115,20 +115,33 @@ class AfterSocketLogicTest(unittest.TestCase):
             self.assertEqual(404, e.status_code)
 
     def test_connect_get_others_last_moment(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        res_1, _ = conn_1.handle_input(10.1, "+1")
-        res_2, conn_2 = self.logic.connect(10.2, "room0")
-        self.assertEqual(res_1[0][1], res_2[2][1])
+        res_1, conn_1 = self.logic.connect(10.0, "room0")
+        res_2, _ = conn_1.handle_input(10.1, "+1")
+        res_3, conn_2 = self.logic.connect(10.2, "room0")
+        a = [x for _, x in res_1 + res_2]
+        b = [x for _, x in res_3[:-2]]
+        self.assertEqual(a, b)
 
-#    def test_on_connect_get_up_to_date(self):
-#        res_1, conn_1 = self.logic.connect(10.0, "room0")
-#        res_2, _ = conn_1.handle_input(10.1, "+old")
-#        res_3, _ = conn_1.handle_input(99.0, "+new")
-#        res_4, conn_2 = self.logic.connect(99.1, "room0")
-#        a = [x for _, x in res_1 + res_2 + res_3]
-#        b = [x for c, x in res_4 if c == conn_2.conn_id]
-#        self.assertEqual(a, b)
-#
+    def test_on_connect_get_a_stored_moment(self):
+        res_1, conn_1 = self.logic.connect(10.0, "room0")
+        res_2, _ = conn_1.handle_input(10.1, "+old")
+        res_3, conn_2 = self.logic.connect(99.0, "room0")
+        a = [x for _, x in res_1 + res_2]
+        b = [x for _, x in res_3[:len(a)]]
+        self.assertEqual(a, b)
+
+    def test_on_connect_get_a_stored_moment_and_new(self):
+        res_1, conn_1 = self.logic.connect(10.0, "room0")
+        res_2, _ = conn_1.handle_input(10.1, "+old")
+        res_3, _ = conn_1.handle_input(99.0, "+new")
+        res_4, conn_2 = self.logic.connect(99.1, "room0")
+        a = [x for _, x in res_1 + res_2]
+        b = [x for _, x in res_4[:len(a)]]
+        self.assertEqual(a, b)
+        c = [x for _, x in res_3]
+        d = [x for _, x in res_4[len(a):len(a) + len(c)]]
+        self.assertEqual(c, d)
+
 #    def test_connect_get_no_moments(self):
 #        res, conn_1 = self.logic.connect(10.0, "room0")
 #        self.assertEqual(1, res[0][1]["n"])

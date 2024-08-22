@@ -1,10 +1,10 @@
+from dataclasses import dataclass
 
+@dataclass
 class ViewEvent:
-
-    def __init__(self, conn_id, event_type, body=None):
-        self.conn_id = conn_id
-        self.event_type = event_type
-        self.body = body
+    conn_id: any
+    event_type: str
+    body: any
 
 
 class EventDbAdapter:

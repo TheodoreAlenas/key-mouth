@@ -65,6 +65,7 @@ class Connection:
 
     def _store_last_moment(self, time):
         baked_moment = self.room.evt_db.pop_moment()
+        self.room.evt_stream.stream_models = []
         self.room.db.add_moment(baked_moment)
         self.room.last_moment = []
         self.room.last_moment_time = time
