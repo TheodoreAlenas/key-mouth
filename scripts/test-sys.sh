@@ -18,7 +18,7 @@ sleep 1
     export KEYMOUTH_API=http://localhost:8001
     export KEYMOUTH_WS=ws://localhost:8001
 
-    timeout 3s node js/mod/WebInteractor.systestMain.js
+    timeout 3s node js/mod/ControllerInttestMain.js
     err=$?
     if [ 0 = $err ]
     then echo passed > git-ignores/systest-front-result.gitig

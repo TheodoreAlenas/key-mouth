@@ -1,4 +1,4 @@
-import WebInteractor from './WebInteractor.js'
+import Controller from './Controller.js'
 import UriRoom from './UriRoom.js'
 import uriFirstArg from './uriFirstArg.js'
 import TestCase from './TestCase.js'
@@ -19,8 +19,8 @@ const withNoError = withRoom.then(function(res) {
     })
 })
 
-function withWebInteractor(buf, callback) {
-    const wi = new WebInteractor(uri)
+function withController(buf, callback) {
+    const wi = new Controller(uri)
 
     wi.setInputValue = function(m) {
         buf.inp.push(m)
@@ -37,7 +37,7 @@ function withWebInteractor(buf, callback) {
 const d = [0,0,0,0].map(_ => ({inp: [], snap: []}))
 
 withNoError.then(function() {
-    withWebInteractor(d[0], function(unlocked, close) {
+    withController(d[0], function(unlocked, close) {
         setTimeout(function() {
             unlocked.onInputChange("hi")
             unlocked.onInputChange("hi there")
@@ -46,18 +46,18 @@ withNoError.then(function() {
         setTimeout(close, 200)
     })
     setTimeout(function() {
-        withWebInteractor(d[1], function(unlocked, close) {
+        withController(d[1], function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 20)
     setTimeout(function() {
-        withWebInteractor(d[2], function(unlocked, close) {
+        withController(d[2], function(unlocked, close) {
             unlocked.onInputChange("interrupt")
             setTimeout(close, 200)
         })
     }, 600)
     setTimeout(function() {
-        withWebInteractor(d[3], function(unlocked, close) {
+        withController(d[3], function(unlocked, close) {
             setTimeout(close, 200)
         })
     }, 650)

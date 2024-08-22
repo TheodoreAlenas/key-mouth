@@ -4,7 +4,7 @@
 import Io from './Io.js'
 import EventPresenter from './EventPresenter.js'
 
-export default class WebInteractor {
+export default class Controller {
     setMoments(m) {throw new Error("setMoments unset, arg: " + m)}
     setInputValue(v) {throw new Error("setInputValue unset, arg: " + v)}
     onReadySocket(v) {throw new Error("onReadySocket unset, arg: " + v)}

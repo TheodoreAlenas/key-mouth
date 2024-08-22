@@ -1,4 +1,4 @@
-import WebInteractor from '../mod/WebInteractor.js'
+import Controller from '../mod/Controller.js'
 import UriRoom from '../mod/UriRoom.js'
 import uriFirstArg from '../mod/uriFirstArg.js'
 import Room from '../components/room.jsx'
@@ -14,7 +14,7 @@ export default function PageRoom({env}) {
             const s = new URLSearchParams(router.query)
             const roomName = s.get('name')
             const uri = new UriRoom(env.room, roomName)
-            const newO = new WebInteractor(uri)
+            const newO = new Controller(uri)
             setO(newO)
             return function() { newO.close() }
         }
