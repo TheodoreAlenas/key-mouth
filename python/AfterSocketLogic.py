@@ -3,7 +3,7 @@
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from Connection import Connection
-from logic_and_conn import ConnRoomData, ConfTiming
+from ConnRoomData import ConnRoomData, ConfTiming
 
 class LogicHttpException(Exception):
     def __init__(self, detail, status_code):

@@ -1,5 +1,6 @@
 from db.event_adapter import EventDbAdapter
 from EventStreamAdapter import EventStreamAdapter
+from dataclasses import dataclass
 
 
 class ConnRoomData:
@@ -18,8 +19,7 @@ class ConnRoomData:
         self.name = name
 
 
+@dataclass
 class ConfTiming:
-
-    def __init__(self, min_silence, min_moment):
-        self.min_silence = min_silence
-        self.min_moment = min_moment
+    min_silence: float
+    min_moment: float

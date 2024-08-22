@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from logic_and_conn import ConnRoomData, ConfTiming
+from ConnRoomData import ConnRoomData, ConfTiming
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
 
