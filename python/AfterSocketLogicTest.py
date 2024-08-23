@@ -118,6 +118,20 @@ class AfterSocketLogicTest(unittest.TestCase):
         except Exception as e:
             self.assertEqual(404, e.status_code)
 
+    def test_connection_ids_start_at_101(self):
+        _, conn = self.logic.connect(10.0, "room0")
+        self.assertEqual(101, conn.conn_id)
+
+    def test_connection_ids_increment(self):
+        self.logic.connect(10.0, "room0")
+        _, conn = self.logic.connect(10.1, "room0")
+        self.assertEqual(102, conn.conn_id)
+
+    def test_connection_ids_dont_go_per_room(self):
+        self.logic.connect(10.0, "room0")
+        _, conn = self.logic.connect(10.1, "room1")
+        self.assertEqual(102, conn.conn_id)
+
     def test_connect_get_others_last_moment(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, _ = conn_1.handle_input(10.1, "+1")
@@ -285,6 +299,18 @@ class DbLoadRoomTest(unittest.TestCase):
         logic = self.get_logic(10.0, db)
         _, ans = logic.get_rooms(10.1, None)
         self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
+
+    def test_connection_ids_continue(self):
+        db = Db()
+
+        logic = self.get_logic(10.0, db)
+        logic.create_room(10.1, "room0")
+        _, conn_1 = logic.connect(10.2, "room0")
+        logic.close()
+
+        logic = self.get_logic(10.0, db)
+        _, conn_2 = logic.connect(10.2, "room0")
+        self.assertEqual(1, conn_2.conn_id - conn_1.conn_id)
 
 
 if __name__ == "__main__":

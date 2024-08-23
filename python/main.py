@@ -111,6 +111,11 @@ async def root(websocket: WebSocket, room: str):
             await wrap(conn.disconnect, None)
 
 
+@app.on_event("shutdown")
+def on_shutdown():
+    print("shutting down...")
+
+
 '''
 Copyright 2024 <dimakopt732@gmail.com>
 

@@ -98,6 +98,9 @@ class AfterSocketLogic:
         self.conns[i] = Connection(i, self.rooms_ram[room], self._conf_timing)
         return self.conns[i].connect(time, None)
 
+    def close(self):
+        pass
+
 
 """
 Copyright 2024 <dimakopt732@gmail.com>
