@@ -20,7 +20,7 @@ class AfterSocketLogic:
     def __init__(self, time, db, conf_timing):
         self._conf_timing = conf_timing
         self.db = db
-        self.last_id = -1
+        self.last_id = 100
         self.conns = {}
         self.rooms_ram = {}
         for d in self.db.get_restart_data():
