@@ -247,34 +247,40 @@ class DbLoadRoomTest(unittest.TestCase):
     def test_use_other_db_start_blank(self):
         logic_1 = self.get_logic(10.0, Db())
         logic_1.create_room(10.1, "room0")
-        logic_2 = self.get_logic(10.2, Db())
+        logic_1.close(10.2, None)
+        logic_2 = self.get_logic(10.3, Db())
         try:
-            logic_2.connect(10.3, "room0")
+            logic_2.connect(10.4, "room0")
             self.assertFalse("should have thrown an error")
         except Exception:
             pass
 
-    def test_use_same_db_dont_start_blank(self):
+    def test_use_same_db_see_shutdown_event(self):
         db = Db()
         logic_1 = self.get_logic(10.0, db)
         logic_1.create_room(10.1, "room0")
-        logic_2 = self.get_logic(10.2, db)
-        logic_2.connect(10.3, "room0")
+        logic_1.close(10.2, None)
+        logic_2 = self.get_logic(10.3, db)
+        res, _ = logic_2.connect(10.4, "room0")
+        self.assertEqual('shutdown', res[-3][1]['type'])
+        self.assertEqual('endOfMoment', res[-2][1]['type'])
+        self.assertEqual('connect', res[-1][1]['type'])
 
-    def test_use_same_db_dont_see_last_moment(self):
+    def test_use_same_db_see_last_moment(self):
         db = Db()
 
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
         _, conn = logic.connect(10.2, "room0")
         conn.handle_input(10.3, "+will be stored later")
+        logic.close(10.4, None)
 
-        logic = self.get_logic(10.3, db)
-        res, _ = logic.connect(10.4, "room0")
+        logic = self.get_logic(10.5, db)
+        res, _ = logic.connect(10.6, "room0")
 
-        self.assertEqual(   1   , res[-1][1]['momentIdx'])
+        self.assertEqual(   2   , res[-1][1]['momentIdx'])
 
-    def test_use_same_db_see_stored_moment_and_not_last(self):
+    def test_use_same_db_see_stored_moment_and_last(self):
         db = Db()
 
         logic = self.get_logic(10.0, db)
@@ -283,21 +289,23 @@ class DbLoadRoomTest(unittest.TestCase):
         conn.handle_input(10.3, "+will be stored later")
 
         conn.handle_input(99.0, "+started speaking again, stored old")
+        logic.close(99.1, None)
 
-        logic = self.get_logic(99.1, db)
-        res, _ = logic.connect(99.2, "room0")
+        logic = self.get_logic(99.2, db)
+        res, _ = logic.connect(99.3, "room0")
 
-        self.assertEqual(   2   , res[-1][1]['momentIdx'])
+        self.assertEqual(   3   , res[-1][1]['momentIdx'])
 
     def test_room_names_reload(self):
         db = Db()
 
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
-        logic.rename_room(10.0, ("room0", "a name"))
+        logic.rename_room(10.2, ("room0", "a name"))
+        logic.close(10.3, None)
 
-        logic = self.get_logic(10.0, db)
-        _, ans = logic.get_rooms(10.1, None)
+        logic = self.get_logic(10.4, db)
+        _, ans = logic.get_rooms(10.5, None)
         self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
 
     def test_connection_ids_continue(self):
@@ -306,10 +314,10 @@ class DbLoadRoomTest(unittest.TestCase):
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
         _, conn_1 = logic.connect(10.2, "room0")
-        logic.close()
+        logic.close(10.3, None)
 
-        logic = self.get_logic(10.0, db)
-        _, conn_2 = logic.connect(10.2, "room0")
+        logic = self.get_logic(10.4, db)
+        _, conn_2 = logic.connect(10.5, "room0")
         self.assertEqual(1, conn_2.conn_id - conn_1.conn_id)
 
 

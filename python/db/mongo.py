@@ -5,6 +5,7 @@ from db.exceptions import RoomExistsException, RoomDoesntExistException
 import db.server_only_gitig
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from dataclasses import dataclass
 
 
 class RoomMoments:
@@ -58,12 +59,16 @@ class RoomMoments:
         return ms['moments']
 
 
+@dataclass
 class RoomRestartData:
+    room_id: any
+    name: str
+    last_moment_time: float
 
-    def __init__(self, room_id, name, last_moment_time):
-        self.room_id = room_id
-        self.name = name
-        self.last_moment_time = last_moment_time
+
+@dataclass
+class AfterSocketLogicRestartData:
+    last_id: any
 
 
 class Db:
@@ -156,6 +161,19 @@ class Db:
                 last_moment_time=r.last_moment_time
             ))
         return res
+
+    def save_state(self, last_id):
+        r = self._db['reloadableState'].update_one(
+            {}, {"$set": {'lastId': last_id}})
+        if r.modified_count != 1:
+            self._db['reloadableState'].insert_one(
+                {'lastId': last_id})
+
+    def reload_state(self):
+        s = self._db['reloadableState'].find_one({})
+        if s is None:
+            return None
+        return AfterSocketLogicRestartData(last_id=s['lastId'])
 
 
 """

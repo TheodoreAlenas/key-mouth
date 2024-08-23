@@ -2,6 +2,7 @@
 # License at the bottom
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
+from dataclasses import dataclass
 
 
 class RoomMoments:
@@ -30,17 +31,22 @@ class RoomMoments:
         return self.moments[start:end]
 
 
+@dataclass
 class RoomRestartData:
+    room_id: any
+    name: str
+    last_moment_time: float
 
-    def __init__(self, room_id, name, last_moment_time):
-        self.room_id = room_id
-        self.name = name
-        self.last_moment_time = last_moment_time
+
+@dataclass
+class AfterSocketLogicRestartData:
+    last_id: any
 
 
 class Db:
 
     def __init__(self):
+        self.reloadable_state = None
         self.rooms = {}
 
     def create_room(self, time, name):
@@ -71,6 +77,13 @@ class Db:
                 name=r.name,
                 last_moment_time=r.last_moment_time))
         return res
+
+    def save_state(self, last_id):
+        s = AfterSocketLogicRestartData(last_id=last_id)
+        self.reloadable_state = s
+
+    def reload_state(self):
+        return self.reloadable_state
 
 
 """

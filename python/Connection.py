@@ -34,6 +34,11 @@ class Connection:
         conn_msg = self._handle_parsed(time, "connect")
         return (catch_up + conn_msg, self)
 
+    def close_room(self, time):
+        self._handle_parsed(time, "shutdown")
+        self._push(0, 'endOfMoment', time)
+        self._store_last_moment(time)
+
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
         return (self._handle_parsed(time, "disconnect"), None)

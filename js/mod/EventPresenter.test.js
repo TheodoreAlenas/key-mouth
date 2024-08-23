@@ -59,7 +59,7 @@ ep.push({connId: 4, type: "write", body: "hi again"})
 v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
-    "only end of moment",
+    "sandwitched end of moment",
     [
         {key: 7, time: "times erased", body: [{
             name: "con4",
@@ -69,6 +69,21 @@ test.assertEqual(
             name: "con4",
             message: [{type: "write", body: "hi again"}]
         }]},
+    ],
+    v
+)
+
+ep = new EventPresenter(7)
+ep.push({connId: 0, type: "shutdown", body: null})
+v = ep.getMomentViews(x => "con" + x)
+for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
+test.assertEqual(
+    "shutdown event",
+    [
+        {key: 7, time: null, body: [{
+            name: "con0",
+            message: [{type: "event", body: "[server shutting down]"}]
+        }]}
     ],
     v
 )

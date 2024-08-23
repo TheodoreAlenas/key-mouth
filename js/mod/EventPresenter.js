@@ -76,6 +76,11 @@ function massageEvent(event) {
         type: 'event',
         body: '[disconnected]'
     }
+    if (event.type === 'shutdown') return {
+        connId: event.connId,
+        type: 'event',
+        body: '[server shutting down]'
+    }
     return event
 }
 

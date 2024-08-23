@@ -112,8 +112,8 @@ async def root(websocket: WebSocket, room: str):
 
 
 @app.on_event("shutdown")
-def on_shutdown():
-    print("shutting down...")
+async def on_shutdown():
+    await wrap(logic.close, None)
 
 
 '''

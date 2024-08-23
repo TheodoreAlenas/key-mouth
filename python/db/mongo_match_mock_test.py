@@ -64,6 +64,15 @@ class BothDbs:
         return ([obj_to_dict(o) for o in a],
                 [obj_to_dict(o) for o in b])
 
+    def save_state(self, last_id):
+        self.real.save_state(last_id=last_id)
+        self.mock.save_state(last_id=last_id)
+
+    def reload_state(self):
+        a = self.real.reload_state()
+        b = self.mock.reload_state()
+        return (obj_to_dict(a), obj_to_dict(b))
+
 
 class A(unittest.TestCase):
 
@@ -137,6 +146,15 @@ class A(unittest.TestCase):
         a, b = rooms.get_range(1, 2)
         self.assertEqual(a, b)
         a, b = rooms.get_range(0, 2)
+        self.assertEqual(a, b)
+
+    def test_reload_nothing(self):
+        a, b = self.dbs.reload_state()
+        self.assertEqual(a, b)
+
+    def test_reload_state(self):
+        self.dbs.save_state(last_id=732)
+        a, b = self.dbs.reload_state()
         self.assertEqual(a, b)
 
 

@@ -6,6 +6,7 @@ from Connection import Connection
 from ConnRoomData import ConnRoomData, ConfTiming
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
+from dataclasses import dataclass
 
 
 class LogicHttpException(Exception):
@@ -20,7 +21,11 @@ class AfterSocketLogic:
     def __init__(self, time, db, conf_timing):
         self._conf_timing = conf_timing
         self.db = db
-        self.last_id = 100
+        saved = self.db.reload_state()
+        if saved is None:
+            self.last_id = 100
+        else:
+            self.last_id = saved.last_id
         self.conns = {}
         self.rooms_ram = {}
         for d in self.db.get_restart_data():
@@ -30,13 +35,23 @@ class AfterSocketLogic:
                 name=d.name,
                 db_room=db.get_room(d.room_id))
 
-    def create_room(self, time, name):
+    def connect(self, time, room):
+        if not room in self.rooms_ram:
+            raise LogicHttpException(f"room '{room}' doesn't exist",
+                                     status_code=404)
+        self.last_id += 1
+        i = self.last_id
+        self.conns[i] = Connection(i, self.rooms_ram[room], self._conf_timing)
+        return self.conns[i].connect(time, None)
+
+    def create_room(self, time, room_id):
         def create_and_set():
-            self.db.create_room(time, name)
-            self.rooms_ram[name] = ConnRoomData(
-                time, name, self.db.get_room(name))
+            self.db.create_room(time, room_id)
+            r = ConnRoomData(time, room_id, self.db.get_room(room_id))
+            r.conn_bcaster = Connection(0, r, self._conf_timing)
+            self.rooms_ram[room_id] = r
             return ([], None)
-        return self._if_room_doesnt_exist(name, create_and_set)
+        return self._if_room_doesnt_exist(room_id, create_and_set)
 
     def delete_room(self, time, name):
         def delete():
@@ -89,17 +104,11 @@ class AfterSocketLogic:
             return ([], to_stream.stream_models)
         return self._if_room_exists(room, f)
 
-    def connect(self, time, room):
-        if not room in self.rooms_ram:
-            raise LogicHttpException(f"room '{room}' doesn't exist",
-                                     status_code=404)
-        self.last_id += 1
-        i = self.last_id
-        self.conns[i] = Connection(i, self.rooms_ram[room], self._conf_timing)
-        return self.conns[i].connect(time, None)
-
-    def close(self):
-        pass
+    def close(self, time, _):
+        for room_id in self.rooms_ram:
+            self.rooms_ram[room_id].conn_bcaster.close_room(time)
+        self.db.save_state(last_id=self.last_id)
+        return ([], None)
 
 
 """
