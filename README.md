@@ -11,20 +11,7 @@ In a typical messenger there are bubbles per sent message,
 and this app has a bubble per significant moment,
 such as someone interrupting a conversation or people pausing.
 
-The architecture is inspired by
-Robert C. Martin's Clean Architecture book.
-Frameworks are pushed to the side and the system is cut in ways
-that make it convenient to write fast tests.
-It started out as a small cluster of code in a few files
-and slowly it started to form parts.
-The database was added later and it was made to mimic the mock.
-
-To understand the system,
-I'd recommend starting from the scripts
-for testing and for setting up my environment.
-The deployment scripts are ignored by git.
-
-## Necessary basic features
+## Essential features
 
 - [x] interrupting breaks the moment
 - [x] silence breaks the moment
@@ -37,80 +24,208 @@ The deployment scripts are ignored by git.
 - [ ] locked rooms that require an invitation
 - [ ] administration bans
 
-## Wanted features
+## Secondary features
 
-- image uploading
-- some stages of the upload act like messages, perhaps 0%, 50%, 100%
-- uploading an amount of text which appears folded
-- editing a copy of someone's uploaded text
-- drawing strokes on someone's uploaded image
-- these edits appear to the others like messages in real time
-- guest chat rooms that don't need authentication, at some tradeoff
+- [ ] image uploading
+- [ ] some stages of the upload act like messages, perhaps 0%, 50%, 100%
+- [ ] uploading an amount of text which appears folded
+- [ ] editing a copy of someone's uploaded text
+- [ ] drawing strokes on someone's uploaded image
+- [ ] these edits appear to the others like messages in real time
+- [ ] guest chat rooms that don't need authentication, at some tradeoff
 
 ## Unlikely features
 
-- audio/video calls
-- integration with video platforms to display videos inside the app
-- GUI apps outside the browser
+- [ ] audio/video calls
+- [ ] integration with video platforms to display videos inside the app
+- [ ] GUI apps outside the browser
+
+## Code structure
+
+The architecture is inspired by
+Robert C. Martin's Clean Architecture book.
+It allows fast tests to be thorough and convenient to write,
+at the cost of underutilizing thrird party frameworks
+and adding some abstraction.
+
+I'd recommend reading the scripts first
+because I run them often.
+
+### Web
+
+The client sends `+h`, `+i`, `-i` through the socket.
+
+The server sends the diffs back.
+It does not send something closer to the final view.
+The data is more complicated and varied from server to client,
+so it's JSON,
+but with a format that makes it reasonably easy
+to turn it into protobuff in the future.
+
+The socket never tells the client to do a fetch request
+on another endpoint.
+This did use to happen,
+but eventually the socket was made to give the information itself.
+
+### Server
+
+The FastAPI code is in one place
+and it's only tested through the front-back integration test.
+
+Most of the code stays outside and
+the tests execute it without importing FastAPI.
+
+The different events create event data structures,
+which can be turned into
+data structures for the database (and back)
+and for the client.
+
+An important event is the event that the "speech bubbles" can be split.
+If this README is up to date, the "speech bubble" is called moment.
+When they split, a moment can be stored in the database,
+since the diffs in it can be displayed
+without fetching previous diffs.
+One of the reasons why there are three data structures for events
+is that for the database the ending of a moment is the end of a list,
+while for the client the ending of a moment is an event.
+Also, if this is still the case,
+the client gets the moment id and diff id per event, for validation.
+
+### Client
+
+One directory has NextJS code.
+
+ReactJS code is in part in that directory
+but mostly in another directory.
+
+Most Javascript code is outside of both,
+in a directory with a `package.json` file
+that declares the files ES modules.
+That way, the test files among them can be ran with
+`node <filename>` from the shell.
+
+If this README is up to date,
+there's a `TestCase.js` file with a class of the same name.
+I found `jest` to be uncomfortable so I thought to implement
+something reliable-enough on my own,
+so long as it doesn't exceed a laptop screen of lines of code.
+
+The server data is turned into a data structure
+that can easily be turned into ReactJS components
+
+If this README is up to date, there's an intermediate step,
+where the events are turned into a data structure
+that the `accumulateDiffs` function accepts.
+The data structure it returns isn't meant to be the final view model.
+That way, `accumulateDiffs` can stay the same for longer.
+
+The mechanism that takes events and produces the view model
+is made to be reusable,
+because once it's made possible to scroll far up in old messages,
+it will be reused to create the view model of fetched events.
 
 ## Story
 
-I was told to learn NextJS and Python's FastAPI
-by making a pet project.
-I had no experience in web development
-so I wasn't used to thinking about
-sessions, users, databases, concurrency etc.
+This project was for me to learn NextJS and Python's FastAPI.
+I became an intern
+in a chatbot company called [Helvia](https://helvia.ai)
+in July 2024.
+I started in the operations and a month later
+I was told to practice with their tools to go to the backend.
 
-I happened to have an idea for a project at that time,
-an instant messenger, your friend types
-and you see him type letter by letter.
-You also see him delete,
-and the deletions stay,
-perhaps they're fainted text with a strike through.
+Although I had written small CLI programs before
+and I wasn't a complete beginner in the languages,
+I didn't grasp events, state management, sessions, users
+and the web technologies.
 
-It sounded simple.
-Each person sends diffs, such as letter typed, letter deleted,
-the diffs stay in a database
-and the other person's browser reads them and
-constructs the appearance of the messages.
+I was told I could make a taks management app,
+but I said I had an idea in my head
+and they told me I could try it instead.
 
-But if the placement of a letter on the screen
-depends on what happened right before...
-How far back does one need to go in history
-to decide where a letter is placed on screen?
-Also, what if someone changes the middle of their input box?
-And if there's no input box, what about smartphone auto-correction?
+Now that the project has progressed it looks staightforward,
+but the concept only outlined roughly what should be possible.
+An early concept was
 
-The first week I thought I'm almost done.
-I thought I'm almost done every day
-and I went from plan to code to plan and back to code.
+```
+Tom:
+- Hi [hter]there, did you
+
+Tom and Tedd together:
+- go to the oh cool
+- party yes I loved it
+```
+
+Then I realized I can't use key up and key down events
+because on mobile there's auto-correction.
+But if there's a text box, one can edit the middle.
+A later concept was:
+
+```
+Tom: I was thinking if you'd want
+Tom: [I wa]nted to ask you[ if you'd want]
+Tom: to go to Tedd's party
+```
+
+If you have some experience, you may notice a flaw.
+I didn't have the experience, so it took me a week.
+In essense, how many write events and deletion events
+does one need to fetch from the database
+in order to know how to present a message?
+
+The first week, every day I would think I'll be done in two more days.
+I went from plan to code back and forth multiple times a day,
+because every part of a plan
+was proven ineffective by a few lines of implementation code.
+The experience reminded me of the way people advertise waterfall,
+because indeed I was too overwhelmed to code without plans.
 
 The second week
 the code stabilized to the point where
-I could extract code into different files
+I could extract it into different files
 and write tests.
+The company was supportive and I was told to continue.
 
-The third week I don't even remember what happened.
-I worked in the mornings,
-I worked in the evenings,
-I worked in the weekends,
-I worked and I worked and I worked,
-and on the evening of Friday I served *something*.
-It showed keys in real time,
-it had chat rooms
-and it showed some gap between messages
-where one interrupts the other.
-But it didn't show deletions.
-It didn't have a database either.
+The third week I worked massive amounts.
+On the evening of Friday I served a pitiful web app
+without a database.
+It didn't display deleted text properly,
+it would look like
 
-I remember Robert Martin talking about the time
-when he did a start-up and he writes in his book
-"we wanted to be millionaires, we [...], we were full of sh-"
+```
+Hi ehre-e-r-h-ethere
+```
 
-The fourth week I implemented a lot and I did a ton of refactoring.
-I started to see the full picture and to comprehend how
-as you scroll up in the messages there are 3 states,
-and how there was the concept of an event
-which may or may not have to be stored and sent to the client.
-There was a big refactor where
-I tried to paint my understanding into the code.
+because the protocol was `+e+h+r+e-e-r-h-e`
+and the temporary implementation
+was to display everything but plus signs.
+
+I was mentally declining because I was stuck in Athens in August
+and the streets were empty.
+I had fantasies of showcasing a beautiful web app
+to the company and getting claps in the online meeting.
+I was full of shit
+and I started to de-value a lot for the sake of the project.
+
+The fourth week I implemented many features
+and I did a ton of refactoring.
+I started to understand the state management and the flow of events
+through the system,
+so the code started to reference my understanding.
+
+In the end of the fourth week,
+the person who assigned the task and my mentor saw the app.
+My fantasies were crushed so bad that I spent 7 hours on YouTube,
+didn't eat from 11am that day to 2pm next day.
+I lacked sleep and before going to the Goody's
+I spent half hour listening to heavy metal
+and another hour reformulating the situation in my head.
+I was mentally exhausted and my shaming circuits burnt out.
+I sat on a bench, put the Goody's box next to me and
+it slipped and spilled the burger and potatoes on the ground.
+I was so mentally exhausted that,
+Once I comprehended what just happened,
+I causally picked up and ate the parts that
+landed on top of other parts.
+
+And that's the story thus far,
+24th of August 2024.
