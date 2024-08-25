@@ -14,10 +14,12 @@ if a in environ and environ[a] == 'yes':
 else:
     from db.mongo import Db
 
-inttest = False
-a = 'KEYMOUTH_INTTEST'
+inttest = None
+a = 'KEYMOUTH_INTTEST_WIDGETS'
 if a in environ and environ[a] == 'yes':
-    inttest = True
+    from IntTestWidgets import IntTestWidgets
+    inttest = IntTestWidgets()
+
 
 app = FastAPI()
 a = 'KEYMOUTH_CORS_ALL'
@@ -49,6 +51,8 @@ async def wrap(f, args, before_sending=do_nothing):
     mutex.acquire()
     released_the_mutex = False
     try:
+        if inttest is not None:
+            inttest.raise_exception_once('before releasing mutex')
         to_send, to_return = f(time(), args)
         mutex.release()
         released_the_mutex = True
