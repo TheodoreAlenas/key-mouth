@@ -1,3 +1,6 @@
+from time import time
+
+
 class IntTestWidgets:
 
     def __init__(self):
@@ -7,3 +10,8 @@ class IntTestWidgets:
         if not msg in self.raised_exceptions:
             self.raised_exceptions.append(msg)
             raise Exception("for inttest: " + msg)
+
+    def add_room_and_restart(self, logic, create_logic):
+        logic.create_room(time(), 'pre\nmade')
+        logic.close(time(), None)
+        return create_logic()

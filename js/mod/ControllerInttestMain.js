@@ -6,20 +6,31 @@ import fs from 'fs'
 
 const test = new TestCase()
 
-const uri = new UriRoom(uriFirstArg.room, "my\nroom")
+const uriRestarted = new UriRoom(uriFirstArg.room, "pre\nmade")
+const uriMissing = new UriRoom(uriFirstArg.room, "doesn't exist")
+const uriNew = new UriRoom(uriFirstArg.room, "new\n room")
 let res = null
 
-res = await uri.fetchPutRoom()
+res = await uriNew.fetchPutRoom()
 test.assertEqual("inttest widget injected a 500", 500, res.status)
 
-res = await uri.fetchPutRoom()
+res = await uriNew.fetchPutRoom()
 test.assertEqual("server mutex released and got 200", 200, res.status)
 
-res = await uri.fetchPutRoom()
+res = await uriNew.fetchPutRoom()
 test.assertEqual("creating room twice throws error", 409, res.status)
 
+let shouldThrow = new Controller(uriMissing)
+let threw = 'no'
+shouldThrow.onSocketError = function() {threw = 'yes'}
+setTimeout(function() {
+    test.assertEqual("missing room returns error", 'yes', threw)
+    test.printResults()
+    if (test.getFails() !== 0) process.exit(1)
+}, 100)
+
 function withController(buf, callback) {
-    const wi = new Controller(uri)
+    const wi = new Controller(uriRestarted)
 
     wi.setInputValue = function(m) {
         buf.inp.push(m)

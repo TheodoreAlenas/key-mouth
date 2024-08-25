@@ -20,7 +20,6 @@ if a in environ and environ[a] == 'yes':
     from IntTestWidgets import IntTestWidgets
     inttest = IntTestWidgets()
 
-
 app = FastAPI()
 a = 'KEYMOUTH_CORS_ALL'
 if a in environ and environ[a] == 'yes':
@@ -33,14 +32,22 @@ if a in environ and environ[a] == 'yes':
     )
 id_to_sock = {}
 mutex = threading.Lock()
-logic = AfterSocketLogic(
-    time=time(),
-    db=Db(),
-    conf_timing=ConfTiming(
-        min_silence=1.0,
-        min_moment=0.5
-    ))
-logic.create_room(time(), str(time()))
+db_only_use_in_inttest_and_logic_init = Db()
+def create_logic():
+    return AfterSocketLogic(
+        time=time(),
+        db=db_only_use_in_inttest_and_logic_init,
+        conf_timing=ConfTiming(
+            min_silence=1.0,
+            min_moment=0.5
+        ))
+logic = create_logic()
+if inttest is not None:
+    logic = inttest.add_room_and_restart(logic, create_logic)
+a = 'KEYMOUTH_ADD_A_ROOM'
+if a in environ and environ[a] == 'yes':
+    logic.create_room(time(), 'test-room')
+    logic.rename_room(time(), ('test-room', 'Test Room'))
 
 
 def do_nothing(_):
@@ -99,6 +106,8 @@ async def room_get(room: str, start: int, end: int):
 
 @app.websocket("/{room}")
 async def root(websocket: WebSocket, room: str):
+    if not room in logic.rooms_ram:
+        raise HTTPException(status_code=404, detail="room missing")
     conn = None
     try:
         await websocket.accept()

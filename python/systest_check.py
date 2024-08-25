@@ -16,7 +16,7 @@ class BackCheck(unittest.TestCase):
                 openConnections += 1
             elif l == 'connection closed\n':
                 closedConnections += 1
-        self.assertEqual(4, openConnections)
+        self.assertEqual(5, openConnections)
         self.assertEqual(openConnections, closedConnections)
 
     def test_gracefuly_shut_down(self):

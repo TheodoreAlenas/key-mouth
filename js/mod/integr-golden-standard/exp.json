@@ -13,6 +13,21 @@
                 "message": [
                     {
                         "type": "event",
+                        "body": "[server shutting down]"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "key": 2,
+        "time": "erased times",
+        "body": [
+            {
+                "name": "erased names",
+                "message": [
+                    {
+                        "type": "event",
                         "body": "[connected]"
                     },
                     {
@@ -41,7 +56,7 @@
         ]
     },
     {
-        "key": 2,
+        "key": 3,
         "time": null,
         "body": [
             {

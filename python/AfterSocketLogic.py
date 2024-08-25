@@ -34,6 +34,8 @@ class AfterSocketLogic:
                 room_id=d.room_id,
                 name=d.name,
                 db_room=db.get_room(d.room_id))
+            r = self.rooms_ram[d.room_id]
+            r.conn_bcaster = Connection(0, r, self._conf_timing)
 
     def connect(self, time, room):
         if not room in self.rooms_ram:

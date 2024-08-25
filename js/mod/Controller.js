@@ -8,6 +8,7 @@ export default class Controller {
     setMoments(m) {throw new Error("setMoments unset, arg: " + m)}
     setInputValue(v) {throw new Error("setInputValue unset, arg: " + v)}
     onReadySocket(v) {throw new Error("onReadySocket unset, arg: " + v)}
+    onSocketError(v) {throw new Error("onSocketError unset, arg: " + v)}
     constructor(uri) {
         try {
             this.constructorUnhandled(uri)
@@ -23,7 +24,10 @@ export default class Controller {
         function onReadySocket(io) {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
         }
-        this.io = new Io(uri, onReadySocket)
+        function onSocketError(arg) {
+            self.onSocketError(arg)
+        }
+        this.io = new Io(uri, onReadySocket, onSocketError)
         this.presenter = null
         this.io.onEvent(function(event) {
             if (self.presenter === null) {
