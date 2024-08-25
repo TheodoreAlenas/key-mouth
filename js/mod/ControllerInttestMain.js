@@ -2,7 +2,6 @@ import Controller from './Controller.js'
 import UriRoom from './UriRoom.js'
 import uriFirstArg from './uriFirstArg.js'
 import TestCase from './TestCase.js'
-import fs from 'fs'
 
 const test = new TestCase()
 
@@ -27,14 +26,18 @@ setTimeout(function() {
     test.assertEqual("missing room returns error", 'yes', threw)
 }, 100)
 
-function withController(buf, callback) {
-    const wi = new Controller(uriRestarted)
+function withController(uri, ret, callback) {
+    const wi = new Controller(uri)
 
-    wi.setInputValue = function(m) {
-        buf.inp.push(m)
-    }
-    wi.setMoments = function(m) {
-        buf.snap.push(m)
+    wi.setInputValue = function() {}
+    wi.setMoments = function(v) {
+        ret.v = v
+        for (let moment of ret.v) {
+            moment.time = "-"
+            for (let person of moment.body) {
+                person.name = "-"
+            }
+        }
     }
     function close() { wi.close() }
     wi.onReadySocket = function(unlocked) {
@@ -42,77 +45,127 @@ function withController(buf, callback) {
     }
 }
 
-const d = [0,0,0,0].map(_ => ({inp: [], snap: []}))
+const expShutdownMsg = [
+    {key: 0, time: "-", body: []},
+    {key: 1, time: "-", body: [{name: "-", message: [
+        {type: "event", body: "[room created]"},
+        {type: "event", body: "[server shutting down]"}
+    ]}]},
+    {key: 2, time: "-", body: [{name: "-", message: [
+        {type: "event", body: "[server started]"}
+    ]}]},
+    {key: 3, time: "-", body: [{name: "-", message: [
+        {type: "event", body: "[connected]"}
+    ]}]}
+]
+const realShutdownMsg = {v: null}
 
-withController(d[0], function(unlocked, close) {
+withController(uriRestarted, realShutdownMsg, function(_, close) {
     setTimeout(function() {
-        unlocked.onInputChange("hi")
-        unlocked.onInputChange("hi there")
-        unlocked.onClear()
-    }, 50)
-    setTimeout(close, 200)
-})
-setTimeout(function() {
-    withController(d[1], function(unlocked, close) {
-        setTimeout(close, 200)
-    })
-}, 20)
-setTimeout(function() {
-    withController(d[2], function(unlocked, close) {
-        unlocked.onInputChange("interrupt")
-        setTimeout(close, 200)
-    })
-}, 600)
-setTimeout(function() {
-    withController(d[3], function(unlocked, close) {
-        setTimeout(close, 200)
-    })
-}, 650)
-
-function getLastTimeResults() {
-    const j = fs.readFileSync('js/mod/integr-golden-standard/exp.json')
-    return JSON.parse(j)
-}
-function writeNewResults(r) {
-    fs.writeFileSync(
-        'js/mod/integr-golden-standard/real.gitig.json',
-        JSON.stringify(r, null, 4))
-}
-
-setTimeout(check, 860)
-function check() {
-    eraseUnstableFields()
-    const lastTimeResults = getLastTimeResults()
-    const last = d[3].snap[d[3].snap.length - 1]
-    writeNewResults(last)
-    compareToGoldenStandard(lastTimeResults, last, test)
-    test.printResults()
-    if (test.getFails() !== 0) process.exit(1)
-}
-
-function eraseUnstableFields() {
-    for (let person of d) {
-        for (let snapshot of person.snap) {
-            for (let moment of snapshot) {
-                if (moment.time) {
-                    moment.time = "erased times"
-                }
-                if (moment.body.length > 0) {
-                    for (let person of moment.body) {
-                        person.name = "erased names"
-                    }
-                }
-            }
-        }
-    }
-}
-
-function compareToGoldenStandard(lastTimeResults, last, test) {
-    for (let i = 0; i < last.length; i++) {
+        close()
         test.assertEqual(
-            `at least hasn't changed, moment ${i}`,
-            lastTimeResults[i],
-            last[i]
-        )
-    }
+            "seeing shutdown", expShutdownMsg, realShutdownMsg.v)
+    }, 100)
+})
+
+const expOneMoment = [
+    {key: 0, time: "-", body: []},
+    {key: 1, time: "-", body: [
+        {name: "-", message: [{type: "event", body: "[room created]"}]},
+        {name: "-", message: [{type: "event", body: "[connected]"},
+                              {type: "write", body: "too soon"}]}
+    ]}
+]
+const realOneMoment = []
+
+for (let i = 0; i < 10; i++) {
+    const uri = new UriRoom(uriFirstArg.room, "one-moment-" + i)
+    await uri.fetchPutRoom()
+    realOneMoment.push({v: null})
+    withController(uri, realOneMoment[i], function(unlocked, close) {
+        setTimeout(function() {unlocked.onInputChange("too soon")}, 150)
+        setTimeout(function() {close()}, 200)
+    })
 }
+setTimeout(function() {
+    test.assertEqual(
+        "one oneMessage", expOneMoment, realOneMoment[0].v)
+    const t = new TestCase()
+    for (let i = 0; i < 10; i++) {
+        t.assertEqual('', expOneMoment, realOneMoment[i].v)
+    }
+    test.assertEqual(
+        "all oneMessage", 10, 10 - t.getFails())
+}, 200)
+
+const expTwoMoments = [
+    {key: 0, time: "-", body: []},
+    {key: 1, time: "-", body: [
+        {name: "-", message: [{type: "event", body: "[room created]"}]},
+        {name: "-", message: [{type: "event", body: "[connected]"}]}
+    ]},
+    {key: 2, time: "-", body: [
+        {name: "-", message: [{type: "write", body: "late"}]}
+    ]}
+]
+const realTwoMoments = []
+
+for (let i = 0; i < 10; i++) {
+    const uri = new UriRoom(uriFirstArg.room, "two-moments-" + i)
+    await uri.fetchPutRoom()
+    realTwoMoments.push({v: null})
+    withController(uri, realTwoMoments[i], function(unlocked, close) {
+        setTimeout(function() {unlocked.onInputChange("late")}, 220)
+        setTimeout(function() {close()}, 300)
+    })
+}
+setTimeout(function() {
+    test.assertEqual(
+        "one twoMoments", expTwoMoments, realTwoMoments[0].v)
+    const t = new TestCase()
+    for (let i = 0; i < 10; i++) {
+        t.assertEqual('', expTwoMoments, realTwoMoments[i].v)
+    }
+    test.assertEqual(
+        "all twoMoments", 10, 10 - t.getFails())
+}, 300)
+
+const expConnDis = [
+    {key: 0, time: "-", body: []},
+    {key: 1, time: "-", body: [
+        {name: "-", message: [{type: "event", body: "[room created]"}]},
+        {name: "-", message: [{type: "event", body: "[connected]"},
+                              {type: "event", body: "[disconnected]"}]},
+        {name: "-", message: [{type: "event", body: "[connected]"}]}
+    ]}
+]
+const realConnDis = []
+
+for (let i = 0; i < 10; i++) {
+    const uri = new UriRoom(uriFirstArg.room, "conn-dis-" + i)
+    await uri.fetchPutRoom()
+    realConnDis.push({v: null})
+    withController(uri, realConnDis[i], function(_, close) {
+        setTimeout(close, 50)
+    })
+    setTimeout(function() {
+        withController(uri, realConnDis[i], function(_, close) {
+            setTimeout(close, 50)
+        })
+    }, 100)
+}
+setTimeout(function() {
+    test.assertEqual(
+        "one connDis", expConnDis, realConnDis[0].v)
+    const t = new TestCase()
+    for (let i = 0; i < 10; i++) {
+        t.assertEqual('', expConnDis, realConnDis[i].v)
+    }
+    test.assertEqual(
+        "all connDis", 10, 10 - t.getFails())
+}, 150)
+
+setTimeout(function() {
+    test.printResults()
+    if (test.getFails() > 0) process.exit(1)
+}, 300)

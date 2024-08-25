@@ -38,12 +38,13 @@ def create_logic():
         time=time(),
         db=db_only_use_in_inttest_and_logic_init,
         conf_timing=ConfTiming(
-            min_silence=1.0,
-            min_moment=0.5
+            min_silence=3.0,
+            min_moment=1.0
         ))
 logic = create_logic()
 if inttest is not None:
-    logic = inttest.add_room_and_restart(logic, create_logic)
+    logic = inttest.add_room_and_restart(
+        logic, db_only_use_in_inttest_and_logic_init)
 a = 'KEYMOUTH_ADD_A_ROOM'
 if a in environ and environ[a] == 'yes':
     logic.create_room(time(), 'test-room')
@@ -65,7 +66,10 @@ async def wrap(f, args, before_sending=do_nothing):
         released_the_mutex = True
         before_sending(to_return)
         for conn, json in to_send:
-            await id_to_sock[conn].send_json(json)
+            try:
+                await id_to_sock[conn].send_json(json)
+            except Exception:
+                pass
         return to_return
     except LogicHttpException as e:
         if not released_the_mutex:

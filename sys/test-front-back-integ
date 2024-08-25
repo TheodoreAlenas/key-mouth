@@ -5,29 +5,27 @@
     . venv/bin/activate
     export KEYMOUTH_RAM_DB=yes
     export KEYMOUTH_INTTEST_WIDGETS=yes
-    timeout 3s uvicorn                          \
+    timeout 1.7s uvicorn                        \
             --host localhost                    \
             --port 8001                         \
             --log-config systest-log-config.ini \
             main:app
 ) &
 
-sleep 1
+sleep 1.2
 
 (
     export KEYMOUTH_UI=the-ui-uri-isnt-used
     export KEYMOUTH_API=http://localhost:8001
     export KEYMOUTH_WS=ws://localhost:8001
 
-    timeout 3s node js/mod/ControllerInttestMain.js
-    err=$?
-    if [ 0 = $err ]
-    then echo passed > git-ignores/systest-front-result.gitig
-    else echo failed > git-ignores/systest-front-result.gitig
-    fi
+    timeout 1s node js/mod/ControllerInttestMain.js
+    echo $? > git-ignores/systest-front-result.gitig
 ) &
 
 wait
 
-test passed = "$(head git-ignores/systest-front-result.gitig)" || exit 1
-python python/systest_check.py || exit 2
+python python/systest_check.py || exit 1
+r="$(head git-ignores/systest-front-result.gitig)"
+echo "the front end returned $r"
+exit "$r"
