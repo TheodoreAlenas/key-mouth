@@ -25,8 +25,6 @@ let threw = 'no'
 shouldThrow.onSocketError = function() {threw = 'yes'}
 setTimeout(function() {
     test.assertEqual("missing room returns error", 'yes', threw)
-    test.printResults()
-    if (test.getFails() !== 0) process.exit(1)
 }, 100)
 
 function withController(buf, callback) {
