@@ -212,20 +212,5 @@ I started to understand the state management and the flow of events
 through the system,
 so the code started to reference my understanding.
 
-In the end of the fourth week,
-the person who assigned the task and my mentor saw the app.
-My fantasies were crushed so bad that I spent 7 hours on YouTube,
-didn't eat from 11am that day to 2pm next day.
-I lacked sleep and before going to the Goody's
-I spent half hour listening to heavy metal
-and another hour reformulating the situation in my head.
-I was mentally exhausted and my shaming circuits burnt out.
-I sat on a bench, put the Goody's box next to me and
-it slipped and spilled the burger and potatoes on the ground.
-I was so mentally exhausted that,
-Once I comprehended what just happened,
-I causally picked up and ate the parts that
-landed on top of other parts.
-
 And that's the story thus far,
 24th of August 2024.
