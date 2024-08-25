@@ -111,7 +111,7 @@ something reliable-enough on my own,
 so long as it doesn't exceed a laptop screen of lines of code.
 
 The server data is turned into a data structure
-that can easily be turned into ReactJS components
+that can easily be turned into ReactJS components.
 
 If this README is up to date, there's an intermediate step,
 where the events are turned into a data structure

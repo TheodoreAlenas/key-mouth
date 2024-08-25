@@ -17,15 +17,14 @@ class EventDbAdapter:
         self.m = {'time': None, 'diffs': []}
 
     def push(self, event):
-        t = event.event_type
-        if t == 'endOfMoment':
+        if event.event_type == 'endOfMoment':
             self.m['time'] = event.body
             self.return_on_pop = self.m
             self._clear_m()
         else:
             self.m['diffs'].append({
                 'connId': event.conn_id,
-                'type': t,
+                'type': event.event_type,
                 'body': event.body
             })
 

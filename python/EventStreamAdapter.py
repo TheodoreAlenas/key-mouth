@@ -7,16 +7,15 @@ class EventStreamAdapter:
         self.stream_models = []
 
     def push(self, event):
-        t = event.event_type
         m = {
             'momentIdx': self.mi,
             'diffIdx': self.di,
             'connId': event.conn_id,
-            'type': t,
+            'type': event.event_type,
             'body': event.body
         }
         self.stream_models.append(m)
-        if t == 'endOfMoment':
+        if event.event_type == 'endOfMoment':
             self.di = 0
             self.mi += 1
         else:

@@ -3,12 +3,11 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "dev": "next dev",
-        "test": "node presentMoment.test.mjs"
+        "dev": "next dev"
     },
     "author": "",
     "license": "MIT",
-    "description": "",
+    "description": "Note that the tests are ran with node directly, there are shell scripts in the repository as of writing this description",
     "dependencies": {
         "next": "^14.2.5",
         "react": "^18.3.1",

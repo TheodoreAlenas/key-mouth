@@ -3,11 +3,9 @@
 set -e
 
 if ! [ $# = 0 ]; then
-    echo "no args, shorthand for 2 rsync commands. DOESN'T DEPLOY" >&2
+    echo "no args, stands for 'synchronize' and DOESN'T DEPLOY" >&2
     exit 1
 fi
-
-. ./secrets.gitig.sh
 
 cd ..
 
@@ -28,6 +26,8 @@ rsync -r --delete $d/tmp-py/ $d/python/
 rm -r $d/tmp-py
 rsync -r --delete git-ignores/front-static-serve.gitig/ $d/static/
 rsync -r --delete server-scripts/ $d/sys/
+
+. ./secrets.gitig.sh
 
 echo "rsync to remote..."
 rsync -rz --delete $d/ "$secret_upload"/

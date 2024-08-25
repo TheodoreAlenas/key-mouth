@@ -14,6 +14,11 @@ if a in environ and environ[a] == 'yes':
 else:
     from db.mongo import Db
 
+inttest = False
+a = 'KEYMOUTH_INTTEST'
+if a in environ and environ[a] == 'yes':
+    inttest = True
+
 app = FastAPI()
 a = 'KEYMOUTH_CORS_ALL'
 if a in environ and environ[a] == 'yes':
@@ -101,7 +106,8 @@ async def root(websocket: WebSocket, room: str):
             return
         def assign_the_socket(conn):
             id_to_sock[conn.conn_id] = websocket
-        conn = await wrap(logic.connect, room, assign_the_socket)
+        conn = await wrap(logic.connect, room,
+                          before_sending=assign_the_socket)
         while True:
             data = await websocket.receive_text()
             await wrap(conn.handle_input, data)
