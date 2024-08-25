@@ -2,7 +2,7 @@
 # License at the bottom
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
-from Connection import Connection
+from Connection import Connection, Broadcaster
 from ConnRoomData import ConnRoomData, ConfTiming
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
@@ -35,7 +35,8 @@ class AfterSocketLogic:
                 name=d.name,
                 db_room=db.get_room(d.room_id))
             r = self.rooms_ram[d.room_id]
-            r.conn_bcaster = Connection(0, r, self._conf_timing)
+            r.conn_bcaster = Broadcaster(0, r, self._conf_timing)
+            r.conn_bcaster.say_started(time)
 
     def connect(self, time, room):
         if not room in self.rooms_ram:
@@ -50,8 +51,10 @@ class AfterSocketLogic:
         def create_and_set():
             self.db.create_room(time, room_id)
             r = ConnRoomData(time, room_id, self.db.get_room(room_id))
-            r.conn_bcaster = Connection(0, r, self._conf_timing)
+            r.conn_bcaster = Broadcaster(0, r, self._conf_timing)
             self.rooms_ram[room_id] = r
+            r.conn_bcaster.say_created(time)
+            #r.conn_bcaster.handle_input("")
             return ([], None)
         return self._if_room_doesnt_exist(room_id, create_and_set)
 

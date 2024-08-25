@@ -30,6 +30,13 @@ class AfterSocketLogicTest(unittest.TestCase):
                 (conn.conn_id, {
                     "momentIdx": 1,
                     "diffIdx": 0,
+                    "connId": 0,
+                    "type": "create",
+                    "body": None
+                }),
+                (conn.conn_id, {
+                    "momentIdx": 1,
+                    "diffIdx": 1,
                     "connId": conn.conn_id,
                     "type": "connect",
                     "body": None
@@ -40,7 +47,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(
             [(conn.conn_id, {
                 "momentIdx": 1,
-                "diffIdx": 1,
+                "diffIdx": 2,
                 "connId": conn.conn_id,
                 "type": "write",
                 "body": "hello"
@@ -262,8 +269,9 @@ class DbLoadRoomTest(unittest.TestCase):
         logic_1.close(10.2, None)
         logic_2 = self.get_logic(10.3, db)
         res, _ = logic_2.connect(10.4, "room0")
-        self.assertEqual('shutdown', res[-3][1]['type'])
-        self.assertEqual('endOfMoment', res[-2][1]['type'])
+        self.assertEqual('shutdown', res[-4][1]['type'])
+        self.assertEqual('endOfMoment', res[-3][1]['type'])
+        self.assertEqual('start', res[-2][1]['type'])
         self.assertEqual('connect', res[-1][1]['type'])
 
     def test_shutdown_twice_no_missing_broadcaster_error(self):

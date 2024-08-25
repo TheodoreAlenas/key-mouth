@@ -66,22 +66,21 @@ function getViewModel(getNames, events) {
 }
 
 function massageEvent(event) {
-    if (event.type === 'connect') return {
+    if (event.type === 'write') return event
+    if (event.type === 'delete') return event
+
+    let body = null
+    if (event.type === 'connect') body = '[connected]'
+    else if (event.type === 'disconnect') body = '[disconnected]'
+    else if (event.type === 'shutdown') body = '[server shutting down]'
+    else if (event.type === 'start') body = '[server started]'
+    else if (event.type === 'create') body = '[room created]'
+    else throw new Error("unknown type on event: " + event)
+    return {
         connId: event.connId,
         type: 'event',
-        body: '[connected]'
+        body
     }
-    if (event.type === 'disconnect') return {
-        connId: event.connId,
-        type: 'event',
-        body: '[disconnected]'
-    }
-    if (event.type === 'shutdown') return {
-        connId: event.connId,
-        type: 'event',
-        body: '[server shutting down]'
-    }
-    return event
 }
 
 /*
