@@ -10,6 +10,9 @@ export default function Moments({o}) {
     if (o === null || o === undefined) {
         return <code>{"Loading..."}</code>
     }
+    o.onSocketError = function() {
+        setState({atBottom: getIsAtBottom(), moments: null})
+    }
     o.setMoments = function(v) {
         setState({atBottom: getIsAtBottom(), moments: v})
     }
