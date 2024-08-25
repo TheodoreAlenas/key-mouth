@@ -27,7 +27,7 @@ rm -r $d/tmp-py
 rsync -r --delete git-ignores/front-static-serve.gitig/ $d/static/
 rsync -r --delete server-scripts/ $d/sys/
 
-. ./secrets.gitig.sh
+. sys/secrets.gitig.sh
 
 echo "rsync to remote..."
 rsync -rz --delete $d/ "$secret_upload"/
