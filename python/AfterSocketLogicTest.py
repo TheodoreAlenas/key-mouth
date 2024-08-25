@@ -266,6 +266,16 @@ class DbLoadRoomTest(unittest.TestCase):
         self.assertEqual('endOfMoment', res[-2][1]['type'])
         self.assertEqual('connect', res[-1][1]['type'])
 
+    def test_shutdown_twice_no_missing_broadcaster_error(self):
+        db = Db()
+        logic = self.get_logic(10.0, db)
+        logic.create_room(10.1, "room0")
+        logic.close(10.2, None)
+        logic = self.get_logic(10.3, db)
+        logic.close(10.4, None)
+        logic = self.get_logic(10.5, db)
+        logic.close(10.6, None)
+
     def test_use_same_db_see_last_moment(self):
         db = Db()
 
