@@ -69,7 +69,9 @@ function personToLi(person, i) {
         return <li id={person.id} key={i}>
                    <pre className={colors.bubble + ' ' +
                                    shapes.bubble}>
-                       <strong key="name">{person.name + ': '}</strong>
+                       <strong key="name"
+                               className={colors.name}
+                       >{person.name + ': '}</strong>
                        {person.message.map(diffToSpan)}
                    </pre>
                </li>
@@ -94,7 +96,8 @@ function diffToSpan(diff, i) {
                     key={i}>{diff.body}</del>
     }
     if (diff.type === "event") {
-        return <code key={i}>{diff.body}</code>
+        return <code className={colors.event + ' ' + shapes.event}
+                     key={i}>{diff.body}</code>
     }
     else return <code key={i}>ERROR</code>
 }
