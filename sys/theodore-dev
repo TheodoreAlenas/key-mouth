@@ -7,7 +7,10 @@ bspc rule --add 'firefox:*:*' --one-shot desktop=^2
 
 tmux new-session -d -t key-mouth
 
-ip="$(ip addr | sed -n 's|.*inet \(.*\)/24.*|\1|p')"
+if [ "o$1" = o-l ]
+then ip=localhost
+else ip="$(ip addr | sed -n 's|.*inet \(.*\)/24.*|\1|p')"
+fi
 
 tmux new-window -t key-mouth:1
 tmux send-keys  -t key-mouth:1 "export KEYMOUTH_UI=http://$ip:3000" C-m
