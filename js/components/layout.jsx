@@ -1,36 +1,44 @@
-import shapes from './shapes.module.css'
-import colors from './colors.module.css'
 import UriHome from '../mod/UriHome.js'
 import Link from 'next/link'
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
-export default function Layout({ env, showHome, children }) {
+export default function Layout({env, styles, showHome, children}) {
     const uri = new UriHome(env.home, 'ERROR, LAYOUT HAS NO ROOM')
+    if (showHome) {
+        return <>
+                   <Wrapper styles={styles}>
+                       <li><HomeLink uri={uri} styles={styles} /></li>
+                   </Wrapper>
+                   {children}
+               </>
+    }
     return <>
-               <nav className={shapes.menuWrapper + ' ' +
-                               colors.menuWrapper}>
-                   <ul className={shapes.menu}>
-                       {showHome ? <li><HomeLink uri={uri} /></li> : ''}
-                       <li><ThemeToggle /></li>
-                   </ul>
-               </nav>
+               <Wrapper styles={styles} />
                {children}
            </>
+
 }
 
-function HomeLink({uri}) {
+function Wrapper({styles, children}) {
+    return <nav className={styles.menuWrapper}>
+               <ul className={styles.menu}>
+                   {children}
+                   <li><ThemeToggle styles={styles} /></li>
+               </ul>
+           </nav>
+}
+
+function HomeLink({uri, styles}) {
     return <Link href={uri.home()}
-                 className={colors.link + ' ' +
-                            shapes.link}
+                 className={styles.link}
     >Home</Link>
 }
 
-function ThemeToggle() {
+function ThemeToggle({styles}) {
     useEffect(function() {
         initColorScheme()
     }, [])
-    return <button className={shapes.button + ' ' +
-                              colors.button}
+    return <button className={styles.button}
                    onClick={switchColorScheme}
            >Switch light/dark theme</button>
 }

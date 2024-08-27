@@ -1,8 +1,6 @@
-import colors from './colors.module.css'
-import shapes from './shapes.module.css'
 import { useEffect, useRef, useState } from "react"
 
-export default function InputAndButton({o, className}) {
+export default function InputAndButton({o, styles}) {
     const defaultHooks = {
         onClear: function(e) {e.preventDefault},
         onChange: function() {},
@@ -38,15 +36,14 @@ export default function InputAndButton({o, className}) {
     }
     return (
         <form onSubmit={hooks.onClear}
-              className={className + ' ' +
-                         shapes.inputForm + ' ' +
-                         colors.inputForm}>
+              className={styles.stickyBottom + ' ' +
+                         styles.inputForm}>
             <Input o={o}
+                   styles={styles}
                    onChange={hooks.onChange}
                    onKeyDown={hooks.onKeyDown}
             />
-            <button className={shapes.button + ' ' +
-                               colors.button}
+            <button className={styles.button}
                     type="submit"
             >Clear</button>
         </form>
@@ -57,7 +54,7 @@ function getIsOnMobile() {
     return / Android | webOS | iPhone | iPad | iPod | BlackBerry | IEMobile | Opera Mini /i.test(navigator.userAgent)
 }
 
-function Input({o, onChange, onKeyDown}) {
+function Input({o, styles, onChange, onKeyDown}) {
     const [inputValue, setInputValue] = useState('')
     if (o !== null) o.setInputValue = setInputValue
     const inpRef = useRef(null)
@@ -67,15 +64,13 @@ function Input({o, onChange, onKeyDown}) {
         t.style.height = t.scrollHeight + 'px'
     }, [])
     return (
-        <div className={shapes.inputContainer + ' ' +
-                        colors.inputContainer}>
+        <div className={styles.inputContainer}>
             <textarea
                 ref={inpRef}
                 name="message"
                 placeholder="Think and type"
                 rows="1"
-                className={shapes.input + ' ' +
-                           colors.input}
+                className={styles.input}
                 value={inputValue}
                 onChange={onChange}
                 onKeyDown={onKeyDown}

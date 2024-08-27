@@ -2,6 +2,7 @@ import UriHome from '../mod/UriHome.js'
 import uriFirstArg from '../mod/uriFirstArg.js'
 import RoomList from '../components/roomList.jsx'
 import Layout from '../components/layout.jsx'
+import styles from '../components/styles.module.css'
 import { useEffect, useState } from "react"
 
 export default function Home({env}) {
@@ -10,7 +11,7 @@ export default function Home({env}) {
     useEffect(function() {
         getRooms(uri, setRooms)
     }, [])
-    return <Layout env={env}><RoomList rooms={rooms} /></Layout>
+    return Layout({env, styles, children: RoomList({rooms, styles})})
 }
 
 function getRooms(uri, setRooms) {

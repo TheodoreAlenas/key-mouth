@@ -1,8 +1,6 @@
-import shapes from './shapes.module.css'
-import colors from './colors.module.css'
 import React, { useEffect, useState } from "react"
 
-export default function Moments({o}) {
+export default function Moments({o, styles}) {
     const [state, setState] = useState({atBottom: true, moments: []})
     useEffect(function() {
         if (state.atBottom) scrollToBottom()
@@ -18,7 +16,8 @@ export default function Moments({o}) {
     }
     let finalPres = <code>{"ERROR"}</code>
     try {
-        const pres = state.moments.map(momentAndIdToUl)
+        const pres = state.moments.map(
+            moment => MomentToUl({moment, styles}))
         finalPres = pres
     }
     catch (err) {
@@ -26,7 +25,7 @@ export default function Moments({o}) {
         console.error(state.moments)
         console.error(err)
     }
-    return <section className={shapes.stretch}>{finalPres}</section>
+    return <section className={styles.stretch}>{finalPres}</section>
 }
 
 function getIsAtBottom() {
@@ -42,18 +41,17 @@ function scrollToBottom() {
     })
 }
 
-function momentAndIdToUl(momentAndId) {
+function MomentToUl({moment, styles}) {
     try {
-        const m = momentAndId
-        if (m.length === 0) return
+        const m = moment
         return (
             <React.Fragment key={m.key}>
-                <ul className={shapes.bubbleGroupSpacing + ' ' +
-                               shapes.noBullets + ' ' +
-                               colors.moment}>
-                    {m.body.map(personToLi)}
+                <ul className={styles.bubbleGroupSpacing + ' ' +
+                               styles.noBullets}>
+                    {m.body.map(
+                        (person, i) => PersonToLi({person, i, styles}))}
                 </ul>
-                {m.time ? <h2 className={shapes.time}>{m.time}</h2> :''}
+                {m.time ? <h2 className={styles.time}>{m.time}</h2> :''}
             </React.Fragment>
         )
     }
@@ -64,15 +62,15 @@ function momentAndIdToUl(momentAndId) {
     }
 }
 
-function personToLi(person, i) {
+function PersonToLi({person, i, styles}) {
     try {
         return <li id={person.id} key={i}>
-                   <pre className={colors.bubble + ' ' +
-                                   shapes.bubble}>
+                   <pre className={styles.bubble}>
                        <strong key="name"
-                               className={colors.name}
+                               className={styles.name}
                        >{person.name + ': '}</strong>
-                       {person.message.map(diffToSpan)}
+                       {person.message.map(
+                           (diff, i) => DiffToSpan({diff, i, styles}))}
                    </pre>
                </li>
     }
@@ -83,20 +81,20 @@ function personToLi(person, i) {
     }
  }
 
-function diffToSpan(diff, i) {
+function DiffToSpan({diff, i, styles}) {
     if (diff.type === "write") {
         return <span key={i}>{diff.body}</span>
     }
     if (diff.type === "delete") {
-        return <del className={colors.delete + ' ' + shapes.delete}
+        return <del className={styles.delete}
                     key={i}>{diff.body}</del>
     }
     if (diff.type === "erase") {
-        return <del className={colors.erase + ' ' + shapes.erase}
+        return <del className={styles.erase}
                     key={i}>{diff.body}</del>
     }
     if (diff.type === "event") {
-        return <code className={colors.event + ' ' + shapes.event}
+        return <code className={styles.event}
                      key={i}>{diff.body}</code>
     }
     else return <code key={i}>ERROR</code>

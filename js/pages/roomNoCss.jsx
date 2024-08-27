@@ -3,7 +3,6 @@ import UriRoom from '../mod/UriRoom.js'
 import uriFirstArg from '../mod/uriFirstArg.js'
 import Room from '../components/room.jsx'
 import Layout from '../components/layout.jsx'
-import styles from '../components/styles.module.css'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 
@@ -20,8 +19,8 @@ export default function PageRoom({env}) {
             return function() { newO.close() }
         }
     }, [router.isReady])
-    return <Layout env={env} styles={styles} showHome>
-               <Room o={o} styles={styles} />
+    return <Layout env={env} styles={{}} showHome>
+               <Room o={o} styles={{}} />
            </Layout>
 }
 
