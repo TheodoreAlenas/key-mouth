@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 export default function Moments({o, styles}) {
     const [state, setState] = useState({atBottom: true, moments: []})
+    const ref = useRef(null)
     useEffect(function() {
-        if (state.atBottom) scrollToBottom()
+        if (ref.current && state.atBottom) scrollToBottom(ref.current)
     }, [state])
     if (o === null || o === undefined) {
         return <code>{"Loading..."}</code>
     }
     o.onSocketError = function() {
-        setState({atBottom: getIsAtBottom(), moments: null})
+        setState({atBottom: getIsAtBottom(ref.current), moments: null})
     }
     o.setMoments = function(v) {
-        setState({atBottom: getIsAtBottom(), moments: v})
+        setState({atBottom: getIsAtBottom(ref.current), moments: v})
     }
     let finalPres = <code>{"ERROR"}</code>
     try {
@@ -25,20 +26,20 @@ export default function Moments({o, styles}) {
         console.error(state.moments)
         console.error(err)
     }
-    return <section className={styles.chat}>{finalPres}</section>
+    return <section ref={ref}
+                    className={styles.chat}
+           >{finalPres}</section>
 }
 
-function getIsAtBottom() {
-    const visible = window.innerHeight
-    const above = Math.floor(window.scrollY)
-    const all = document.body.scrollHeight
+function getIsAtBottom(element) {
+    const visible = element.clientHeight
+    const above = Math.floor(element.scrollTop)
+    const all = element.scrollHeight
     return visible + above + 5 > all
 }
 
-function scrollToBottom() {
-    window.scrollTo({
-        top: document.body.scrollHeight
-    })
+function scrollToBottom(element) {
+    element.scrollTop = element.scrollHeight
 }
 
 function MomentToUl({moment, styles}) {
