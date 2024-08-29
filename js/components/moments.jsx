@@ -18,7 +18,7 @@ export default function Moments({o, styles}) {
     let finalPres = <code>{"ERROR"}</code>
     try {
         const pres = state.moments.map(
-            moment => MomentToUl({moment, styles}))
+            moment => MomentToBubble({moment, styles}))
         finalPres = pres
     }
     catch (err) {
@@ -42,14 +42,15 @@ function scrollToBottom(element) {
     element.scrollTop = element.scrollHeight
 }
 
-function MomentToUl({moment, styles}) {
+function MomentToBubble({moment, styles}) {
     try {
         const m = moment
         return (
             <React.Fragment key={m.key}>
+                {m.names.toString()}
                 <ul className={styles.bubbleGroupSpacing + ' ' +
                                styles.noBullets}>
-                    {m.body.map(
+                    {m.messages.map(
                         (person, i) => PersonToLi({person, i, styles}))}
                 </ul>
                 {m.time ? <h2 className={styles.time}>{m.time}</h2> :''}

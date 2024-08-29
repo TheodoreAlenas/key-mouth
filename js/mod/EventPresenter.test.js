@@ -19,8 +19,8 @@ ep.push({connId: 4, type: "delete", body: "h"})
 ep.push({connId: 4, type: "disconnect", body: null})
 test.assertEqual(
     "write 2 delete 1 delete 1 delete 1 disconnect",
-    [{key: 7, time: null, body: [
-        {name: "con4", message: [
+    [{key: 7, time: null, names: ["con4"], messages: [
+        {message: [
             {type: "delete", body: "he"},
             {type: "erase", body: "llo"},
             {type: "event", body: "[disconnected]"}
@@ -35,9 +35,9 @@ ep.push({connId: 5, type: "write", body: "HELLO"})
 ep.push({connId: 4, type: "write", body: "i"})
 test.assertEqual(
     "a writes, b writes, a writes",
-    [{key: 7, time: null, body: [
-        {name: "con4", message: [{type: "write", body: "hi"}]},
-        {name: "con5", message: [{type: "write", body: "HELLO"}]}
+    [{key: 7, time: null, names:["con4", "con5"], messages: [
+        {message: [{type: "write", body: "hi"}]},
+        {message: [{type: "write", body: "HELLO"}]}
     ]}],
     ep.getMomentViews(x => "con" + x)
 )
@@ -48,7 +48,7 @@ let v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "only end of moment",
-    [{key: 7, time: "times erased", body: []}],
+    [{key: 7, time: "times erased", names: [], messages: []}],
     v
 )
 
@@ -61,12 +61,10 @@ for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "sandwitched end of moment",
     [
-        {key: 7, time: "times erased", body: [{
-            name: "con4",
+        {key: 7, time: "times erased", names: ["con4"], messages: [{
             message: [{type: "write", body: "HELLO"}]
         }]},
-        {key: 8, time: null, body: [{
-            name: "con4",
+        {key: 8, time: null, names: ["con4"], messages: [{
             message: [{type: "write", body: "hi again"}]
         }]},
     ],
@@ -80,8 +78,7 @@ for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "shutdown event",
     [
-        {key: 7, time: null, body: [{
-            name: "con0",
+        {key: 7, time: null, names: ["con0"], messages: [{
             message: [{type: "event", body: "[server shutting down]"}]
         }]}
     ],

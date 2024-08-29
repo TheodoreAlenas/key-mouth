@@ -28,23 +28,17 @@ export default class EventPresenter {
     }
     getMomentViews(getNames) {
         let i = this.firstMomentIdx
-        const views = this.moments.map(({time, raw}) => ({
-            key: i++,
-            time: presentTimeFromSecondsSince1970(time),
-            body: getViewModel(getNames, raw)
-        }))
-        if (this.last.length !== 0) views.push({
-            key: i,
-            time: null,
-            body: getViewModel(getNames, this.last)
-        })
+        const views = this.moments.map(({time, raw}) =>
+            getViewModel(i++, presTime(time), getNames, raw))
+        if (this.last.length !== 0) views.push(
+            getViewModel(i, null, getNames, this.last))
         return views
     }
     // future idea: updateNames(getNames) and getMomentViews()
     // to pre - bake the views and relax the garbage collector
 }
 
-function presentTimeFromSecondsSince1970(secondsSince1970) {
+function presTime(secondsSince1970) {
     const msSince1970 = Math.ceil(secondsSince1970 * 1000)
     const msOf24h = 1000 * 60 * 60 * 24
     const now = Date.now()
@@ -55,14 +49,12 @@ function presentTimeFromSecondsSince1970(secondsSince1970) {
     return date.toLocaleString()
 }
 
-function getViewModel(getNames, events) {
+function getViewModel(key, time, getNames, events) {
     const massaged = events.map(massageEvent)
     const r = accumulateDiffs(massaged)
-    const ans = r.map(({connId, message}) => ({
-        name: getNames(connId),
-        message
-    }))
-    return ans
+    const names = r.map(e => getNames(e.connId))
+    const messages = r.map(e => ({message: e.message}))
+    return {key, time, names, messages}
 }
 
 function massageEvent(event) {

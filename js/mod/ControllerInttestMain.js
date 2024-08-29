@@ -34,9 +34,7 @@ function withController(uri, ret, callback) {
         ret.v = v
         for (let moment of ret.v) {
             moment.time = "-"
-            for (let person of moment.body) {
-                person.name = "-"
-            }
+            moment.names = "(#)" + moment.names.length
         }
     }
     function close() { wi.close() }
@@ -46,15 +44,15 @@ function withController(uri, ret, callback) {
 }
 
 const expShutdownMsg = [
-    {key: 0, time: "-", body: []},
-    {key: 1, time: "-", body: [{name: "-", message: [
+    {key: 0, time: "-", names: "(#)0", messages: []},
+    {key: 1, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[room created]"},
         {type: "event", body: "[server shutting down]"}
     ]}]},
-    {key: 2, time: "-", body: [{name: "-", message: [
+    {key: 2, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[server started]"}
     ]}]},
-    {key: 3, time: "-", body: [{name: "-", message: [
+    {key: 3, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[connected]"}
     ]}]}
 ]
@@ -69,11 +67,11 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
 })
 
 const expOneMoment = [
-    {key: 0, time: "-", body: []},
-    {key: 1, time: "-", body: [
-        {name: "-", message: [{type: "event", body: "[room created]"}]},
-        {name: "-", message: [{type: "event", body: "[connected]"},
-                              {type: "write", body: "too soon"}]}
+    {key: 0, time: "-", names: "(#)0", messages: []},
+    {key: 1, time: "-", names: "(#)2", messages: [
+        {message: [{type: "event", body: "[room created]"}]},
+        {message: [{type: "event", body: "[connected]"},
+                   {type: "write", body: "too soon"}]}
     ]}
 ]
 const realOneMoment = []
@@ -99,13 +97,13 @@ setTimeout(function() {
 }, 200)
 
 const expTwoMoments = [
-    {key: 0, time: "-", body: []},
-    {key: 1, time: "-", body: [
-        {name: "-", message: [{type: "event", body: "[room created]"}]},
-        {name: "-", message: [{type: "event", body: "[connected]"}]}
+    {key: 0, time: "-", names: "(#)0", messages: []},
+    {key: 1, time: "-", names: "(#)2", messages: [
+        {message: [{type: "event", body: "[room created]"}]},
+        {message: [{type: "event", body: "[connected]"}]}
     ]},
-    {key: 2, time: "-", body: [
-        {name: "-", message: [{type: "write", body: "late"}]}
+    {key: 2, time: "-", names: "(#)1", messages: [
+        {message: [{type: "write", body: "late"}]}
     ]}
 ]
 const realTwoMoments = []
@@ -131,12 +129,12 @@ setTimeout(function() {
 }, 300)
 
 const expConnDis = [
-    {key: 0, time: "-", body: []},
-    {key: 1, time: "-", body: [
-        {name: "-", message: [{type: "event", body: "[room created]"}]},
-        {name: "-", message: [{type: "event", body: "[connected]"},
-                              {type: "event", body: "[disconnected]"}]},
-        {name: "-", message: [{type: "event", body: "[connected]"}]}
+    {key: 0, time: "-", names: "(#)0", messages: []},
+    {key: 1, time: "-", names: "(#)3", messages: [
+        {message: [{type: "event", body: "[room created]"}]},
+        {message: [{type: "event", body: "[connected]"},
+                   {type: "event", body: "[disconnected]"}]},
+        {message: [{type: "event", body: "[connected]"}]}
     ]}
 ]
 const realConnDis = []
