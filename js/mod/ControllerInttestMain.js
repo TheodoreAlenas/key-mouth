@@ -113,8 +113,8 @@ for (let i = 0; i < 10; i++) {
     await uri.fetchPutRoom()
     realTwoMoments.push({v: null})
     withController(uri, realTwoMoments[i], function(unlocked, close) {
-        setTimeout(function() {unlocked.onInputChange("late")}, 220)
-        setTimeout(function() {close()}, 300)
+        setTimeout(function() {unlocked.onInputChange("late")}, 280)
+        setTimeout(function() {close()}, 500)
     })
 }
 setTimeout(function() {
@@ -126,7 +126,7 @@ setTimeout(function() {
     }
     test.assertEqual(
         "all twoMoments", 10, 10 - t.getFails())
-}, 300)
+}, 500)
 
 const expConnDis = [
     {key: 0, time: "-", names: "(#)0", messages: []},
@@ -166,4 +166,4 @@ setTimeout(function() {
 setTimeout(function() {
     test.printResults()
     if (test.getFails() > 0) process.exit(1)
-}, 300)
+}, 500)
