@@ -5,12 +5,14 @@ import { useEffect } from "react"
 export default function Layout({env, styles, showHome, children}) {
     const uri = new UriHome(env.home, 'ERROR, LAYOUT HAS NO ROOM')
     if (showHome) {
-        return <>
+        return <div className={styles.layout}>
                    <Wrapper styles={styles}>
                        <li><HomeLink uri={uri} styles={styles} /></li>
                    </Wrapper>
-                   {children}
-               </>
+                   <main className={styles.main}>
+                       {children}
+                   </main>
+               </div>
     }
     return <>
                <Wrapper styles={styles} />

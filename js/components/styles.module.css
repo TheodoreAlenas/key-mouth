@@ -1,4 +1,4 @@
-[data-sch=dark] .bg {background-color: #000;}
+[data-sch=dark] .main {background-color: #000;}
 [data-sch=dark] .bubble {box-shadow: #210 1px 1px 0px 2px;}
 [data-sch=dark] .bubble,
 [data-sch=dark] .inputForm,
@@ -6,7 +6,7 @@
 [data-sch=dark] .input,
 [data-sch=dark] .barContainer {background-color: #000;}
 
-.bg {background-color: #fff;}
+.main {background-color: #fff;}
 .bubble {box-shadow: #ddd 1px 3px 8px 2px;}
 .bubble,
 .inputForm,
@@ -77,10 +77,6 @@
     padding: 0.8em 1em;
 }
 
-.bg {
-    max-width: 20cm;
-    margin: 0 auto;
-}
 .link, .links a {
     text-underline-offset: 5px;
     text-decoration-thickness: 2px;
@@ -109,10 +105,31 @@
 .delete {
     font-weight: bold;
 }
-.stretch, .barContainer {padding: 1px}
+.chat, .barContainer {padding: 1px}
 
-.stickyBottom {position: sticky; bottom: 0;}
-.barContainer {position: sticky; top: 0}
+.layout {
+    display: grid;
+    grid-template-rows: max-content auto;
+    grid-template-columns: 1fr;
+    grid-template-areas: "bar" "main";
+
+    max-width: 20cm;
+    margin: 0 auto;
+    height: 100vh;
+}
+.bar {grid-area: bar}
+.bar + main {grid-area: main}
+
+.main {
+    display: grid;
+    grid-auto-rows: auto max-content;
+    overflow: scroll;
+}
+
+.chat {
+    height: 100%;
+    overflow: scroll;
+}
 
 .inputForm {
     display: grid;

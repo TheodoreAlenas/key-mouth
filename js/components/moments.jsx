@@ -25,7 +25,7 @@ export default function Moments({o, styles}) {
         console.error(state.moments)
         console.error(err)
     }
-    return <section className={styles.stretch}>{finalPres}</section>
+    return <section className={styles.chat}>{finalPres}</section>
 }
 
 function getIsAtBottom() {

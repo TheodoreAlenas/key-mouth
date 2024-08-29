@@ -36,8 +36,7 @@ export default function InputAndButton({o, styles}) {
     }
     return (
         <form onSubmit={hooks.onClear}
-              className={styles.stickyBottom + ' ' +
-                         styles.inputForm}>
+              className={styles.inputForm}>
             <Input o={o}
                    styles={styles}
                    onChange={hooks.onChange}
