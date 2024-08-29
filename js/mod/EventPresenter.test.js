@@ -48,7 +48,7 @@ let v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "only end of moment",
-    [{key: 7, time: "times erased", names: [], messages: []}],
+    [{key: 7, time: null, names: [], messages: []}],
     v
 )
 
@@ -61,10 +61,10 @@ for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
     "sandwitched end of moment",
     [
-        {key: 7, time: "times erased", names: ["con4"], messages: [{
+        {key: 7, time: null, names: ["con4"], messages: [{
             message: [{type: "write", body: "HELLO"}]
         }]},
-        {key: 8, time: null, names: ["con4"], messages: [{
+        {key: 8, time: "times erased", names: ["con4"], messages: [{
             message: [{type: "write", body: "hi again"}]
         }]},
     ],

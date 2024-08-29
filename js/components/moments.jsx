@@ -45,21 +45,24 @@ function scrollToBottom(element) {
 function MomentToBubble({moment, styles}) {
     try {
         const m = moment
+        const namesAndCommas = m.names.reduce((a, x) => a + ', ' + x, '')
+        const msgs = m.messages.map(
+            (person, i) => PersonToLi({person, i, styles}))
         return (
             <React.Fragment key={m.key}>
-                {m.names.toString()}
+                <h2 className={styles.bubbleTop}>
+                    {(m.time || '') + namesAndCommas}
+                </h2>
                 <ul className={styles.bubbleGroupSpacing + ' ' +
                                styles.noBullets}>
-                    {m.messages.map(
-                        (person, i) => PersonToLi({person, i, styles}))}
+                    {msgs}
                 </ul>
-                {m.time ? <h2 className={styles.time}>{m.time}</h2> :''}
             </React.Fragment>
         )
     }
     catch (e) {
-        console.error("error rendering moment and id:")
-        console.error(momentAndId)
+        console.error("error rendering moment:")
+        console.error(moment)
         throw e
     }
 }
@@ -68,9 +71,6 @@ function PersonToLi({person, i, styles}) {
     try {
         return <li id={person.id} key={i}>
                    <pre className={styles.bubble}>
-                       <strong key="name"
-                               className={styles.name}
-                       >{person.name + ': '}</strong>
                        {person.message.map(
                            (diff, i) => DiffToSpan({diff, i, styles}))}
                    </pre>

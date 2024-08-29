@@ -13,14 +13,16 @@ export default class EventPresenter {
         this.firstMomentIdx = firstMomentIdx
         this.moments = []
         this.last = []
+        this.lastTime = null
     }
     push(viewEvent) {
         if (viewEvent.type === 'endOfMoment') {
             this.moments.push({
-                time: viewEvent.body,
+                time: this.lastTime,
                 raw: this.last
             })
             this.last = []
+            this.lastTime = viewEvent.body
         }
         else {
             this.last.push(viewEvent)
@@ -31,7 +33,8 @@ export default class EventPresenter {
         const views = this.moments.map(({time, raw}) =>
             getViewModel(i++, presTime(time), getNames, raw))
         if (this.last.length !== 0) views.push(
-            getViewModel(i, null, getNames, this.last))
+            getViewModel(i, presTime(this.lastTime), getNames,
+                         this.last))
         return views
     }
     // future idea: updateNames(getNames) and getMomentViews()
@@ -39,6 +42,7 @@ export default class EventPresenter {
 }
 
 function presTime(secondsSince1970) {
+    if (secondsSince1970 === null) return null
     const msSince1970 = Math.ceil(secondsSince1970 * 1000)
     const msOf24h = 1000 * 60 * 60 * 24
     const now = Date.now()
