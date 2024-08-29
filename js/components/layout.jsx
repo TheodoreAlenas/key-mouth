@@ -20,8 +20,8 @@ export default function Layout({env, styles, showHome, children}) {
 }
 
 function Wrapper({styles, children}) {
-    return <nav className={styles.menuWrapper}>
-               <ul className={styles.menu}>
+    return <nav className={styles.barContainer}>
+               <ul className={styles.bar}>
                    {children}
                    <li><ThemeToggle styles={styles} /></li>
                </ul>

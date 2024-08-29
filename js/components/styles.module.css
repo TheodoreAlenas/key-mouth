@@ -4,7 +4,7 @@
 [data-sch=dark] .inputForm,
 [data-sch=dark] .button,
 [data-sch=dark] .input,
-[data-sch=dark] .menuWrapper {background-color: #000;}
+[data-sch=dark] .barContainer {background-color: #000;}
 
 .bg {background-color: #fff;}
 .bubble {box-shadow: #ddd 1px 3px 8px 2px;}
@@ -12,7 +12,7 @@
 .inputForm,
 .button,
 .input,
-.menuWrapper {background-color: #fff;}
+.barContainer {background-color: #fff;}
 
 [data-sch=dark] .name {color: #fd5;}
 [data-sch=dark] .event {color: #fd5;}
@@ -53,7 +53,7 @@
     margin: 0;
     padding: 0 0.8em;
 }
-.menu {
+.bar {
     margin: 0;
     padding: 2px 0;
 }
@@ -86,8 +86,8 @@
     text-decoration-thickness: 2px;
 }
 .noBullets li {list-style: none;}
-.menu li {list-style: none;}
-.menu {
+.bar li {list-style: none;}
+.bar {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -109,10 +109,10 @@
 .delete {
     font-weight: bold;
 }
-.stretch, .menuWrapper {padding: 1px}
+.stretch, .barContainer {padding: 1px}
 
 .stickyBottom {position: sticky; bottom: 0;}
-.menuWrapper {position: sticky; top: 0}
+.barContainer {position: sticky; top: 0}
 
 .inputForm {
     display: grid;
