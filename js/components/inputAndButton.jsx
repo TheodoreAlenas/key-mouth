@@ -12,10 +12,12 @@ export default function InputAndButton({o, styles}) {
         o.onReadySocket = function(unlocked) {
             function onClear(event) {
                 event.preventDefault()
-                const t = event.target
+                const t = document.getElementById('chat-input')
                 t.value = ''
                 t.style.height = 'auto'
                 t.style.height = t.scrollHeight + 'px'
+                const button = document.getElementById('chat-button')
+                button.style.display = 'none'
                 unlocked.onClear()
             }
             function onChange(event, newValue) {
@@ -25,6 +27,9 @@ export default function InputAndButton({o, styles}) {
                 const wasAtBottom = getIsAtBottom(chat)
                 t.style.height = 'auto'
                 t.style.height = t.scrollHeight + 'px'
+                const button = document.getElementById('chat-button')
+                if (t.value === '') button.style.display = 'none'
+                else button.style.display = 'unset'
                 unlocked.onInputChange(t.value)
                 if (wasAtBottom) scrollToBottom(chat)
             }
@@ -51,7 +56,9 @@ export default function InputAndButton({o, styles}) {
                    onChange={hooks.onChange}
                    onKeyDown={hooks.onKeyDown}
             />
-            <button className={styles.button}
+            <button id="chat-button"
+                    className={styles.button}
+                    style={{display: "none"}}
                     type="submit"
             >Clear</button>
         </form>
@@ -74,6 +81,7 @@ function Input({o, styles, onChange, onKeyDown}) {
     return (
         <div className={styles.inputContainer}>
             <textarea
+                id="chat-input"
                 ref={inpRef}
                 name="message"
                 placeholder="Stream typing"
