@@ -14,7 +14,7 @@ class ViewEvent:
         self.body = body
 
 
-class Connection:
+class RoomChannel:
 
     def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
         self.conn_id = conn_id
@@ -80,18 +80,36 @@ class Connection:
         return [(conn, v) for conn in self.room.conns]
 
 
+class Connection:
+
+    def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
+        self.channels = [RoomChannel(conn_id, room, conf_timing)]
+
+    def connect(self, time, unused_for_now):
+        return self.channels[0].connect(time, unused_for_now)
+
+    def disconnect(self, time, unused_for_now):
+        res = []
+        ans = []
+        for c in self.channels:
+            r, a = c.disconnect(time, unused_for_now)
+            res += r
+            ans.append(a)
+        return (res, ans)
+
+
 class Broadcaster(Connection):
 
     def close_room(self, time):
-        self._handle_parsed(time, "shutdown")
-        self._push(0, 'endOfMoment', time)
-        self._store_last_moment(time)
+        self.channels[0]._handle_parsed(time, "shutdown")
+        self.channels[0]._push(0, 'endOfMoment', time)
+        self.channels[0]._store_last_moment(time)
 
     def say_created(self, time):
-        self._handle_parsed(time, "create")
+        self.channels[0]._handle_parsed(time, "create")
 
     def say_started(self, time):
-        self._handle_parsed(time, "start")
+        self.channels[0]._handle_parsed(time, "start")
 
 
 """
