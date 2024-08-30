@@ -35,6 +35,7 @@ export default class Controller {
         this.io = new Io(uri, onReadySocket, onSocketError)
         this.presenter = null
         this.io.onEvent(function(event) {
+            if (event.channelId === "00") return
             if (self.presenter === null) {
                 self.presenter = new EventPresenter(event.momentIdx)
             }

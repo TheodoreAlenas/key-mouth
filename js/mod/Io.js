@@ -50,7 +50,8 @@ export default class Io {
             }
             catch (e) {
                 console.error("Error JSON parsing " + event +
-                              " or calling moments message callback")
+                              " or calling moments message callback " +
+                              "with arg " + event.data)
                 throw e
             }
         })
