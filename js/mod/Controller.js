@@ -5,10 +5,15 @@ import Io from './Io.js'
 import EventPresenter from './EventPresenter.js'
 
 export default class Controller {
-    setMoments(m) {throw new Error("setMoments unset, arg: " + m)}
-    setInputValue(v) {throw new Error("setInputValue unset, arg: " + v)}
-    onReadySocket(v) {throw new Error("onReadySocket unset, arg: " + v)}
-    onSocketError(v) {throw new Error("onSocketError unset, arg: " + v)}
+    setMoments(v) {this._sayUnset('setMoments', v)}
+    setInputValue(v) {this._sayUnset('setInputValue', v)}
+    onReadySocket(v) {this._sayUnset('onReadySocket', v)}
+    onSocketError(v) {this._sayUnset('onSocketError', v)}
+    _sayUnset(f, v) {
+        let j = null
+        try {j = JSON.stringify(v)}
+        finally {throw new Error(f + ' unset, arg: ' + (j ? j : v))}
+    }
     constructor(uri) {
         try {
             this.constructorUnhandled(uri)
