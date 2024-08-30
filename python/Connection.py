@@ -17,7 +17,8 @@ class ViewEvent:
 
 class RoomChannel:
 
-    def __init__(self, conn_id, channel_id, room: ConnRoomData, conf_timing: ConfTiming):
+    def __init__(self, conn_id, channel_id, room: ConnRoomData,
+                 conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.channel_id = channel_id
         self.room = room
@@ -88,7 +89,8 @@ class RoomChannel:
 
 class Connection:
 
-    def __init__(self, conn_id, room: ConnRoomData, rooms, conf_timing: ConfTiming):
+    def __init__(self, conn_id, room: ConnRoomData, rooms,
+                 conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.rooms = rooms
         self.channels = [RoomChannel(conn_id, "01", room, conf_timing)]

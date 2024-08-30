@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
+import { getIsAtBottom, scrollToBottom } from "./scrolling.js"
 
 export default function Moments({o, styles}) {
     const [state, setState] = useState({atBottom: true, moments: []})
@@ -26,20 +27,10 @@ export default function Moments({o, styles}) {
         console.error(state.moments)
         console.error(err)
     }
-    return <section ref={ref}
+    return <section id="chat"
+                    ref={ref}
                     className={styles.chat}
            >{finalPres}</section>
-}
-
-function getIsAtBottom(element) {
-    const visible = element.clientHeight
-    const above = Math.floor(element.scrollTop)
-    const all = element.scrollHeight
-    return visible + above + 5 > all
-}
-
-function scrollToBottom(element) {
-    element.scrollTop = element.scrollHeight
 }
 
 function MomentToBubble({moment, styles}) {
@@ -49,15 +40,16 @@ function MomentToBubble({moment, styles}) {
         const msgs = m.messages.map(
             (person, i) => PersonToLi({person, i, styles}))
         return (
-            <React.Fragment key={m.key}>
+            <section key={m.key} className={styles.moment}>
                 <h2 className={styles.bubbleTop}>
                     {(m.time || '') + namesAndCommas}
                 </h2>
-                <ul className={styles.bubbleGroupSpacing + ' ' +
+                <ul className={styles.bubbleGroup + ' ' +
+                               styles.bubbleGroupSpacing + ' ' +
                                styles.noBullets}>
                     {msgs}
                 </ul>
-            </React.Fragment>
+            </section>
         )
     }
     catch (e) {

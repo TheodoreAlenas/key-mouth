@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { getIsAtBottom, scrollToBottom } from "./scrolling.js"
 
 export default function InputAndButton({o, styles}) {
     const defaultHooks = {
@@ -9,27 +10,35 @@ export default function InputAndButton({o, styles}) {
     const [hooks, setHooks] = useState(defaultHooks)
     if (o !== null) {
         o.onReadySocket = function(unlocked) {
+            function onClear(event) {
+                event.preventDefault()
+                const t = event.target
+                t.value = ''
+                t.style.height = 'auto'
+                t.style.height = t.scrollHeight + 'px'
+                unlocked.onClear()
+            }
+            function onChange(event, newValue) {
+                const t = event.target
+                if (newValue !== undefined) t.value = newValue
+                const chat = document.getElementById('chat')
+                const wasAtBottom = getIsAtBottom(chat)
+                t.style.height = 'auto'
+                t.style.height = t.scrollHeight + 'px'
+                unlocked.onInputChange(t.value)
+                if (wasAtBottom) scrollToBottom(chat)
+            }
             setHooks({
-                onClear: function(event) {
-                    event.preventDefault()
-                    unlocked.onClear()
-                },
-                onChange: function(event) {
-                    const t = event.target
-                    t.style.height = 'auto'
-                    t.style.height = t.scrollHeight + 'px'
-                    unlocked.onInputChange(t.value)
-                },
+                onClear,
+                onChange,
                 onKeyDown: function(event) {
                     if (event.key !== 'Enter') return
                     if (getIsOnMobile()) {
-                        event.preventDefault()
-                        unlocked.onInputChange(event.target.value + '\n')
+                        onChange(event, event.target.value + '\n')
                         return
                     }
                     if (event.shiftKey) return
-                    event.preventDefault()
-                    unlocked.onClear()
+                    onClear(event)
                 }
             })
         }
@@ -67,7 +76,7 @@ function Input({o, styles, onChange, onKeyDown}) {
             <textarea
                 ref={inpRef}
                 name="message"
-                placeholder="Think and type"
+                placeholder="Stream typing"
                 rows="1"
                 className={styles.input}
                 value={inputValue}
