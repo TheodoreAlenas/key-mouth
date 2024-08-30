@@ -3,7 +3,7 @@ from db.mock import Db
 import unittest
 
 
-class AfterSocketLogicTest(unittest.TestCase):
+class Parsing(unittest.TestCase):
 
     def setUp(self):
         self.logic = AfterSocketLogic(
@@ -60,46 +60,71 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual('delete', res[0][1]['type'])
         self.assertEqual('a', res[0][1]['body'])
 
+
+class Broadcasting(unittest.TestCase):
+
+    def setUp(self):
+        self.logic = AfterSocketLogic(
+            time=8.0,
+            db=Db(),
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            ))
+        self.logic.create_room(10.0, "room0")
+        self.logic.create_room(10.0, "room1")
+        _, self.conn_1 = self.logic.connect(10.0, "room0")
+        _, self.conn_2 = self.logic.connect(11.0, "room0")
+        _, self.conn_3 = self.logic.connect(11.0, "room1")
+
     def test_two_conn_one_speaks_they_hear_the_same(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        _, conn_2 = self.logic.connect(11.0, "room0")
-        res, _ = conn_1.handle_input(12.0, "+hello")
+        res, _ = self.conn_1.handle_input(12.0, "+hello")
         self.assertEqual(res[0][1], res[1][1])
 
     def test_two_conn_one_speaks_exactly_they_get_notified(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        _, conn_2 = self.logic.connect(11.0, "room0")
-        res, _ = conn_1.handle_input(12.0, "+hello")
+        res, _ = self.conn_1.handle_input(12.0, "+hello")
         self.assertEqual(2, len(res))
-        a = [conn_1.conn_id, conn_2.conn_id]
+        a = [self.conn_1.conn_id, self.conn_2.conn_id]
         b = [res[0][0], res[1][0]]
         a.sort()
         b.sort()
         self.assertEqual(a, b)
 
     def test_a_comes_b_comes_a_goes_one_msg(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        _, conn_2 = self.logic.connect(11.0, "room0")
-        conn_1.disconnect(12.0, None)
-        res, _ = conn_2.handle_input(13.0, "+hello")
+        self.conn_1.disconnect(12.0, None)
+        res, _ = self.conn_2.handle_input(13.0, "+hello")
         self.assertEqual(1, len(res))
-        self.assertEqual(conn_2.conn_id, res[0][0])
+        self.assertEqual(self.conn_2.conn_id, res[0][0])
 
     def test_message_in_one_room_is_isolated(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        _, conn_2 = self.logic.connect(11.0, "room1")
-        res, _ = conn_1.handle_input(12.0, "+1")
+        res, _ = self.conn_3.handle_input(12.0, "+1")
         self.assertEqual(1, len(res))
-        self.assertEqual(conn_1.conn_id, res[0][0])
+        self.assertEqual(self.conn_3.conn_id, res[0][0])
+
+
+class Rooms(unittest.TestCase):
+
+    def setUp(self):
+        self.logic = AfterSocketLogic(
+            time=8.0,
+            db=Db(),
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            ))
+        self.logic.create_room(10.0, "room0")
+
+    def test_created_room_listed(self):
+        _, ans = self.logic.get_rooms(10.1, None)
+        self.assertEqual([{'id': 'room0', 'name': None}], ans)
 
     def test_deleted_room_not_listed(self):
         self.logic.delete_room(10.0, "room0")
         _, ans = self.logic.get_rooms(10.1, None)
-        self.assertEqual([{'id': 'room1', 'name': None}], ans)
+        self.assertEqual([], ans)
 
     def test_renamed_room_listed_renamed(self):
         self.logic.rename_room(10.0, ("room0", "a name"))
-        self.logic.delete_room(10.0, "room1")
         _, ans = self.logic.get_rooms(10.1, None)
         self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
 
@@ -125,19 +150,43 @@ class AfterSocketLogicTest(unittest.TestCase):
         except Exception as e:
             self.assertEqual(404, e.status_code)
 
+
+class ConnectionIds(unittest.TestCase):
+
+    def setUp(self):
+        self.logic = AfterSocketLogic(
+            time=8.0,
+            db=Db(),
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            ))
+        self.logic.create_room(10.0, "room0")
+        self.logic.create_room(10.0, "room1")
+        _, self.conn_1 = self.logic.connect(10.0, "room0")
+        _, self.conn_2 = self.logic.connect(10.1, "room0")
+
     def test_connection_ids_start_at_101(self):
-        _, conn = self.logic.connect(10.0, "room0")
-        self.assertEqual(101, conn.conn_id)
+        self.assertEqual(101, self.conn_1.conn_id)
 
     def test_connection_ids_increment(self):
-        self.logic.connect(10.0, "room0")
-        _, conn = self.logic.connect(10.1, "room0")
-        self.assertEqual(102, conn.conn_id)
+        self.assertEqual(102, self.conn_2.conn_id)
 
     def test_connection_ids_dont_go_per_room(self):
-        self.logic.connect(10.0, "room0")
-        _, conn = self.logic.connect(10.1, "room1")
-        self.assertEqual(102, conn.conn_id)
+        self.assertEqual(102, self.conn_2.conn_id)
+
+
+class Moments(unittest.TestCase):
+
+    def setUp(self):
+        self.logic = AfterSocketLogic(
+            time=8.0,
+            db=Db(),
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            ))
+        self.logic.create_room(10.0, "room0")
 
     def test_connect_get_others_last_moment(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
@@ -207,6 +256,19 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(3, ns[4])
         self.assertEqual(4, ns[6])
 
+
+class DbBasics(unittest.TestCase):
+
+    def setUp(self):
+        self.logic = AfterSocketLogic(
+            time=8.0,
+            db=Db(),
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            ))
+        self.logic.create_room(10.0, "room0")
+
     def test_database_starts_empty(self):
         self.logic.connect(10.0, "room0")
         _, moments = self.logic.get_moments_range(10.2, ("room0", 0, 100))
@@ -240,7 +302,7 @@ class AfterSocketLogicTest(unittest.TestCase):
         self.assertEqual(msg_to_1[:-1], m)
 
 
-class DbLoadRoomTest(unittest.TestCase):
+class DbLoadRoom(unittest.TestCase):
 
     def get_logic(self, time, db_mock):
         return AfterSocketLogic(
