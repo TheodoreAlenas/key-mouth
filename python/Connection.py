@@ -17,8 +17,9 @@ class ViewEvent:
 
 class RoomChannel:
 
-    def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
+    def __init__(self, conn_id, channel_id, room: ConnRoomData, conf_timing: ConfTiming):
         self.conn_id = conn_id
+        self.channel_id = channel_id
         self.room = room
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
@@ -83,31 +84,37 @@ class RoomChannel:
 
 class Connection:
 
-    def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
+    def __init__(self, conn_id, room: ConnRoomData, rooms, conf_timing: ConfTiming):
         self.conn_id = conn_id
-        self.channels = [RoomChannel(conn_id, room, conf_timing)]
+        self.rooms = rooms
+        self.channels = [RoomChannel(conn_id, "01", room, conf_timing)]
 
     def connect(self, time, unused_for_now):
-        res, ans = self.channels[0].connect(time, unused_for_now)
+        res, _ = self.channels[0].connect(time, unused_for_now)
         return (res, self)
 
-    def disconnect(self, time, unused_for_now):
+    def disconnect(self, time, _):
         res = []
         ans = []
         for c in self.channels:
-            r, a = c.disconnect(time, unused_for_now)
+            r, a = c.disconnect(time, None)
             res += r
             ans.append(a)
         return (res, ans)
 
     def handle_input(self, time, data):
         if data[:2] == '00':
+            c = RoomChannel(conn_id, "02", self.rooms[data[2:]],
+                            self.conf_timing)
+            res, _ = c.connect(time, None)
             return ([(self.conn_id, {
                 "channelId": "00",
-                "newChannelId": "01"
+                "newChannelId": "02"
             })], None)
         elif data[:2] == '01':
             return self.channels[0].handle_input(time, data[2:])
+        elif data[:2] == '02':
+            return self.channels[1].handle_input(time, data[2:])
         else:
             raise LogicHttpException(
                 status_code=404,
