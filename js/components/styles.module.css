@@ -6,13 +6,13 @@
 [data-sch=dark] .inputForm,
 [data-sch=dark] .barContainer {background-color: #000;}
 
-.main {background-color: #fff;}
-.bubble {box-shadow: #ddd 1px 3px 8px 2px;}
-.bubble,
+.main,
 .inputForm,
-.button {background-color: #fff;}
-.input,
 .barContainer {background-color: #fff;}
+.bubble {box-shadow: #ddd 1px 3px 8px 2px;}
+.bubble {background-color: #fc8;}
+.input,
+.button {background-color: #dde;}
 
 [data-sch=dark] .event {color: #ff8;}
 [data-sch=dark] .erase {background-color: #000; color: #854;}
@@ -20,8 +20,8 @@
 [data-sch=dark] .bubbleTop {color: #b97;}
 
 .event {color: #600;}
-.erase {background-color: #ccc; color: #fff;}
-.delete {background-color: #aaa; color: #fff;}
+.erase {background-color: #fea; color: #fff;}
+.delete {background-color: #da6; color: #fff;}
 .bubbleTop {color: #876;}
 
 [data-sch=dark] .moment:hover {background-color: #000;}
@@ -41,10 +41,12 @@
 .moment:hover .erase {background-color: #fff; color: #000;}
 .moment:hover .delete {background-color: #fff; color: #000;}
 .moment:hover .erase,
-.moment:hover .delete {box-shadow: #888 0 0 0 2px;}
-.moment:hover .bubble {box-shadow: #888 0 0 0 2px;}
+.moment:hover .delete {box-shadow: #b97 0 0 0 2px;}
+.moment:hover .bubble {box-shadow: #b97 0 0 0 2px;}
+.moment:hover .bubble {background-color: #fff;}
 .moment:hover .bubbleTop {color: #000;}
-.button:hover {background-color: #ccc;}
+.input:hover,
+.button:hover {background-color: #fff;}
 
 [data-sch=dark] .inputContainer {border-color: #048;}
 [data-sch=dark] .input::placeholder {color: #fff;}
@@ -63,7 +65,7 @@
 }
 .bubbleTop {
     padding: 0 0;
-    margin: 0 0.8em 0 1.6em;
+    margin: 0 0.8em;
 }
 .bubbleGroup {
     padding: 0 0;
