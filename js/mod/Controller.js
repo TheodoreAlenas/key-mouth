@@ -83,14 +83,14 @@ class Unlocked {
 
 function getDiff(a, b) {
     if (a.startsWith(b)) {
-        return ["-" + a.substr(b.length)]
+        return ["01-" + a.substr(b.length)]
     }
     if (b.startsWith(a)) {
-        return ["+" + b.substr(a.length)]
+        return ["01+" + b.substr(a.length)]
     }
     for (let i = 0; i < a.length && i < b.length; i++) {
         if (a[i] !== b[i]) {
-            return ["-" + a.substr(i), "+" + b.substr(i)]
+            return ["01-" + a.substr(i), "01+" + b.substr(i)]
         }
     }
     throw new Error("can't handle diff, a: " + a + ", b: " + b)

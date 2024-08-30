@@ -43,7 +43,7 @@ class Parsing(unittest.TestCase):
                 }),
             ],
             res)
-        res, _ = conn.handle_input(10.1, "+hello")
+        res, _ = conn.handle_input(10.1, "01+hello")
         self.assertEqual(
             [(conn.conn_id, {
                 "momentIdx": 1,
@@ -56,7 +56,7 @@ class Parsing(unittest.TestCase):
 
     def test_deletion_parsed(self):
         _, conn = self.logic.connect(10.0, "room0")
-        res, _ = conn.handle_input(10.1, "-a")
+        res, _ = conn.handle_input(10.1, "01-a")
         self.assertEqual('delete', res[0][1]['type'])
         self.assertEqual('a', res[0][1]['body'])
 
@@ -78,11 +78,11 @@ class Broadcasting(unittest.TestCase):
         _, self.conn_3 = self.logic.connect(11.0, "room1")
 
     def test_two_conn_one_speaks_they_hear_the_same(self):
-        res, _ = self.conn_1.handle_input(12.0, "+hello")
+        res, _ = self.conn_1.handle_input(12.0, "01+hello")
         self.assertEqual(res[0][1], res[1][1])
 
     def test_two_conn_one_speaks_exactly_they_get_notified(self):
-        res, _ = self.conn_1.handle_input(12.0, "+hello")
+        res, _ = self.conn_1.handle_input(12.0, "01+hello")
         self.assertEqual(2, len(res))
         a = [self.conn_1.conn_id, self.conn_2.conn_id]
         b = [res[0][0], res[1][0]]
@@ -92,12 +92,12 @@ class Broadcasting(unittest.TestCase):
 
     def test_a_comes_b_comes_a_goes_one_msg(self):
         self.conn_1.disconnect(12.0, None)
-        res, _ = self.conn_2.handle_input(13.0, "+hello")
+        res, _ = self.conn_2.handle_input(13.0, "01+hello")
         self.assertEqual(1, len(res))
         self.assertEqual(self.conn_2.conn_id, res[0][0])
 
     def test_message_in_one_room_is_isolated(self):
-        res, _ = self.conn_3.handle_input(12.0, "+1")
+        res, _ = self.conn_3.handle_input(12.0, "01+1")
         self.assertEqual(1, len(res))
         self.assertEqual(self.conn_3.conn_id, res[0][0])
 
@@ -190,7 +190,7 @@ class Moments(unittest.TestCase):
 
     def test_connect_get_others_last_moment(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
-        res_2, _ = conn_1.handle_input(10.1, "+1")
+        res_2, _ = conn_1.handle_input(10.1, "01+1")
         res_3, conn_2 = self.logic.connect(10.2, "room0")
         a = [x for _, x in res_1 + res_2]
         b = [x for _, x in res_3[:-2]]
@@ -198,7 +198,7 @@ class Moments(unittest.TestCase):
 
     def test_on_connect_get_a_stored_moment(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
-        res_2, _ = conn_1.handle_input(10.1, "+old")
+        res_2, _ = conn_1.handle_input(10.1, "01+old")
         res_3, conn_2 = self.logic.connect(99.0, "room0")
         a = [x for _, x in res_1 + res_2]
         b = [x for _, x in res_3[:len(a)]]
@@ -206,8 +206,8 @@ class Moments(unittest.TestCase):
 
     def test_on_connect_get_a_stored_moment_and_new(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
-        res_2, _ = conn_1.handle_input(10.1, "+old")
-        res_3, _ = conn_1.handle_input(99.0, "+new")
+        res_2, _ = conn_1.handle_input(10.1, "01+old")
+        res_3, _ = conn_1.handle_input(99.0, "01+new")
         res_4, conn_2 = self.logic.connect(99.1, "room0")
         a = [x for _, x in res_1 + res_2]
         b = [x for _, x in res_4[:len(a)]]
@@ -222,26 +222,26 @@ class Moments(unittest.TestCase):
 
     def test_connecting_and_speaking_is_one_stream(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.handle_input(12.9, "+1")
+        res, _ = conn_1.handle_input(12.9, "01+1")
         self.assertEqual(1, res[-1][1]['momentIdx'])
 
     def test_connecting_pausing_speaking_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.handle_input(13.1, "+1")
+        res, _ = conn_1.handle_input(13.1, "01+1")
         self.assertEqual(2, res[-1][1]["momentIdx"])
 
     def test_interrupting_creates_moment(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(100.0, "+1")
-        res, _ = conn_2.handle_input(100.6, "+2")
+        conn_1.handle_input(100.0, "01+1")
+        res, _ = conn_2.handle_input(100.6, "01+2")
         self.assertEqual(3, res[-1][1]["momentIdx"])
 
     def test_interrupting_quickly_doesnt_count(self):
         _, conn_1 = self.logic.connect(10.0, "room0")
         _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(100.0, "+1")
-        res, _ = conn_2.handle_input(100.4, "+2")
+        conn_1.handle_input(100.0, "01+1")
+        res, _ = conn_2.handle_input(100.4, "01+2")
         self.assertEqual(2, res[-1][1]["momentIdx"])
 
     def test_merged_moments_dont_chain_beyond_the_config(self):
@@ -251,7 +251,7 @@ class Moments(unittest.TestCase):
             conns.append(conn)
         ns = []
         for i in range(7):
-            res, _ = conns[i].handle_input(99.0 + 0.1 * i, "+hi")
+            res, _ = conns[i].handle_input(99.0 + 0.1 * i, "01+hi")
             ns.append(res[-1][1]["momentIdx"])
         self.assertEqual(3, ns[4])
         self.assertEqual(4, ns[6])
@@ -292,8 +292,8 @@ class DbBasics(unittest.TestCase):
     def test_interrupt_and_fetch_moments_get_socket_moments(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, conn_2 = self.logic.connect(10.1, "room0")
-        res_3, _ = conn_1.handle_input(100.0, "+1")
-        res_4, _ = conn_2.handle_input(100.6, "+2")
+        res_3, _ = conn_1.handle_input(100.0, "01+1")
+        res_4, _ = conn_2.handle_input(100.6, "01+2")
         _, m = self.logic.get_moments_range(100.7, ("room0", 0, 4))
         res_all = res_1 + res_2 + res_3 + res_4
         msg_to_1 = [x for c, x in res_all if c == conn_1.conn_id]
@@ -352,7 +352,7 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
         _, conn = logic.connect(10.2, "room0")
-        conn.handle_input(10.3, "+will be stored later")
+        conn.handle_input(10.3, "01+will be stored later")
         logic.close(10.4, None)
 
         logic = self.get_logic(10.5, db)
@@ -366,9 +366,9 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(10.0, db)
         logic.create_room(10.1, "room0")
         _, conn = logic.connect(10.2, "room0")
-        conn.handle_input(10.3, "+will be stored later")
+        conn.handle_input(10.3, "01+will be stored later")
 
-        conn.handle_input(99.0, "+started speaking again, stored old")
+        conn.handle_input(99.0, "01+started speaking again, stored old")
         logic.close(99.1, None)
 
         logic = self.get_logic(99.2, db)

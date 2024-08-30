@@ -83,10 +83,12 @@ class RoomChannel:
 class Connection:
 
     def __init__(self, conn_id, room: ConnRoomData, conf_timing: ConfTiming):
+        self.conn_id = conn_id
         self.channels = [RoomChannel(conn_id, room, conf_timing)]
 
     def connect(self, time, unused_for_now):
-        return self.channels[0].connect(time, unused_for_now)
+        res, ans = self.channels[0].connect(time, unused_for_now)
+        return (res, self)
 
     def disconnect(self, time, unused_for_now):
         res = []
@@ -96,6 +98,15 @@ class Connection:
             res += r
             ans.append(a)
         return (res, ans)
+
+    def handle_input(self, time, data):
+        if data[:2] == '00':
+            return ([(self.conn_id, {
+                "channelId": "00",
+                "newChannelId": "01"
+            })], None)
+        else:
+            return self.channels[0].handle_input(time, data[2:])
 
 
 class Broadcaster(Connection):
