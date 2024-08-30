@@ -3,17 +3,11 @@
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from Connection import Connection, Broadcaster
+from exceptions import LogicHttpException
 from ConnRoomData import ConnRoomData, ConfTiming
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
 from dataclasses import dataclass
-
-
-class LogicHttpException(Exception):
-    def __init__(self, detail, status_code):
-        self.status_code = status_code
-        self.detail = detail
-        super().__init__(detail)
 
 
 class AfterSocketLogic:

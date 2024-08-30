@@ -4,6 +4,7 @@
 from ConnRoomData import ConnRoomData, ConfTiming
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
+from exceptions import LogicHttpException
 
 
 class ViewEvent:
@@ -105,8 +106,12 @@ class Connection:
                 "channelId": "00",
                 "newChannelId": "01"
             })], None)
-        else:
+        elif data[:2] == '01':
             return self.channels[0].handle_input(time, data[2:])
+        else:
+            raise LogicHttpException(
+                status_code=404,
+                detail="invalid channel ID: " + data[:2])
 
 
 class Broadcaster(Connection):
