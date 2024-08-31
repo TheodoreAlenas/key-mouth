@@ -1,28 +1,28 @@
-[data-sch=dark] .main {background-color: #000;}
-[data-sch=dark] .bubble {box-shadow: none;}
-[data-sch=dark] .bubble {background-color: #4f4840;}
+[data-sch=dark] .main {background-color: #000; color: #ddd}
+[data-sch=dark] .bubble {box-shadow: #444 0 0 0 2px;}
+[data-sch=dark] .bubble {background-color: #000;}
 [data-sch=dark] .button,
-[data-sch=dark] .input {background-color: #123;}
+[data-sch=dark] .input {background-color: #000;}
 [data-sch=dark] .inputForm,
-[data-sch=dark] .barContainer {background-color: #10181f;}
+[data-sch=dark] .barContainer {background-color: #000;}
 
-.main {background-color: #fff;}
+.main {background-color: #f0f4f8;}
 .inputForm,
-.barContainer {background-color: #e0e8ee;}
-.bubble {box-shadow: none;}
-.bubble {background-color: #e4efe4;}
+.barContainer {background-color: #fff;}
+.bubble {box-shadow: #dde 2px 2px 3px 1px;}
+.bubble {background-color: #fff;}
 .input,
-.button {background-color: #e0ecf8;}
+.button {background-color: #e0e8ef;}
 
-[data-sch=dark] .event {color: #ddc;}
-[data-sch=dark] .erase {background-color: #1f1810; color: #633;}
+[data-sch=dark] .event {color: #cb8;}
+[data-sch=dark] .erase {background-color: #2f2820; color: #822;}
 [data-sch=dark] .delete {background-color: #000; color: #a82;}
-[data-sch=dark] .bubbleTop {color: #753;}
+[data-sch=dark] .bubbleTop {color: #a54;}
 
-.event {color: #633;}
-.erase {background-color: #fff; color: #cc8;}
-.delete {background-color: #fff; color: #b77;}
-.bubbleTop {color: #cba;}
+.event {color: #123;}
+.erase {background-color: #def; color: #abc;}
+.delete {background-color: #def; color: #789;}
+.bubbleTop {color: #789;}
 
 [data-sch=dark] .moment:hover {background-color: #000;}
 [data-sch=dark] .moment:hover .erase {background-color: #000;}
@@ -48,10 +48,10 @@
 .input:hover,
 .button:hover {background-color: #fff;}
 
-[data-sch=dark] .inputContainer {border-color: #aaf;}
-[data-sch=dark] .input::placeholder {color: #ccf;}
-[data-sch=dark] .button {border-color: #aaf; color: #ccf;}
-[data-sch=dark] .link, [data-sch=dark] .links a {color: #aaf;}
+[data-sch=dark] .inputContainer {border-color: #8af;}
+[data-sch=dark] .input::placeholder {color: #8af;}
+[data-sch=dark] .button {border-color: #8af; color: #8af;}
+[data-sch=dark] .link, [data-sch=dark] .links a {color: #8af;}
 
 .input {border: none;}
 .input::placeholder,
