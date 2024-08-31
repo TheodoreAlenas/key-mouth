@@ -14,7 +14,11 @@ export default class Io {
         this.uri = uri
         this.socket = new WebSocket(uri.webSocket())
         this.socket.addEventListener('error', onSocketError)
+        this.socketQueue = Promise.resolve()
         onOpenSendVersionAnd(this.socket, onReadySocket, this)
+    }
+    _enqueue(f) {
+        this.socketQueue = this.socketQueue.then(f)
     }
     close() {
         this.socket.close()
@@ -44,16 +48,20 @@ export default class Io {
         })
     }
     onEvent(callback) {
+        const self = this
         this.socket.addEventListener("message", function(event) {
-            try {
-                callback(JSON.parse(event.data))
-            }
-            catch (e) {
-                console.error("Error JSON parsing " + event +
-                              " or calling moments message callback " +
-                              "with arg " + event.data)
-                throw e
-            }
+            self._enqueue(function() {
+                try {
+                    callback(JSON.parse(event.data))
+                }
+                catch (e) {
+                    console.error(
+                        "Error JSON parsing " + event +
+                            " or calling moments message callback " +
+                            "with arg " + event.data)
+                    console.error(e)
+                }
+            })
         })
     }
 }
