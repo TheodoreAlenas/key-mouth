@@ -10,19 +10,19 @@
 .inputForm,
 .barContainer {background-color: #e0e8ee;}
 .bubble {box-shadow: none;}
-.bubble {background-color: #e0efe8;}
+.bubble {background-color: #e4efe4;}
 .input,
-.button {background-color: #e0e0ef;}
+.button {background-color: #e0ecf8;}
 
 [data-sch=dark] .event {color: #cdc;}
 [data-sch=dark] .erase {background-color: #000; color: #844;}
 [data-sch=dark] .delete {background-color: #000; color: #a82;}
 [data-sch=dark] .bubbleTop {color: #564;}
 
-.event {color: #333;}
-.erase {background-color: #fff; color: #ad6;}
-.delete {background-color: #fff; color: #aaa;}
-.bubbleTop {color: #8a4;}
+.event {color: #633;}
+.erase {background-color: #fff; color: #cc8;}
+.delete {background-color: #fff; color: #b77;}
+.bubbleTop {color: #cba;}
 
 [data-sch=dark] .moment:hover {background-color: #000;}
 [data-sch=dark] .moment:hover .erase {background-color: #000;}
