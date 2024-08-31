@@ -39,6 +39,7 @@ export default function InputAndButton({o, styles}) {
                 onKeyDown: function(event) {
                     if (event.key !== 'Enter') return
                     if (getIsOnMobile()) {
+                        event.preventDefault()
                         onChange(event, event.target.value + '\n')
                         return
                     }
