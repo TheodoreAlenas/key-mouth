@@ -1,6 +1,6 @@
 [data-sch=dark] .main {background-color: #000;}
 [data-sch=dark] .bubble {box-shadow: none;}
-[data-sch=dark] .bubble {background-color: #621;}
+[data-sch=dark] .bubble {background-color: #654;}
 [data-sch=dark] .button,
 [data-sch=dark] .input {background-color: #112;}
 [data-sch=dark] .inputForm,
@@ -14,10 +14,10 @@
 .input,
 .button {background-color: #dde;}
 
-[data-sch=dark] .event {color: #ff8;}
-[data-sch=dark] .erase {background-color: #000; color: #854;}
-[data-sch=dark] .delete {background-color: #000; color: #976;}
-[data-sch=dark] .bubbleTop {color: #b97;}
+[data-sch=dark] .event {color: #cdc;}
+[data-sch=dark] .erase {background-color: #000; color: #844;}
+[data-sch=dark] .delete {background-color: #000; color: #a82;}
+[data-sch=dark] .bubbleTop {color: #564;}
 
 .event {color: #600;}
 .erase {background-color: #fea; color: #fff;}
@@ -32,7 +32,7 @@
 [data-sch=dark] .moment:hover .delete {color: #fff;}
 [data-sch=dark] .moment:hover .erase,
 [data-sch=dark] .moment:hover .delete {box-shadow: #b97 0 0 0 2px;}
-[data-sch=dark] .moment:hover .bubble {box-shadow: #b97 3px 0 8px 0;}
+[data-sch=dark] .moment:hover .bubble {box-shadow: #b97 0 0 0 2px;}
 [data-sch=dark] .moment:hover .bubbleTop {color: #fff;}
 [data-sch=dark] .input:hover,
 [data-sch=dark] .button:hover {background-color: #000;}
