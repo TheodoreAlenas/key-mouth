@@ -33,13 +33,9 @@ class RoomChannel:
         for e in events:
             a.push(e)
         stream = a.stream_models + self.room.evt_stream.stream_models
-        channel_id = [(self.conn_id, {
-            "channelId": "00",
-            "newChannelId": self.channel_id
-        })]
         catch_up = [(self.conn_id, e) for e in stream]
         conn_msg = self._handle_parsed(time, "connect")
-        return (channel_id + catch_up + conn_msg, self)
+        return (catch_up + conn_msg, self)
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)
@@ -109,19 +105,7 @@ class Connection:
         return (res, ans)
 
     def handle_input(self, time, data):
-        if data[:2] == '00':
-            c = RoomChannel(conn_id, "02", self.rooms[data[2:]],
-                            self.conf_timing)
-            res, _ = c.connect(time, None)
-            return (res, None)
-        elif data[:2] == '01':
-            return self.channels[0].handle_input(time, data[2:])
-        elif data[:2] == '02':
-            return self.channels[1].handle_input(time, data[2:])
-        else:
-            raise LogicHttpException(
-                status_code=404,
-                detail="invalid channel ID: " + data[:2])
+        return self.channels[0].handle_input(time, data)
 
 
 class Broadcaster(Connection):

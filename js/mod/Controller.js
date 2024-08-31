@@ -35,7 +35,6 @@ export default class Controller {
         this.io = new Io(uri, onReadySocket, onSocketError)
         this.presenter = null
         this.io.onEvent(function(event) {
-            if (event.channelId === "00") return
             if (self.presenter === null) {
                 self.presenter = new EventPresenter(event.momentIdx)
             }
@@ -84,14 +83,14 @@ class Unlocked {
 
 function getDiff(a, b) {
     if (a.startsWith(b)) {
-        return ["01-" + a.substr(b.length)]
+        return ["-" + a.substr(b.length)]
     }
     if (b.startsWith(a)) {
-        return ["01+" + b.substr(a.length)]
+        return ["+" + b.substr(a.length)]
     }
     for (let i = 0; i < a.length && i < b.length; i++) {
         if (a[i] !== b[i]) {
-            return ["01-" + a.substr(i), "01+" + b.substr(i)]
+            return ["-" + a.substr(i), "+" + b.substr(i)]
         }
     }
     throw new Error("can't handle diff, a: " + a + ", b: " + b)
