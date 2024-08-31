@@ -29,7 +29,7 @@ class AfterSocketLogic:
                 name=d.name,
                 db_room=db.get_room(d.room_id))
             r = self.rooms_ram[d.room_id]
-            r.conn_bcaster = Broadcaster(0, r, self.rooms_ram, self._conf_timing)
+            r.conn_bcaster = Broadcaster(0, r, self._conf_timing)
             r.conn_bcaster.say_started(time)
 
     def connect(self, time, room):
@@ -38,14 +38,14 @@ class AfterSocketLogic:
                                      status_code=404)
         self.last_id += 1
         i = self.last_id
-        self.conns[i] = Connection(i, self.rooms_ram[room], self.rooms_ram, self._conf_timing)
+        self.conns[i] = Connection(i, self.rooms_ram[room], self._conf_timing)
         return self.conns[i].connect(time, None)
 
     def create_room(self, time, room_id):
         def create_and_set():
             self.db.create_room(time, room_id)
             r = ConnRoomData(time, room_id, self.db.get_room(room_id))
-            r.conn_bcaster = Broadcaster(0, r, self.rooms_ram, self._conf_timing)
+            r.conn_bcaster = Broadcaster(0, r, self._conf_timing)
             self.rooms_ram[room_id] = r
             r.conn_bcaster.say_created(time)
             #r.conn_bcaster.handle_input("")

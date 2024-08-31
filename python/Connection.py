@@ -15,12 +15,11 @@ class ViewEvent:
         self.body = body
 
 
-class RoomChannel:
+class Connection:
 
-    def __init__(self, conn_id, channel_id, room: ConnRoomData,
+    def __init__(self, conn_id, room: ConnRoomData,
                  conf_timing: ConfTiming):
         self.conn_id = conn_id
-        self.channel_id = channel_id
         self.room = room
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
@@ -83,43 +82,18 @@ class RoomChannel:
         return [(conn, v) for conn in self.room.conns]
 
 
-class Connection:
-
-    def __init__(self, conn_id, room: ConnRoomData, rooms,
-                 conf_timing: ConfTiming):
-        self.conn_id = conn_id
-        self.rooms = rooms
-        self.channels = [RoomChannel(conn_id, "01", room, conf_timing)]
-
-    def connect(self, time, _):
-        res, _ = self.channels[0].connect(time, None)
-        return (res, self)
-
-    def disconnect(self, time, _):
-        res = []
-        ans = []
-        for c in self.channels:
-            r, a = c.disconnect(time, None)
-            res += r
-            ans.append(a)
-        return (res, ans)
-
-    def handle_input(self, time, data):
-        return self.channels[0].handle_input(time, data)
-
-
 class Broadcaster(Connection):
 
     def close_room(self, time):
-        self.channels[0]._handle_parsed(time, "shutdown")
-        self.channels[0]._push(0, 'endOfMoment', time)
-        self.channels[0]._store_last_moment(time)
+        self._handle_parsed(time, "shutdown")
+        self._push(0, 'endOfMoment', time)
+        self._store_last_moment(time)
 
     def say_created(self, time):
-        self.channels[0]._handle_parsed(time, "create")
+        self._handle_parsed(time, "create")
 
     def say_started(self, time):
-        self.channels[0]._handle_parsed(time, "start")
+        self._handle_parsed(time, "start")
 
 
 """
