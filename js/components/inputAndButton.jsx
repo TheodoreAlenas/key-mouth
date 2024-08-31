@@ -78,19 +78,15 @@ function Input({o, styles, onChange, onKeyDown}) {
         t.style.height = 'auto'
         t.style.height = t.scrollHeight + 'px'
     }, [])
-    return (
-        <div className={styles.inputContainer}>
-            <textarea
-                id="chat-input"
-                ref={inpRef}
-                name="message"
-                placeholder="Stream typing"
-                rows="1"
-                className={styles.input}
-                value={inputValue}
-                onChange={onChange}
-                onKeyDown={onKeyDown}
-            />
-        </div>
-    )
+    return <textarea
+               id="chat-input"
+               ref={inpRef}
+               name="message"
+               placeholder="Stream typing"
+               rows="1"
+               className={styles.input}
+               value={inputValue}
+               onChange={onChange}
+               onKeyDown={onKeyDown}
+           />
 }

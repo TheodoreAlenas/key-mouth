@@ -9,7 +9,7 @@
 .main {background-color: #f0f4f8;}
 .inputForm,
 .barContainer {background-color: #fff;}
-.bubble {box-shadow: #dde 2px 2px 3px 1px;}
+.bubble {box-shadow: #dde 1px 1px 2px 0;}
 .bubble {background-color: #fff;}
 .input,
 .button {background-color: #e0e8ef;}
@@ -30,6 +30,7 @@
 [data-sch=dark] .moment:hover .bubble {background-color: #000;}
 [data-sch=dark] .moment:hover .erase {color: #fff;}
 [data-sch=dark] .moment:hover .delete {color: #fff;}
+[data-sch=dark] .moment:hover .event {color: #fff;}
 [data-sch=dark] .moment:hover .erase,
 [data-sch=dark] .moment:hover .delete {box-shadow: #bbb 0 0 0 2px;}
 [data-sch=dark] .moment:hover .bubble {box-shadow: #bbb 0 0 0 2px;}
@@ -48,16 +49,15 @@
 .input:hover,
 .button:hover {background-color: #fff;}
 
-[data-sch=dark] .inputContainer {border-color: #8af;}
+[data-sch=dark] .input {border-color: #8af;}
 [data-sch=dark] .input::placeholder {color: #8af;}
 [data-sch=dark] .button {border-color: #8af; color: #8af;}
 [data-sch=dark] .link, [data-sch=dark] .links a {color: #8af;}
 
-.input {border: none;}
 .input::placeholder,
 .button {color: #026;}
 .link, .links a {color: #028;}
-.inputContainer,
+.input,
 .button {border: 2px solid #248;}
 
 .moment {
@@ -161,7 +161,6 @@
 
 .bubble {border-radius: 4px 1em 1em 4px;}
 .button {border-radius: 1.5em;}
-.inputContainer {border-radius: 1.5em;}
 .input {border-radius: 1.5em;}
 
 .button {
