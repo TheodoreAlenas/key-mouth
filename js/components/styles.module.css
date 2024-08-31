@@ -6,23 +6,23 @@
 [data-sch=dark] .inputForm,
 [data-sch=dark] .barContainer {background-color: #000;}
 
-.main,
+.main {background-color: #fff;}
 .inputForm,
-.barContainer {background-color: #fff;}
-.bubble {box-shadow: #ddd 1px 3px 8px 2px;}
-.bubble {background-color: #fc8;}
+.barContainer {background-color: #e0e8ee;}
+.bubble {box-shadow: none;}
+.bubble {background-color: #e0efe8;}
 .input,
-.button {background-color: #dde;}
+.button {background-color: #e0e0ef;}
 
 [data-sch=dark] .event {color: #cdc;}
 [data-sch=dark] .erase {background-color: #000; color: #844;}
 [data-sch=dark] .delete {background-color: #000; color: #a82;}
 [data-sch=dark] .bubbleTop {color: #564;}
 
-.event {color: #600;}
-.erase {background-color: #fea; color: #fff;}
-.delete {background-color: #da6; color: #fff;}
-.bubbleTop {color: #876;}
+.event {color: #333;}
+.erase {background-color: #fff; color: #ad6;}
+.delete {background-color: #fff; color: #aaa;}
+.bubbleTop {color: #8a4;}
 
 [data-sch=dark] .moment:hover {background-color: #000;}
 [data-sch=dark] .moment:hover .erase {background-color: #000;}
@@ -31,33 +31,34 @@
 [data-sch=dark] .moment:hover .erase {color: #fff;}
 [data-sch=dark] .moment:hover .delete {color: #fff;}
 [data-sch=dark] .moment:hover .erase,
-[data-sch=dark] .moment:hover .delete {box-shadow: #b97 0 0 0 2px;}
-[data-sch=dark] .moment:hover .bubble {box-shadow: #b97 0 0 0 2px;}
+[data-sch=dark] .moment:hover .delete {box-shadow: #bbb 0 0 0 2px;}
+[data-sch=dark] .moment:hover .bubble {box-shadow: #bbb 0 0 0 2px;}
 [data-sch=dark] .moment:hover .bubbleTop {color: #fff;}
 [data-sch=dark] .input:hover,
 [data-sch=dark] .button:hover {background-color: #000;}
 
-.moment:hover {background-color: #f8f8f8;}
+.moment:hover {background-color: #fff;}
 .moment:hover .erase {background-color: #fff; color: #000;}
 .moment:hover .delete {background-color: #fff; color: #000;}
 .moment:hover .erase,
-.moment:hover .delete {box-shadow: #b97 0 0 0 2px;}
-.moment:hover .bubble {box-shadow: #b97 0 0 0 2px;}
+.moment:hover .delete {box-shadow: #888 0 0 0 2px;}
+.moment:hover .bubble {box-shadow: #888 0 0 0 2px;}
 .moment:hover .bubble {background-color: #fff;}
 .moment:hover .bubbleTop {color: #000;}
 .input:hover,
 .button:hover {background-color: #fff;}
 
-[data-sch=dark] .inputContainer {border-color: #048;}
-[data-sch=dark] .input::placeholder {color: #fff;}
-[data-sch=dark] .button {border-color: #048; color: inherit;}
-[data-sch=dark] .link, [data-sch=dark] .links a {color: #acf;}
+[data-sch=dark] .inputContainer {border-color: #aaf;}
+[data-sch=dark] .input::placeholder {color: #ccf;}
+[data-sch=dark] .button {border-color: #aaf; color: #ccf;}
+[data-sch=dark] .link, [data-sch=dark] .links a {color: #aaf;}
 
-.inputContainer {border: 2px solid #048;}
 .input {border: none;}
-.input::placeholder {color: #000;}
-.button {border: 2px solid #048; color: inherit;}
+.input::placeholder,
+.button {color: #026;}
 .link, .links a {color: #028;}
+.inputContainer,
+.button {border: 2px solid #248;}
 
 .moment {
     padding: 0.6em 0;
