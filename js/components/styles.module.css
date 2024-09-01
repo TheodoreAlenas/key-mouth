@@ -1,8 +1,6 @@
-[data-sch=dark] .main {background-color: #000; color: #ddd}
-[data-sch=dark] .bubble {box-shadow: #444 0 0 0 2px;}
-[data-sch=dark] .bubble {background-color: #000;}
-[data-sch=dark] .button,
-[data-sch=dark] .input {background-color: #000;}
+[data-sch=dark] .main {background-color: #000; color: #fff}
+[data-sch=dark] .bubble {box-shadow: none;}
+[data-sch=dark] .bubble {background-color: #303438;}
 [data-sch=dark] .inputForm,
 [data-sch=dark] .bar {background-color: #000;}
 
@@ -11,13 +9,11 @@
 .bar {background-color: #fff;}
 .bubble {box-shadow: #dde 1px 1px 2px 0;}
 .bubble {background-color: #fff;}
-.input,
-.button {background-color: #e0e8ef;}
 
-[data-sch=dark] .event {color: #cb8;}
-[data-sch=dark] .erase {background-color: #2f2820; color: #822;}
-[data-sch=dark] .delete {background-color: #000; color: #a82;}
-[data-sch=dark] .bubbleTop {color: #a54;}
+[data-sch=dark] .event {color: #b0b4b8;}
+[data-sch=dark] .erase {background-color: #000; color: #303438;}
+[data-sch=dark] .delete {background-color: #000; color: #506468;}
+[data-sch=dark] .bubbleTop {color: #808488;}
 
 .event {color: #123;}
 .erase {background-color: #def; color: #abc;}
@@ -49,12 +45,16 @@
 .input:hover,
 .button:hover {background-color: #fff;}
 
-[data-sch=dark] .input {border-color: #8af;}
-[data-sch=dark] .input::placeholder {color: #8af;}
-[data-sch=dark] .button {border-color: #8af; color: #8af;}
-[data-sch=dark] .link, [data-sch=dark] .links a {color: #8af;}
+[data-sch=dark] .button,
+[data-sch=dark] .input {background-color: #123;}
+[data-sch=dark] .input {border-color: #456;}
+[data-sch=dark] .input::placeholder {color: #789;}
+[data-sch=dark] .button {border-color: #68a; color: #acf;}
+[data-sch=dark] .link,
+[data-sch=dark] .links a {text-decoration-color: #68a; color: #acf;}
 
-.input::placeholder,
+.input,
+.button {background-color: #e0e8ef;}
 .button {color: #026;}
 .link, .links a {color: #028;}
 .input,
@@ -186,7 +186,4 @@
     box-sizing: border-box;
     width: 100%;
     resize: none;
-}
-.input::placeholder {
-    text-align: center;
 }
