@@ -16,7 +16,7 @@ export default class EventPresenter {
         this.lastTime = null
     }
     push(viewEvent) {
-        if (viewEvent.type === 'endOfMoment') {
+        if (viewEvent.type === 'newMoment') {
             this.moments.push({
                 time: this.lastTime,
                 raw: this.last

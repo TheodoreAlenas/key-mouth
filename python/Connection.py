@@ -52,7 +52,7 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
         if self._interrupted_conversation(time):
-            to_bcast += self._push(0, 'endOfMoment', time)
+            to_bcast += self._push(0, 'newMoment', time)
             self._store_last_moment(time)
         self.last_spoke = time
         to_bcast += self._push(self.conn_id, inp_type, body)
@@ -86,7 +86,7 @@ class Broadcaster(Connection):
 
     def close_room(self, time):
         self._handle_parsed(time, "shutdown")
-        self._push(0, 'endOfMoment', time)
+        self._push(0, 'newMoment', time)
         self._store_last_moment(time)
 
     def say_created(self, time):

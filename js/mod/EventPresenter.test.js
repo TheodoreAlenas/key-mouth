@@ -43,7 +43,7 @@ test.assertEqual(
 )
 
 ep = new EventPresenter(7)
-ep.push({connId: 0, type: "endOfMoment", body: 732})
+ep.push({connId: 0, type: "newMoment", body: 732})
 let v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual(
@@ -54,7 +54,7 @@ test.assertEqual(
 
 ep = new EventPresenter(7)
 ep.push({connId: 4, type: "write", body: "HELLO"})
-ep.push({connId: 0, type: "endOfMoment", body: 732})
+ep.push({connId: 0, type: "newMoment", body: 732})
 ep.push({connId: 4, type: "write", body: "hi again"})
 v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'

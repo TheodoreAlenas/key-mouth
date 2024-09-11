@@ -15,7 +15,7 @@ class EventStreamAdapter:
             'body': event.body
         }
         self.stream_models.append(m)
-        if event.event_type == 'endOfMoment':
+        if event.event_type == 'newMoment':
             self.di = 0
             self.mi += 1
         else:

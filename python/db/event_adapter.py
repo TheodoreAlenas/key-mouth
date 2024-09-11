@@ -17,7 +17,7 @@ class EventDbAdapter:
         self.m = {'time': None, 'diffs': []}
 
     def push(self, event):
-        if event.event_type == 'endOfMoment':
+        if event.event_type == 'newMoment':
             self.m['time'] = event.body
             self.return_on_pop = self.m
             self._clear_m()
@@ -30,7 +30,7 @@ class EventDbAdapter:
 
     def pop_moment(self):
         if self.return_on_pop is None:
-            raise Exception('popped moment before endOfMoment: ' +
+            raise Exception('popped moment before newMoment: ' +
                             str(self.m))
         p = self.return_on_pop
         self.return_on_pop = None
@@ -49,7 +49,7 @@ def db_model_to_events(moments):
                 body=d['body']))
         events.append(ViewEvent(
             conn_id=0,
-            event_type='endOfMoment',
+            event_type='newMoment',
             body=m['time']))
 
     return events

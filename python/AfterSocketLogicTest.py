@@ -24,7 +24,7 @@ class Parsing(unittest.TestCase):
                     "momentIdx": 0,
                     "diffIdx": 0,
                     "connId": 0,
-                    "type": "endOfMoment",
+                    "type": "newMoment",
                     "body": 10.0
                 }),
                 (conn.conn_id, {
@@ -277,7 +277,7 @@ class DbBasics(unittest.TestCase):
                 'momentIdx': 0,
                 'diffIdx': 0,
                 'connId': 0,
-                'type': 'endOfMoment',
+                'type': 'newMoment',
                 'body': 10.0
             }],
             moments)
@@ -332,7 +332,7 @@ class DbLoadRoom(unittest.TestCase):
         logic_2 = self.get_logic(10.3, db)
         res, _ = logic_2.connect(10.4, "room0")
         self.assertEqual('shutdown', res[-4][1]['type'])
-        self.assertEqual('endOfMoment', res[-3][1]['type'])
+        self.assertEqual('newMoment', res[-3][1]['type'])
         self.assertEqual('start', res[-2][1]['type'])
         self.assertEqual('connect', res[-1][1]['type'])
 
