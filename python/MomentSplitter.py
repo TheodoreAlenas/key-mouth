@@ -15,7 +15,7 @@ class MomentSplitterData:
 @dataclass
 class MomentSplitterRes:
     should_split: bool
-    should_start_new_moment: bool
+    nobody_had_talked: bool
 
 
 class MomentSplitter:
@@ -30,7 +30,7 @@ class MomentSplitter:
         nobody_had_talked = self._update_nobody_talked()
         should_split = self._get_should_split(time)
         self._update_timers(time, should_split)
-        return self._get_res(should_split, nobody_had_talked)
+        return MomentSplitterRes(should_split, nobody_had_talked)
 
     def _update_nobody_talked(self):
         nobody_had_talked = self.nobody_talked_yet
@@ -48,9 +48,3 @@ class MomentSplitter:
         self.last_spoke = time
         if should_split:
             self.room.last_moment_time = time
-
-    def _get_res(self, should_split, nobody_had_talked):
-        return MomentSplitterRes(
-            should_split=should_split,
-            should_start_new_moment=should_split or nobody_had_talked
-        )

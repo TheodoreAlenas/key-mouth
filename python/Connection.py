@@ -37,8 +37,9 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
         r = self.splitter.update(time)
-        if r.should_split:
+        if r.should_split: # or r.nobody_had_talked:
             to_bcast += self._push(0, 'newMoment', time)
+        if r.should_split:
             self.room.output_accumulator.store_last_moment(time)
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
