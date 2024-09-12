@@ -1,13 +1,13 @@
 from db.event_adapter import EventDbAdapter, db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
+from dataclasses import dataclass
 
 
+@dataclass
 class ViewEvent:
-
-    def __init__(self, event_type, conn_id, body):
-        self.event_type = event_type
-        self.conn_id = conn_id
-        self.body = body
+    event_type: str
+    conn_id: any
+    body: any
 
 
 class OutputWithDb:
