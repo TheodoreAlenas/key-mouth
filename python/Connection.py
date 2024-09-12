@@ -14,9 +14,7 @@ class Connection:
                  conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
-        self._conf_timing = conf_timing
-        self.last_spoke = 0.0
-        self.splitter = MomentSplitter(conf_timing)
+        self.splitter = MomentSplitter(conf_timing, room)
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
@@ -46,19 +44,12 @@ class Connection:
 
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
-        if self._interrupted_conversation(time):
+        if self.splitter.interrupted_conversation(time):
             to_bcast += self._push(0, 'newMoment', time)
             self._store_last_moment(time)
-        self.last_spoke = time
+        self.splitter.update_just_spoke(time)
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
-
-    def _interrupted_conversation(self, time):
-        started_speaking = (time - self.last_spoke >
-                            self._conf_timing.min_silence)
-        moment_lasted = (time - self.room.last_moment_time >
-                         self._conf_timing.min_moment)
-        return started_speaking and moment_lasted
 
     def _store_last_moment(self, time):
         self.room.output_accumulator.store_last_moment(time)
