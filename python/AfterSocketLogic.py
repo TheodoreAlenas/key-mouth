@@ -4,7 +4,8 @@
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from Connection import Connection, Broadcaster
 from exceptions import LogicHttpException
-from ConnRoomData import ConnRoomData, ConfTiming
+from ConnRoomData import ConnRoomData
+from MomentSplitter import ConfTiming
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
 from dataclasses import dataclass

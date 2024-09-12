@@ -1,5 +1,5 @@
 from AfterSocketLogic import AfterSocketLogic
-from ConnRoomData import ConfTiming
+from MomentSplitter import ConfTiming
 from time import time
 
 

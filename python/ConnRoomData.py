@@ -1,5 +1,4 @@
 from OutputWithDb import OutputWithDb
-from dataclasses import dataclass
 
 
 class ConnRoomData:
@@ -15,9 +14,3 @@ class ConnRoomData:
     def rename(self, name):
         self.db.rename(name)
         self.name = name
-
-
-@dataclass
-class ConfTiming:
-    min_silence: float
-    min_moment: float

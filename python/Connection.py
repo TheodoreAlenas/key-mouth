@@ -1,7 +1,8 @@
 
 # License at the bottom
 
-from ConnRoomData import ConnRoomData, ConfTiming
+from ConnRoomData import ConnRoomData
+from MomentSplitter import ConfTiming, MomentSplitter
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
 from exceptions import LogicHttpException
@@ -15,6 +16,7 @@ class Connection:
         self.room = room
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
+        self.splitter = MomentSplitter(conf_timing)
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
