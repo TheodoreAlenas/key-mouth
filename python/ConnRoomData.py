@@ -8,7 +8,7 @@ class ConnRoomData:
         self.room_id = room_id
         self.db = db_room
         self.name = name
-        self.output_accumulator = OutputWithDb(db_room)
+        self.output_accumulator = OutputWithDb(db_room, "in " + room_id)
         self.conns = []
 
     def rename(self, name):

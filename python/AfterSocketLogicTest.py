@@ -4,7 +4,7 @@ from db.mock import Db
 import unittest
 
 
-class Parsing(unittest.TestCase):
+class AParsing(unittest.TestCase):
 
     def setUp(self):
         self.logic = AfterSocketLogic(
@@ -17,7 +17,7 @@ class Parsing(unittest.TestCase):
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
 
-    def test_one_conn_one_msg(self):
+    def test_0_one_conn_one_msg(self):
         res, conn = self.logic.connect(10.0, "room0")
         self.assertEqual(
             [
@@ -273,34 +273,28 @@ class DbBasics(unittest.TestCase):
     def test_database_starts_empty(self):
         self.logic.connect(10.0, "room0")
         _, moments = self.logic.get_moments_range(10.2, ("room0", 0, 100))
-        self.assertEqual(
-            [{
-                'momentIdx': 0,
-                'diffIdx': 0,
-                'connId': 0,
-                'type': 'newMoment',
-                'body': 10.0
-            }],
-            moments)
+        self.assertEqual([], moments)
 
     def test_interrupt_and_fetch_moment_get_socket_moment(self):
         res_1, _ = self.logic.connect(10.0, "room0")
         self.logic.connect(100.1, "room0")
         _, m = self.logic.get_moments_range(100.7, ("room0", 0, 2))
         msg_to_1 = [x for _, x in res_1]
-        self.assertEqual(msg_to_1, m[:-1])
+        self.assertEqual(msg_to_1, m)
 
     def test_interrupt_and_fetch_moments_get_socket_moments(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, conn_2 = self.logic.connect(10.1, "room0")
         res_3, _ = conn_1.handle_input(100.0, "+1")
         res_4, _ = conn_2.handle_input(100.6, "+2")
-        _, m = self.logic.get_moments_range(100.7, ("room0", 0, 4))
-        res_all = res_1 + res_2 + res_3 + res_4
+        _, m3 = self.logic.get_moments_range(100.7, ("room0", 0, 3))
+        _, m4 = self.logic.get_moments_range(100.7, ("room0", 0, 4))
+        self.assertEqual(m3, m4)
+        res_all = res_1 + res_2 + res_3
         msg_to_1 = [x for c, x in res_all if c == conn_1.conn_id]
         msg_to_2 = [x for c, x in res_all if c == conn_2.conn_id]
         self.assertEqual(msg_to_1, msg_to_2)
-        self.assertEqual(msg_to_1[:-1], m)
+        self.assertEqual(msg_to_1, m3)
 
 
 class DbLoadRoom(unittest.TestCase):

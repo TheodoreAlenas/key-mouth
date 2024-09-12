@@ -10,6 +10,7 @@ class ConfTiming:
 @dataclass
 class MomentSplitterData:
     last_moment_time: float
+    nobody_talked_yet: bool
 
 
 @dataclass
@@ -24,7 +25,6 @@ class MomentSplitter:
         self._conf_timing = conf_timing
         self.last_spoke = 0.0
         self.room = room
-        self.nobody_talked_yet = True
 
     def update(self, time):
         nobody_had_talked = self._update_nobody_talked()
@@ -33,8 +33,8 @@ class MomentSplitter:
         return MomentSplitterRes(should_split, nobody_had_talked)
 
     def _update_nobody_talked(self):
-        nobody_had_talked = self.nobody_talked_yet
-        self.nobody_talked_yet = False
+        nobody_had_talked = self.room.nobody_talked_yet
+        self.room.nobody_talked_yet = False
         return nobody_had_talked
 
     def _get_should_split(self, time):

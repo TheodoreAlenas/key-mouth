@@ -1,26 +1,11 @@
 from dataclasses import dataclass
 
-@dataclass
-class ViewEvent:
-    conn_id: any
-    event_type: str
-    body: any
-
 
 class EventDbAdapter:
 
-    def __init__(self):
-        self.return_on_pop = None
-        self._clear_m()
-
-    def _clear_m(self):
-        self.m = {'time': None, 'diffs': []}
-
     def push(self, event):
         if event.event_type == 'newMoment':
-            self.m['time'] = event.body
-            self.return_on_pop = self.m
-            self._clear_m()
+            self.m = {'time': event.body, 'diffs': []}
         else:
             self.m['diffs'].append({
                 'connId': event.conn_id,
@@ -28,13 +13,15 @@ class EventDbAdapter:
                 'body': event.body
             })
 
-    def pop_moment(self):
-        if self.return_on_pop is None:
-            raise Exception('popped moment before newMoment: ' +
-                            str(self.m))
-        p = self.return_on_pop
-        self.return_on_pop = None
-        return p
+    def get_moment(self):
+        return self.m
+
+
+@dataclass
+class ViewEvent:
+    conn_id: any
+    event_type: str
+    body: any
 
 
 def db_model_to_events(moments):
@@ -42,15 +29,15 @@ def db_model_to_events(moments):
     events = []
 
     for m in moments:
+        events.append(ViewEvent(
+            conn_id=0,
+            event_type='newMoment',
+            body=m['time']))
         for d in m['diffs']:
             events.append(ViewEvent(
                 conn_id=d['connId'],
                 event_type=d['type'],
                 body=d['body']))
-        events.append(ViewEvent(
-            conn_id=0,
-            event_type='newMoment',
-            body=m['time']))
 
     return events
 

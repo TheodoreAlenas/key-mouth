@@ -25,7 +25,10 @@ class AfterSocketLogic:
         self.rooms_ram = {}
         for d in self.db.get_restart_data():
             self.rooms_ram[d.room_id] = ConnRoomData(
-                splitter_data=MomentSplitterData(d.last_moment_time),
+                splitter_data=MomentSplitterData(
+                    last_moment_time=d.last_moment_time,
+                    nobody_talked_yet=True
+                ),
                 room_id=d.room_id,
                 name=d.name,
                 db_room=db.get_room(d.room_id))
@@ -46,7 +49,10 @@ class AfterSocketLogic:
         def create_and_set():
             self.db.create_room(time, room_id)
             r = ConnRoomData(
-                splitter_data=MomentSplitterData(time),
+                splitter_data=MomentSplitterData(
+                    last_moment_time=time,
+                    nobody_talked_yet=True
+                ),
                 room_id=room_id,
                 db_room=self.db.get_room(room_id)
             )

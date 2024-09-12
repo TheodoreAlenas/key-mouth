@@ -54,7 +54,7 @@ class Db:
             raise RoomExistsException("[DbMoct] room '" + name +
                                       "' already exists")
         self.rooms[name] = RoomMoments(
-            time, name, [{"time": time, "diffs": []}])
+            time, name, [])
 
     def delete_room(self, name):
         if not name in self.rooms:

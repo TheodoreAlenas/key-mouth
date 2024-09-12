@@ -12,14 +12,15 @@ class ViewEvent:
 
 class OutputWithDb:
 
-    def __init__(self, db):
+    def __init__(self, db, debug_context_str="context unset"):
         self.db = db
         self.evt_db = EventDbAdapter()
         self.evt_stream = EventStreamAdapter(db.get_len(), 0)
+        self.debug_context_str = debug_context_str
 
     def store_last_moment(self, time):
         self.evt_stream.stream_models = []
-        baked_moment = self.evt_db.pop_moment()
+        baked_moment = self.evt_db.get_moment()
         self.db.add_moment(baked_moment)
 
     def push(self, conn_id, event_type, body):
