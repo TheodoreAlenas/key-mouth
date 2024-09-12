@@ -37,14 +37,9 @@ export default function InputAndButton({o, styles}) {
                 onClear,
                 onChange,
                 onKeyDown: function(event) {
-                    if (event.key !== 'Enter') return
-                    if (getIsOnMobile()) {
-                        event.preventDefault()
-                        onChange(event, event.target.value + '\n')
-                        return
+                    if (event.ctrlKey && event.key === 'Enter') {
+                        onClear(event)
                     }
-                    if (event.shiftKey) return
-                    onClear(event)
                 }
             })
         }
