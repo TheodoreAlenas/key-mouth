@@ -19,15 +19,13 @@ class MomentSplitter:
         self.last_spoke = 0.0
         self.room = room
 
-    def interrupted_conversation(self, time):
+    def get_should_split(self, time):
         started_speaking = (time - self.last_spoke >
                             self._conf_timing.min_silence)
         moment_lasted = (time - self.room.last_moment_time >
                          self._conf_timing.min_moment)
-        return started_speaking and moment_lasted
-
-    def update_just_spoke(self, time):
         self.last_spoke = time
-
-    def update_stored_last_moment(self, time):
-        self.room.last_moment_time = time
+        if started_speaking and moment_lasted:
+            self.room.last_moment_time = time
+            return True
+        return False

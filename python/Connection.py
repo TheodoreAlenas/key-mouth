@@ -44,16 +44,11 @@ class Connection:
 
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
-        if self.splitter.interrupted_conversation(time):
+        if self.splitter.get_should_split(time):
             to_bcast += self._push(0, 'newMoment', time)
-            self._store_last_moment(time)
-        self.splitter.update_just_spoke(time)
+            self.room.output_accumulator.store_last_moment(time)
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
-
-    def _store_last_moment(self, time):
-        self.room.output_accumulator.store_last_moment(time)
-        self.splitter.update_stored_last_moment(time)
 
     def _push(self, conn_id, event_type, body):
         v = self.room.output_accumulator.push(conn_id, event_type, body)
@@ -65,7 +60,7 @@ class Broadcaster(Connection):
     def close_room(self, time):
         self._handle_parsed(time, "shutdown")
         self._push(0, 'newMoment', time)
-        self._store_last_moment(time)
+        self.room.output_accumulator.store_last_moment(time)
 
     def say_created(self, time):
         self._handle_parsed(time, "create")
