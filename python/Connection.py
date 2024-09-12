@@ -36,7 +36,8 @@ class Connection:
 
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
-        if self.splitter.get_should_split(time):
+        r = self.splitter.update(time)
+        if r.should_split:
             to_bcast += self._push(0, 'newMoment', time)
             self.room.output_accumulator.store_last_moment(time)
         to_bcast += self._push(self.conn_id, inp_type, body)
