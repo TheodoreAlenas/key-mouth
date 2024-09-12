@@ -3,8 +3,6 @@
 
 from ConnRoomData import ConnRoomData
 from MomentSplitter import ConfTiming, MomentSplitter
-from db.event_adapter import db_model_to_events
-from EventStreamAdapter import EventStreamAdapter
 from exceptions import LogicHttpException
 
 
@@ -18,14 +16,8 @@ class Connection:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        l = self.room.output_accumulator.get_last_few()
-        events = db_model_to_events(l['moments'])
-        a = EventStreamAdapter(l['start'], 0)
-        for e in events:
-            a.push(e)
-        last = self.room.output_accumulator.get_last_moment()
-        stream = a.stream_models + last
-        catch_up = [(self.conn_id, e) for e in stream]
+        last_few = self.room.output_accumulator.get_last_few()
+        catch_up = [(self.conn_id, e) for e in last_few]
         conn_msg = self._handle_parsed(time, "connect")
         return (catch_up + conn_msg, self)
 

@@ -1,4 +1,4 @@
-from db.event_adapter import EventDbAdapter
+from db.event_adapter import EventDbAdapter, db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
 
 
@@ -31,8 +31,11 @@ class OutputWithDb:
         self.evt_db.push(ve)
         return self.evt_stream.push(ve)
 
-    def get_last_moment(self):
-        return self.evt_stream.stream_models
-
     def get_last_few(self):
-        return self.db.get_last_few()
+        l = self.db.get_last_few()
+        events = db_model_to_events(l['moments'])
+        a = EventStreamAdapter(l['start'], 0)
+        for e in events:
+            a.push(e)
+        last = self.evt_stream.stream_models
+        return a.stream_models + last
