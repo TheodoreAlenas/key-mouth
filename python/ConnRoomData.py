@@ -3,8 +3,8 @@ from OutputWithDb import OutputWithDb
 
 class ConnRoomData:
 
-    def __init__(self, last_moment_time, room_id, db_room, name=None):
-        self.last_moment_time = last_moment_time
+    def __init__(self, splitter_data, room_id, db_room, name=None):
+        self.splitter_data = splitter_data
         self.room_id = room_id
         self.db = db_room
         self.name = name

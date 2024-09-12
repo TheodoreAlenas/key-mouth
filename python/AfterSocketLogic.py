@@ -5,7 +5,7 @@ from db.exceptions import RoomExistsException, RoomDoesntExistException
 from Connection import Connection, Broadcaster
 from exceptions import LogicHttpException
 from ConnRoomData import ConnRoomData
-from MomentSplitter import ConfTiming
+from MomentSplitter import ConfTiming, MomentSplitterData
 from db.event_adapter import db_model_to_events
 from EventStreamAdapter import EventStreamAdapter
 from dataclasses import dataclass
@@ -25,7 +25,7 @@ class AfterSocketLogic:
         self.rooms_ram = {}
         for d in self.db.get_restart_data():
             self.rooms_ram[d.room_id] = ConnRoomData(
-                last_moment_time=d.last_moment_time,
+                splitter_data=MomentSplitterData(d.last_moment_time),
                 room_id=d.room_id,
                 name=d.name,
                 db_room=db.get_room(d.room_id))
@@ -45,7 +45,11 @@ class AfterSocketLogic:
     def create_room(self, time, room_id):
         def create_and_set():
             self.db.create_room(time, room_id)
-            r = ConnRoomData(time, room_id, self.db.get_room(room_id))
+            r = ConnRoomData(
+                splitter_data=MomentSplitterData(time),
+                room_id=room_id,
+                db_room=self.db.get_room(room_id)
+            )
             r.conn_bcaster = Broadcaster(0, r, self._conf_timing)
             self.rooms_ram[room_id] = r
             r.conn_bcaster.say_created(time)

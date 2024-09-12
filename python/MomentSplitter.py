@@ -7,6 +7,11 @@ class ConfTiming:
     min_moment: float
 
 
+@dataclass
+class MomentSplitterData:
+    last_moment_time: float
+
+
 class MomentSplitter:
 
     def __init__(self, conf_timing, room):
@@ -23,3 +28,6 @@ class MomentSplitter:
 
     def update_just_spoke(self, time):
         self.last_spoke = time
+
+    def update_stored_last_moment(self, time):
+        self.room.last_moment_time = time

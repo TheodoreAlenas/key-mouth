@@ -14,7 +14,7 @@ class Connection:
                  conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
-        self.splitter = MomentSplitter(conf_timing, room)
+        self.splitter = MomentSplitter(conf_timing, room.splitter_data)
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
@@ -53,7 +53,7 @@ class Connection:
 
     def _store_last_moment(self, time):
         self.room.output_accumulator.store_last_moment(time)
-        self.room.last_moment_time = time
+        self.splitter.update_stored_last_moment(time)
 
     def _push(self, conn_id, event_type, body):
         v = self.room.output_accumulator.push(conn_id, event_type, body)
