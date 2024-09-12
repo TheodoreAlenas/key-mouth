@@ -10,8 +10,7 @@ from dataclasses import dataclass
 
 class RoomMoments:
 
-    def __init__(self, room_id, n, last, name, db):
-        self._cached_last_moment = last
+    def __init__(self, room_id, n, name, db):
         self.last_moment_time = last['time']
         self.n = n
         self.room_id = room_id
@@ -32,7 +31,6 @@ class RoomMoments:
         )
         self.n += 1
         self.last_moment_time = moment['time']
-        self._cached_last_moment = moment
 
     def get_last_few(self):
         ms = self._db['rooms'].find_one(
@@ -50,8 +48,6 @@ class RoomMoments:
         return self.n
 
     def get_range(self, start, end):
-        if start == self.n - 1 and end == self.n:
-            return [self._cached_last_moment]
         ms = self._db['rooms'].find_one(
             {"_id": self.room_id},
             {"moments": {"$slice": [start, end - start]}}
@@ -116,17 +112,15 @@ class Db:
 
     def create_room(self, time, room_id):
         try:
-            first_moment = {"time": time, "diffs": []}
             room = RoomMoments(
                 room_id=room_id,
                 n=1,
-                last=first_moment,
                 name=None,
                 db=self._db
             )
             self._db['rooms'].insert_one({
                 "_id": room_id,
-                "moments": [first_moment]
+                "moments": []
             })
             self._rooms[room_id] = room
         except DuplicateKeyError:
