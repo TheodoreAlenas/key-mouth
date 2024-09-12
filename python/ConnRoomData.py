@@ -1,5 +1,4 @@
-from db.event_adapter import EventDbAdapter
-from EventStreamAdapter import EventStreamAdapter
+from OutputWithDb import OutputWithDb
 from dataclasses import dataclass
 
 
@@ -10,8 +9,7 @@ class ConnRoomData:
         self.room_id = room_id
         self.db = db_room
         self.name = name
-        self.evt_db = EventDbAdapter()
-        self.evt_stream = EventStreamAdapter(self.db.get_len(), 0)
+        self.output_accumulator = OutputWithDb(db_room)
         self.conns = []
 
     def rename(self, name):

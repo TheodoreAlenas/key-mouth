@@ -7,14 +7,6 @@ from EventStreamAdapter import EventStreamAdapter
 from exceptions import LogicHttpException
 
 
-class ViewEvent:
-
-    def __init__(self, event_type, conn_id, body):
-        self.event_type = event_type
-        self.conn_id = conn_id
-        self.body = body
-
-
 class Connection:
 
     def __init__(self, conn_id, room: ConnRoomData,
@@ -26,12 +18,13 @@ class Connection:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        l = self.room.db.get_last_few()
+        l = self.room.output_accumulator.get_last_few()
         events = db_model_to_events(l['moments'])
         a = EventStreamAdapter(l['start'], 0)
         for e in events:
             a.push(e)
-        stream = a.stream_models + self.room.evt_stream.stream_models
+        last = self.room.output_accumulator.get_last_moment()
+        stream = a.stream_models + last
         catch_up = [(self.conn_id, e) for e in stream]
         conn_msg = self._handle_parsed(time, "connect")
         return (catch_up + conn_msg, self)
@@ -66,19 +59,11 @@ class Connection:
         return started_speaking and moment_lasted
 
     def _store_last_moment(self, time):
-        baked_moment = self.room.evt_db.pop_moment()
-        self.room.evt_stream.stream_models = []
-        self.room.db.add_moment(baked_moment)
+        self.room.output_accumulator.store_last_moment(time)
         self.room.last_moment_time = time
 
     def _push(self, conn_id, event_type, body):
-        ve = ViewEvent(
-            conn_id=conn_id,
-            event_type=event_type,
-            body=body
-        )
-        self.room.evt_db.push(ve)
-        v = self.room.evt_stream.push(ve)
+        v = self.room.output_accumulator.push(conn_id, event_type, body)
         return [(conn, v) for conn in self.room.conns]
 
 
