@@ -54,13 +54,10 @@ export default class EventPresenter {
     getLength() {
         return this.moments.length
     }
-    shift(n) {
-        if (n > this.moments.length) {
-            throw new Error("tried shifting n = " + n + " > " +
-                            "this.moments.length = " +
-                            this.moments.length)
-        }
-        this.moments.shift(n)
+    keepLast(n) {
+        if (n > this.moments.length) return
+        const ground = this.moments.length - n
+        this.moments = this.moments.filter((_, i) => i > ground)
         this.firstMomentIdx += n
     }
 }
