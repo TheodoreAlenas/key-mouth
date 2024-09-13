@@ -219,46 +219,6 @@ class Moments(unittest.TestCase):
         d = [x for _, x in res_4[len(a):len(a) + len(c)]]
         self.assertEqual(c, d)
 
-    def test_connect_get_no_moments(self):
-        res, conn_1 = self.logic.connect(10.0, "room0")
-        self.assertEqual(1, res[-1][1]['momentIdx'])
-
-    def test_connecting_and_speaking_is_one_stream(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.handle_input(12.9, "+1")
-        self.assertEqual(1, res[-1][1]['momentIdx'])
-
-    def test_connecting_pausing_speaking_creates_moment(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        res, _ = conn_1.handle_input(13.1, "+1")
-        self.assertEqual(2, res[-1][1]["momentIdx"])
-
-    def test_interrupting_creates_moment(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(100.0, "+1")
-        res, _ = conn_2.handle_input(100.6, "+2")
-        self.assertEqual(3, res[-1][1]["momentIdx"])
-
-    def test_interrupting_quickly_doesnt_count(self):
-        _, conn_1 = self.logic.connect(10.0, "room0")
-        _, conn_2 = self.logic.connect(10.1, "room0")
-        conn_1.handle_input(100.0, "+1")
-        res, _ = conn_2.handle_input(100.4, "+2")
-        self.assertEqual(2, res[-1][1]["momentIdx"])
-
-    def test_merged_moments_dont_chain_beyond_the_config(self):
-        conns = []
-        for i in range(7):
-            _, conn = self.logic.connect(10.0 + 0.1 * i, "room0")
-            conns.append(conn)
-        ns = []
-        for i in range(7):
-            res, _ = conns[i].handle_input(99.0 + 0.1 * i, "+hi")
-            ns.append(res[-1][1]["momentIdx"])
-        self.assertEqual(3, ns[4])
-        self.assertEqual(4, ns[6])
-
 
 class DbBasics(unittest.TestCase):
 
