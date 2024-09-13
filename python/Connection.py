@@ -39,7 +39,7 @@ class Connection:
         r = self.splitter.update(time)
         if r.should_split:
             self.room.output_accumulator.store_last_moment(time)
-        if r.should_split or r.nobody_had_talked:
+        if r.should_say_new_moment:
             to_bcast += self._push(0, 'newMoment', time)
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast

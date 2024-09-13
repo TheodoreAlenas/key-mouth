@@ -2,6 +2,8 @@ from AfterSocketLogic import AfterSocketLogic, RoomExistsException
 from MomentSplitter import ConfTiming
 from db.mock import Db
 import unittest
+from OutputWithDbTest import A
+from MomentSplitterTest import MSA
 
 
 class AParsing(unittest.TestCase):
@@ -345,13 +347,13 @@ class DbLoadRoom(unittest.TestCase):
         db = Db()
 
         logic = self.get_logic(10.0, db)
-        logic.create_room(10.1, "room0")
-        _, conn = logic.connect(10.2, "room0")
-        conn.handle_input(10.3, "+will be stored later")
-        logic.close(10.4, None)
+        logic.create_room(10.01, "room0")
+        _, conn = logic.connect(10.02, "room0")
+        conn.handle_input(10.03, "+will be stored later")
+        logic.close(10.04, None)
 
-        logic = self.get_logic(10.5, db)
-        res, _ = logic.connect(10.6, "room0")
+        logic = self.get_logic(10.05, db)
+        res, _ = logic.connect(10.06, "room0")
 
         self.assertEqual(   2   , res[-1][1]['momentIdx'])
 
