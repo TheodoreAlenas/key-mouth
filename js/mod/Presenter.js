@@ -17,6 +17,19 @@ export default class Presenter {
         }
     }
     getViewModel(getConnName) {
-        return this.ep.getMomentViews(getConnName)
+        const r = {
+            moreTopButton: null,
+            moreBottomButton: null,
+            moments: this.ep.getMomentViews(getConnName)
+        }
+        if (!this.ep.touchesTop()) {
+            r.moreTopButton = {
+                label: "Load previous messages",
+                onClick: function() {
+                    alert("not implemented yet")
+                }
+            }
+        }
+        return r
     }
 }

@@ -72,6 +72,9 @@
     padding: 0 0;
     margin: 0 0.8em;
 }
+.moreTopButton {
+    margin: 0.8em;
+}
 .bar {
     margin: 0;
     padding: 0.8em;

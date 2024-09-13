@@ -51,8 +51,8 @@ export default class EventPresenter {
                          this.last))
         return views
     }
-    getLength() {
-        return this.moments.length
+    touchesTop() {
+        return this.firstMomentIdx === 0
     }
     keepLast(n) {
         if (n > this.moments.length) return
