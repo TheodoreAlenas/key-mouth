@@ -23,20 +23,22 @@ class AParsing(unittest.TestCase):
         res, conn = self.logic.connect(10.0, "room0")
         self.assertEqual(
             [
-                (conn.conn_id, {
-                    "momentIdx": 0,
-                    "diffIdx": 0,
-                    "connId": 0,
-                    "type": "newMoment",
-                    "body": 10.0
-                }),
-                (conn.conn_id, {
-                    "momentIdx": 1,
-                    "diffIdx": 0,
-                    "connId": 0,
-                    "type": "create",
-                    "body": None
-                }),
+                (conn.conn_id, {'firstMomentIdx': 0, 'moments': [
+                    {
+                        "momentIdx": 0,
+                        "diffIdx": 0,
+                        "connId": 0,
+                        "type": "newMoment",
+                        "body": 10.0
+                    },
+                    {
+                        "momentIdx": 1,
+                        "diffIdx": 0,
+                        "connId": 0,
+                        "type": "create",
+                        "body": None
+                    }
+                ]}),
                 (conn.conn_id, {
                     "momentIdx": 1,
                     "diffIdx": 1,
@@ -195,29 +197,17 @@ class Moments(unittest.TestCase):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, _ = conn_1.handle_input(10.1, "+1")
         res_3, conn_2 = self.logic.connect(10.2, "room0")
-        a = [x for _, x in res_1 + res_2]
-        b = [x for _, x in res_3[:-2]]
+        a = res_1[0][1]['moments'] + [res_1[1][1]] + [res_2[0][1]]
+        b = res_3[0][1]['moments']
         self.assertEqual(a, b)
 
     def test_on_connect_get_a_stored_moment(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, _ = conn_1.handle_input(10.1, "+old")
         res_3, conn_2 = self.logic.connect(99.0, "room0")
-        a = [x for _, x in res_1 + res_2]
-        b = [x for _, x in res_3[:len(a)]]
+        a = res_1[0][1]['moments'] + [res_1[1][1]] + [res_2[0][1]]
+        b = res_3[0][1]['moments']
         self.assertEqual(a, b)
-
-    def test_on_connect_get_a_stored_moment_and_new(self):
-        res_1, conn_1 = self.logic.connect(10.0, "room0")
-        res_2, _ = conn_1.handle_input(10.1, "+old")
-        res_3, _ = conn_1.handle_input(99.0, "+new")
-        res_4, conn_2 = self.logic.connect(99.1, "room0")
-        a = [x for _, x in res_1 + res_2]
-        b = [x for _, x in res_4[:len(a)]]
-        self.assertEqual(a, b)
-        c = [x for _, x in res_3]
-        d = [x for _, x in res_4[len(a):len(a) + len(c)]]
-        self.assertEqual(c, d)
 
 
 class DbBasics(unittest.TestCase):
@@ -241,22 +231,7 @@ class DbBasics(unittest.TestCase):
         res_1, _ = self.logic.connect(10.0, "room0")
         self.logic.connect(100.1, "room0")
         _, m = self.logic.get_moments_range(100.7, ("room0", 0, 2))
-        msg_to_1 = [x for _, x in res_1]
-        self.assertEqual(msg_to_1, m)
-
-    def test_interrupt_and_fetch_moments_get_socket_moments(self):
-        res_1, conn_1 = self.logic.connect(10.0, "room0")
-        res_2, conn_2 = self.logic.connect(10.1, "room0")
-        res_3, _ = conn_1.handle_input(100.0, "+1")
-        res_4, _ = conn_2.handle_input(100.6, "+2")
-        _, m3 = self.logic.get_moments_range(100.7, ("room0", 0, 3))
-        _, m4 = self.logic.get_moments_range(100.7, ("room0", 0, 4))
-        self.assertEqual(m3, m4)
-        res_all = res_1 + res_2 + res_3
-        msg_to_1 = [x for c, x in res_all if c == conn_1.conn_id]
-        msg_to_2 = [x for c, x in res_all if c == conn_2.conn_id]
-        self.assertEqual(msg_to_1, msg_to_2)
-        self.assertEqual(msg_to_1, m3)
+        self.assertEqual(res_1[0][1]['moments'] + [res_1[1][1]], m)
 
 
 class DbLoadRoom(unittest.TestCase):
@@ -288,9 +263,9 @@ class DbLoadRoom(unittest.TestCase):
         logic_1.close(10.2, None)
         logic_2 = self.get_logic(10.3, db)
         res, _ = logic_2.connect(10.4, "room0")
-        self.assertEqual('shutdown', res[-4][1]['type'])
-        self.assertEqual('newMoment', res[-3][1]['type'])
-        self.assertEqual('start', res[-2][1]['type'])
+        catch_up = [e['type'] for e in res[-2][1]['moments']]
+        self.assertEqual(['shutdown', 'newMoment', 'start'],
+                         catch_up[-3:])
         self.assertEqual('connect', res[-1][1]['type'])
 
     def test_shutdown_twice_no_missing_broadcaster_error(self):

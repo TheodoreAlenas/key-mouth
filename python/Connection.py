@@ -17,9 +17,8 @@ class Connection:
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
         last_few = self.room.output_accumulator.get_last_few()
-        catch_up = [(self.conn_id, e) for e in last_few]
         conn_msg = self._handle_parsed(time, "connect")
-        return (catch_up + conn_msg, self)
+        return ([(self.conn_id, last_few)] + conn_msg, self)
 
     def disconnect(self, time, _):
         self.room.conns.remove(self.conn_id)

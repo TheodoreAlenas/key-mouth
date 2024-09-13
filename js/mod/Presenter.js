@@ -7,9 +7,13 @@ export default class Presenter {
     }
     push(event) {
         if (this.ep === null) {
-            this.ep = new EventPresenter(event.momentIdx, this.pageSize)
+            this.ep = new EventPresenter(
+                event.firstMomentIdx, this.pageSize)
+            for (let e of event.moments) this.ep.push(e)
         }
-        this.ep.push(event)
+        else {
+            this.ep.push(event)
+        }
     }
     getViewModel(getConnName) {
         return this.ep.getMomentViews(getConnName)

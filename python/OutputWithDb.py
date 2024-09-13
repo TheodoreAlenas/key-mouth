@@ -39,4 +39,7 @@ class OutputWithDb:
         for e in events:
             a.push(e)
         last = self.evt_stream.stream_models
-        return a.stream_models + last
+        return {
+            "firstMomentIdx": l['start'],
+            "moments": a.stream_models + last
+        }
