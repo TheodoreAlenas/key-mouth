@@ -7,7 +7,7 @@ import styles from '../components/styles.module.css'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 
-export default function PageRoom({env}) {
+export default function PageRoom({env, pageSize}) {
     const [o, setO] = useState(null)
     const router = useRouter()
     useEffect(function() {
@@ -15,7 +15,7 @@ export default function PageRoom({env}) {
             const s = new URLSearchParams(router.query)
             const roomName = s.get('name')
             const uri = new UriRoom(env.room, roomName)
-            const newO = new Controller(uri)
+            const newO = new Controller(uri, pageSize)
             setO(newO)
             return function() { newO.close() }
         }
@@ -26,5 +26,6 @@ export default function PageRoom({env}) {
 }
 
 export async function getStaticProps() {
-    return {props: {env: uriFirstArg}}
+    const pageSize = process.env.KEYMOUTH_PAGE_SIZE || 50
+    return {props: {env: uriFirstArg, pageSize}}
 }

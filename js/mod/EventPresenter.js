@@ -5,12 +5,13 @@ import accumulateDiffs from './accumulateDiffs.js'
 
 export default class EventPresenter {
 
-    constructor(firstMomentIdx) {
+    constructor(firstMomentIdx, pageSize) {
         if (typeof(firstMomentIdx) !== 'number') {
             throw new Error(
                 "firstMomentIdx isn't number: " + firstMomentIdx)
         }
         this.firstMomentIdx = firstMomentIdx
+        this.pageSize = pageSize
         this.moments = []
         this.last = []
         this.lastTime = null
@@ -21,6 +22,10 @@ export default class EventPresenter {
                 time: this.lastTime,
                 raw: this.last
             })
+            if (this.moments.length > this.pageSize) {
+                this.moments.shift()
+                this.firstMomentIdx += 1
+            }
             this.last = []
             this.lastTime = viewEvent.body
         }
@@ -37,8 +42,6 @@ export default class EventPresenter {
                          this.last))
         return views
     }
-    // future idea: updateNames(getNames) and getMomentViews()
-    // to pre - bake the views and relax the garbage collector
 }
 
 function presTime(secondsSince1970) {

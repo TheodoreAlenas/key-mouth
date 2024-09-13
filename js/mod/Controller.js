@@ -14,9 +14,9 @@ export default class Controller {
         try {j = JSON.stringify(v)}
         finally {throw new Error(f + ' unset, arg: ' + (j ? j : v))}
     }
-    constructor(uri) {
+    constructor(uri, pageSize) {
         try {
-            this.constructorUnhandled(uri)
+            this.constructorUnhandled(uri, pageSize)
         }
         catch (e) {
             console.error("Error constructing web interactor, " +
@@ -24,7 +24,7 @@ export default class Controller {
             throw e
         }
     }
-    constructorUnhandled(uri) {
+    constructorUnhandled(uri, pageSize) {
         const self = this
         function onReadySocket(io) {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
@@ -36,7 +36,7 @@ export default class Controller {
         this.presenter = null
         this.io.onEvent(function(event) {
             if (self.presenter === null) {
-                self.presenter = new EventPresenter(event.momentIdx)
+                self.presenter = new EventPresenter(event.momentIdx, pageSize)
             }
             self.presenter.push(event)
             self.setMoments(self.presenter.getMomentViews(getConnName))
