@@ -2,7 +2,7 @@
 // License at the bottom
 
 import Io from './Io.js'
-import EventPresenter from './EventPresenter.js'
+import Presenter from './Presenter.js'
 
 export default class Controller {
     setMoments(v) {this._sayUnset('setMoments', v)}
@@ -33,13 +33,10 @@ export default class Controller {
             self.onSocketError(arg)
         }
         this.io = new Io(uri, onReadySocket, onSocketError)
-        this.presenter = null
+        this.presenter = new Presenter(pageSize)
         this.io.onEvent(function(event) {
-            if (self.presenter === null) {
-                self.presenter = new EventPresenter(event.momentIdx, pageSize)
-            }
             self.presenter.push(event)
-            self.setMoments(self.presenter.getMomentViews(getConnName))
+            self.setMoments(self.presenter.getViewModel(getConnName))
         })
     }
     close() {

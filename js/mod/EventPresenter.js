@@ -3,15 +3,28 @@
 
 import accumulateDiffs from './accumulateDiffs.js'
 
+/*
+  pastMoments
+  lastMoments   doesn't overlap pastMoments
+  lastMoment
+
+  There's a load later messages button.
+  If the lastMoments touch the pastMoments,
+  they merge and the ceiling lowers.
+  If the lastMoments have some of the desired moments,
+  these moments are kept and the in-between are fetched from the DB.
+  If the lastMoments don't have any of the desired moments,
+  all those moments are fetched from the DB.
+ */
+
 export default class EventPresenter {
 
-    constructor(firstMomentIdx, pageSize) {
+    constructor(firstMomentIdx) {
         if (typeof(firstMomentIdx) !== 'number') {
             throw new Error(
                 "firstMomentIdx isn't number: " + firstMomentIdx)
         }
         this.firstMomentIdx = firstMomentIdx
-        this.pageSize = pageSize
         this.moments = []
         this.last = []
         this.lastTime = null
@@ -22,10 +35,6 @@ export default class EventPresenter {
                 time: this.lastTime,
                 raw: this.last
             })
-            if (this.moments.length > this.pageSize) {
-                this.moments.shift()
-                this.firstMomentIdx += 1
-            }
             this.last = []
             this.lastTime = viewEvent.body
         }
@@ -41,6 +50,18 @@ export default class EventPresenter {
             getViewModel(i, presTime(this.lastTime), getNames,
                          this.last))
         return views
+    }
+    getLength() {
+        return this.moments.length
+    }
+    shift(n) {
+        if (n > this.moments.length) {
+            throw new Error("tried shifting n = " + n + " > " +
+                            "this.moments.length = " +
+                            this.moments.length)
+        }
+        this.moments.shift(n)
+        this.firstMomentIdx += n
     }
 }
 
