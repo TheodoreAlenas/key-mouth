@@ -1,4 +1,4 @@
-from db.event_adapter import EventDbAdapter, db_model_to_events
+from db.event_adapter import DbMapper, db_model_to_events
 from OutputMapper import OutputMapper
 from dataclasses import dataclass
 
@@ -14,7 +14,7 @@ class OutputWithDb:
 
     def __init__(self, db, debug_context_str="context unset"):
         self.db = db
-        self.evt_db = EventDbAdapter()
+        self.evt_db = DbMapper()
         self.evt_stream = OutputMapper(db.get_len(), 0)
         self.debug_context_str = debug_context_str
 

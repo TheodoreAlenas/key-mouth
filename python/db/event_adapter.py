@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-class EventDbAdapter:
+class DbMapper:
 
     def push(self, event):
         if event.event_type == 'newMoment':
