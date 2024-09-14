@@ -1,14 +1,14 @@
 
 # License at the bottom
 
-from ConnRoomData import ConnRoomData
+from Room import Room
 from MomentSplitter import ConfTiming, MomentSplitter
 from exceptions import LogicHttpException
 
 
 class Connection:
 
-    def __init__(self, conn_id, room: ConnRoomData,
+    def __init__(self, conn_id, room: Room,
                  conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room

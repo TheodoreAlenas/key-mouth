@@ -1,5 +1,5 @@
 
-class EventStreamAdapter:
+class OutputMapper:
 
     def __init__(self, first_moment_idx, first_diff_idx):
         self.mi = first_moment_idx

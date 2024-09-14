@@ -1,5 +1,5 @@
 from db.event_adapter import EventDbAdapter, db_model_to_events
-from EventStreamAdapter import EventStreamAdapter
+from OutputMapper import OutputMapper
 from dataclasses import dataclass
 
 
@@ -15,7 +15,7 @@ class OutputWithDb:
     def __init__(self, db, debug_context_str="context unset"):
         self.db = db
         self.evt_db = EventDbAdapter()
-        self.evt_stream = EventStreamAdapter(db.get_len(), 0)
+        self.evt_stream = OutputMapper(db.get_len(), 0)
         self.debug_context_str = debug_context_str
 
     def store_last_moment(self, time):
@@ -35,7 +35,7 @@ class OutputWithDb:
     def get_last_few(self):
         l = self.db.get_last_few()
         events = db_model_to_events(l['moments'])
-        a = EventStreamAdapter(l['start'], 0)
+        a = OutputMapper(l['start'], 0)
         for e in events:
             a.push(e)
         last = self.evt_stream.stream_models

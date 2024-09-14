@@ -1,7 +1,7 @@
 from OutputWithDb import OutputWithDb
 
 
-class ConnRoomData:
+class Room:
 
     def __init__(self, splitter_data, room_id, db_room, name=None):
         self.splitter_data = splitter_data
