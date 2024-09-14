@@ -20,10 +20,10 @@ res = await uriNew.fetchPutRoom()
 test.assertEqual("creating room twice throws error", 409, res.status)
 
 let shouldThrow = new Controller(uriMissing)
-let threw = 'no'
-shouldThrow.onSocketError = function() {threw = 'yes'}
+let threw = false
+shouldThrow.onSocketError = function() {threw = true}
 setTimeout(function() {
-    test.assertEqual("missing room returns error", 'yes', threw)
+    test.assertEqual("missing room returns error", true, threw)
 }, 100)
 
 function withController(uri, ret, callback) {
