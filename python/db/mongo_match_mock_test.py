@@ -173,6 +173,7 @@ class B(unittest.TestCase):
             self.db.create_room(10.0, room_id)
             room = self.db.get_room(room_id)
             room.rename(name)
+            room.add_moment({'time': 732})
 
         a = self.db.get_restart_data()
         self.db.close()
@@ -181,3 +182,7 @@ class B(unittest.TestCase):
 
         self.assertEqual([obj_to_dict(x) for x in a],
                          [obj_to_dict(x) for x in b])
+
+
+def before_main():
+    db.mongo.delete_test_db()

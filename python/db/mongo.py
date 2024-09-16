@@ -10,8 +10,8 @@ from dataclasses import dataclass
 
 class RoomMoments:
 
-    def __init__(self, room_id, n, name, db):
-        self.last_moment_time = last['time']
+    def __init__(self, room_id, n, last_moment_time, name, db):
+        self.last_moment_time = last_moment_time
         self.n = n
         self.room_id = room_id
         self.name = name
@@ -67,6 +67,11 @@ class AfterSocketLogicRestartData:
     last_id: any
 
 
+def delete_test_db():
+    client = MongoClient(db.server_only_gitig.db_uri)
+    client.drop_database('keymouthTest')
+
+
 class Db:
 
     def __init__(self, is_test=False):
@@ -79,16 +84,6 @@ class Db:
         projection = {
             'n': {'$size': '$moments'},
             'last': {'$arrayElemAt': ['$moments', -1]}
-            #'name': {'$arrayElemAt': [
-            #    {'$map': {
-            #        'input': {'$filter': {
-            #            'input': {'$objectToArray': '$in'},
-            #            'cond': {'$eq': ['$$this.k', 'name']}
-            #        }},
-            #        'in': '$$this.v'
-            #    }},
-            #    0
-            #]},
         }
         n_last = self._db['rooms'].aggregate([{'$project': projection}])
         names = self._db['rooms'].find({}, ['name'])
@@ -99,7 +94,7 @@ class Db:
             self._rooms[nl['_id']] = RoomMoments(
                 room_id=nl['_id'],
                 n=nl['n'],
-                last=nl['last'],
+                last_moment_time=nl['last']['time'],
                 name=name,
                 db=self._db
             )
@@ -114,7 +109,8 @@ class Db:
         try:
             room = RoomMoments(
                 room_id=room_id,
-                n=1,
+                n=0,
+                last_moment_time=time,
                 name=None,
                 db=self._db
             )
