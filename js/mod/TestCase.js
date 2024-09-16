@@ -25,6 +25,7 @@ export default class TestCase {
 }
 
 function isSubset(a, b) {
+    if (a === b) return true
     if (typeof(a) !== typeof(b)) return false
     if (typeof(a) !== 'object') return a === b
     return undefined === Object.keys(a).find(k => !isSubset(a[k], b[k]))

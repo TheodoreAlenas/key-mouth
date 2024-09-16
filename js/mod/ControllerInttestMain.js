@@ -27,12 +27,12 @@ setTimeout(function() {
 }, 100)
 
 function withController(uri, ret, callback) {
-    const wi = new Controller(uri)
+    const wi = new Controller(uri, 10)
 
     wi.setInputValue = function() {}
     wi.setMoments = function(v) {
         ret.v = v
-        for (let moment of ret.v) {
+        for (let moment of ret.v.moments) {
             moment.time = "-"
             moment.names = "(#)" + moment.names.length
         }
@@ -61,8 +61,8 @@ const realShutdownMsg = {v: null}
 withController(uriRestarted, realShutdownMsg, function(_, close) {
     setTimeout(function() {
         close()
-        test.assertEqual(
-            "seeing shutdown", expShutdownMsg, realShutdownMsg.v)
+        test.assertEqual("seeing shutdown",
+                         expShutdownMsg, realShutdownMsg.v.moments)
     }, 100)
 })
 
@@ -87,10 +87,10 @@ for (let i = 0; i < 10; i++) {
 }
 setTimeout(function() {
     test.assertEqual(
-        "one oneMessage", expOneMoment, realOneMoment[0].v)
+        "one oneMessage", expOneMoment, realOneMoment[0].v.moments)
     const t = new TestCase()
     for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expOneMoment, realOneMoment[i].v)
+        t.assertEqual('', expOneMoment, realOneMoment[i].v.moments)
     }
     test.assertEqual(
         "all oneMessage", 10, 10 - t.getFails())
@@ -119,10 +119,10 @@ for (let i = 0; i < 10; i++) {
 }
 setTimeout(function() {
     test.assertEqual(
-        "one twoMoments", expTwoMoments, realTwoMoments[0].v)
+        "one twoMoments", expTwoMoments, realTwoMoments[0].v.moments)
     const t = new TestCase()
     for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expTwoMoments, realTwoMoments[i].v)
+        t.assertEqual('', expTwoMoments, realTwoMoments[i].v.moments)
     }
     test.assertEqual(
         "all twoMoments", 10, 10 - t.getFails())
@@ -154,10 +154,10 @@ for (let i = 0; i < 10; i++) {
 }
 setTimeout(function() {
     test.assertEqual(
-        "one connDis", expConnDis, realConnDis[0].v)
+        "one connDis", expConnDis, realConnDis[0].v.moments)
     const t = new TestCase()
     for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expConnDis, realConnDis[i].v)
+        t.assertEqual('', expConnDis, realConnDis[i].v.moments)
     }
     test.assertEqual(
         "all connDis", 10, 10 - t.getFails())
