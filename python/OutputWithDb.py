@@ -38,8 +38,9 @@ class OutputWithDb:
         a = OutputMapper(l['start'], 0)
         for e in events:
             a.push(e)
-        last = self.evt_stream.stream_models
+        from_db = a.stream_models
+        not_yet_in_db = self.evt_stream.stream_models
         return {
             "firstMomentIdx": l['start'],
-            "moments": a.stream_models + last
+            "moments": from_db + not_yet_in_db
         }
