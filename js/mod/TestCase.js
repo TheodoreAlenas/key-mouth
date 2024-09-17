@@ -4,13 +4,13 @@
 export default class TestCase {
     line = ""
     fails = []
-    assertEqual(message, a, b) {
+    assertEqual(testName, a, b) {
         if (isSubset(a, b) && isSubset(b, a)) {
             this.line += '.'
         }
         else {
             this.line += 'F'
-            this.fails.push({message, a, b})
+            this.fails.push({failed: testName, a, b})
         }
     }
     printResults() {

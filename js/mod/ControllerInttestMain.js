@@ -19,9 +19,10 @@ test.assertEqual("server mutex released and got 200", 200, res.status)
 res = await uriNew.fetchPutRoom()
 test.assertEqual("creating room twice throws error", 409, res.status)
 
-let shouldThrow = new Controller(uriMissing)
+let shouldThrow = new Controller(uriMissing, 732)
 let threw = false
 shouldThrow.onSocketError = function() {threw = true}
+shouldThrow.onReadySocket = function() {}
 setTimeout(function() {
     test.assertEqual("missing room returns error", true, threw)
 }, 100)

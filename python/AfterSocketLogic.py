@@ -26,6 +26,11 @@ class AfterSocketLogic:
             room.conn_bcaster = Broadcaster(0, room, self._conf_timing)
             room.conn_bcaster.say_started(time)
 
+    def if_room_is_missing_throw(self, room_id):
+        def f(_):
+            pass
+        self.rooms.given(room_id, f)
+
     def connect(self, time, room_id):
         def create_conn(room):
             self.last_id += 1

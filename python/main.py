@@ -111,6 +111,7 @@ async def room_get(room: str, start: int, end: int):
 
 @app.websocket("/{room}")
 async def root(websocket: WebSocket, room: str):
+    logic.if_room_is_missing_throw(room)
     conn = None
     try:
         await websocket.accept()
