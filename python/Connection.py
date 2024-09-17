@@ -52,7 +52,6 @@ class Broadcaster(Connection):
 
     def close_room(self, time):
         self._handle_parsed(time, "shutdown")
-        #self._push(0, 'newMoment', time)
         self.room.output_accumulator.store_last_moment(time)
 
     def say_created(self, time):

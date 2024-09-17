@@ -12,7 +12,7 @@
 
 [data-sch=dark] .event {color: #b0b4b8;}
 [data-sch=dark] .erase {background-color: #707478; color: #fff0;}
-[data-sch=dark] .delete {background-color: #a01; color: #fff;}
+[data-sch=dark] .delete {background-color: #000; color: #fff;}
 [data-sch=dark] .bubbleTop {color: #808488;}
 
 .event {color: #123;}

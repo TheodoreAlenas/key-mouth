@@ -19,12 +19,12 @@ class MSA(unittest.TestCase):
         self.s3 = MomentSplitter(conf_timing=conf, room=room)
 
     def test_update_noSplit(self):
-        r = self.s1.update(10.9)
+        r = self.s1.update(10.1)
         self.assertEqual(False, r.should_split)
 
-    def test_pauseUpdate_split(self):
-        r = self.s1.update(11.0)
-        self.assertEqual(True, r.should_split)
+    def test_pauseUpdate_noSplit(self):
+        r = self.s1.update(1000.0)
+        self.assertEqual(False, r.should_split)
 
     def test_updateUpdate_noSplit(self):
         self.s1.update(10.0)
