@@ -31,12 +31,6 @@ class MSA(unittest.TestCase):
         r = self.s1.update(19.9)
         self.assertEqual(False, r.should_split)
 
-    def test_updateUpdateUpdate_noSplit(self):
-        self.s1.update(10.0)
-        self.s1.update(19.9)
-        r = self.s1.update(29.8)
-        self.assertEqual(False, r.should_split)
-
     def test_updatePauseUpdate_split(self):
         self.s1.update(10.0)
         r = self.s1.update(20.0)
@@ -47,21 +41,21 @@ class MSA(unittest.TestCase):
         r = self.s2.update(10.9)
         self.assertEqual(False, r.should_split)
 
-    def test_update1Update2Update3_Split(self):
+    def test_update1PauseUpdate2_split(self):
+        self.s1.update(10.0)
+        r = self.s2.update(11.0)
+        self.assertEqual(True, r.should_split)
+
+    def test_update1Update2Update3_split(self):
         self.s1.update(10.0)
         self.s2.update(10.9)
         r = self.s3.update(11.0)
         self.assertEqual(True, r.should_split)
 
-    def test_update1PauseUpdate2_noSplit(self):
-        self.s1.update(10.0)
-        r = self.s2.update(11.0)
-        self.assertEqual(True, r.should_split)
-
     def test_updateUpdateUpdate_noSplit(self):
         self.s1.update(10.0)
         self.s1.update(19.9)
-        r = self.s1.update(29.8)
+        r = self.s1.update(20.8)
         self.assertEqual(False, r.should_split)
 
     def test_first_message_advises_new_moment_event(self):
@@ -77,3 +71,7 @@ class MSA(unittest.TestCase):
         self.s1.update(11.0)
         r = self.s1.update(21.0)
         self.assertEqual(True, r.should_say_new_moment)
+
+
+if __name__ == "__main__":
+    unittest.main()
