@@ -1,7 +1,8 @@
 
 # License at the bottom
 
-from AfterSocketLogic import AfterSocketLogic, LogicHttpException, ConfTiming
+from AfterSocketLogic import AfterSocketLogic, LogicHttpException
+from MomentSplitter import ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
@@ -110,8 +111,6 @@ async def room_get(room: str, start: int, end: int):
 
 @app.websocket("/{room}")
 async def root(websocket: WebSocket, room: str):
-    if not room in logic.rooms_ram:
-        raise HTTPException(status_code=404, detail="room missing")
     conn = None
     try:
         await websocket.accept()

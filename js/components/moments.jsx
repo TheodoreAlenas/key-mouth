@@ -24,7 +24,7 @@ export default function Moments({o, styles}) {
     try {
         const pres = []
         const mt = state.fromO.moreTopButton
-        if (mt !== null) {
+        if (state.fromO !== null && mt !== null) {
             pres.push(
                 <button
                     key="moreTopButton"
