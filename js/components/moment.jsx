@@ -6,7 +6,7 @@ export default function Moment({moment, styles}) {
         const msgs = m.messages.map(
             (person, i) => PersonToLi({person, i, styles}))
         return (
-            <section key={m.key} className={styles.moment}>
+            <section key={m.key} className={styles.moment} tabIndex='0'>
                 <h2 className={styles.bubbleTop}>
                     {(m.time || '') + namesAndCommas}
                 </h2>

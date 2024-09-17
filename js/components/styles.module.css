@@ -20,28 +20,28 @@
 .delete {background-color: #def; color: #789;}
 .bubbleTop {color: #789;}
 
-[data-sch=dark] .moment:hover {background-color: #000;}
-[data-sch=dark] .moment:hover .erase {background-color: #000;}
-[data-sch=dark] .moment:hover .delete {background-color: #000;}
-[data-sch=dark] .moment:hover .bubble {background-color: #000;}
-[data-sch=dark] .moment:hover .erase {color: #fff;}
-[data-sch=dark] .moment:hover .delete {color: #fff;}
-[data-sch=dark] .moment:hover .event {color: #fff;}
-[data-sch=dark] .moment:hover .erase,
-[data-sch=dark] .moment:hover .delete {box-shadow: #bbb 0 0 0 2px;}
-[data-sch=dark] .moment:hover .bubble {box-shadow: #bbb 0 0 0 2px;}
-[data-sch=dark] .moment:hover .bubbleTop {color: #fff;}
+[data-sch=dark] .moment:focus {background-color: #000;}
+[data-sch=dark] .moment:focus .erase {background-color: #000;}
+[data-sch=dark] .moment:focus .delete {background-color: #000;}
+[data-sch=dark] .moment:focus .bubble {background-color: #000;}
+[data-sch=dark] .moment:focus .erase {color: #fff;}
+[data-sch=dark] .moment:focus .delete {color: #fff;}
+[data-sch=dark] .moment:focus .event {color: #fff;}
+[data-sch=dark] .moment:focus .erase,
+[data-sch=dark] .moment:focus .delete {box-shadow: #bbb 0 0 0 2px;}
+[data-sch=dark] .moment:focus .bubble {box-shadow: #bbb 0 0 0 2px;}
+[data-sch=dark] .moment:focus .bubbleTop {color: #fff;}
 [data-sch=dark] .input:hover,
 [data-sch=dark] .button:hover {background-color: #000;}
 
-.moment:hover {background-color: #fff;}
-.moment:hover .erase {background-color: #fff; color: #000;}
-.moment:hover .delete {background-color: #fff; color: #000;}
-.moment:hover .erase,
-.moment:hover .delete {box-shadow: #888 0 0 0 2px;}
-.moment:hover .bubble {box-shadow: #888 0 0 0 2px;}
-.moment:hover .bubble {background-color: #fff;}
-.moment:hover .bubbleTop {color: #000;}
+.moment:focus {background-color: #fff;}
+.moment:focus .erase {background-color: #fff; color: #000;}
+.moment:focus .delete {background-color: #fff; color: #000;}
+.moment:focus .erase,
+.moment:focus .delete {box-shadow: #888 0 0 0 2px;}
+.moment:focus .bubble {box-shadow: #888 0 0 0 2px;}
+.moment:focus .bubble {background-color: #fff;}
+.moment:focus .bubbleTop {color: #000;}
 .input:hover,
 .button:hover {background-color: #fff;}
 
