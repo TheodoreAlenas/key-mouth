@@ -46,8 +46,8 @@ class AfterSocketLogic:
         self.rooms.delete(room_id)
         return ([], None)
 
-    def rename_room(self, time, room_and_name):
-        self.rooms.rename(time, room_and_name[0], room_and_name[1])
+    def rename_room(self, _, room_and_name):
+        self.rooms.rename(room_and_name[0], room_and_name[1])
         return ([], None)
 
     def get_rooms(self, _time, _arg):

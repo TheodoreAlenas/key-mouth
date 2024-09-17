@@ -43,7 +43,7 @@ class Rooms:
             self.rooms_ram.pop(room_id)
         self.given(room_id, delete)
 
-    def rename(self, time, room_id, name):
+    def rename(self, room_id, name):
         def rename_it(room):
             room.rename(name)
         self.given(room_id, rename_it)

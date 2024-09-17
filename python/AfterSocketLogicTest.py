@@ -4,6 +4,7 @@ from db.mock import Db
 import unittest
 from OutputWithDbTest import A
 from MomentSplitterTest import MSA
+from RoomsTest import RA
 
 
 class AParsing(unittest.TestCase):
@@ -119,41 +120,17 @@ class Rooms(unittest.TestCase):
             ))
         self.logic.create_room(10.0, "room0")
 
-    def test_created_room_listed(self):
-        _, ans = self.logic.get_rooms(10.1, None)
-        self.assertEqual([{'id': 'room0', 'name': None}], ans)
-
-    def test_deleted_room_not_listed(self):
-        self.logic.delete_room(10.0, "room0")
-        _, ans = self.logic.get_rooms(10.1, None)
-        self.assertEqual([], ans)
-
     def test_renamed_room_listed_renamed(self):
         self.logic.rename_room(10.0, ("room0", "a name"))
         _, ans = self.logic.get_rooms(10.1, None)
         self.assertEqual([{'id': 'room0', 'name': "a name"}], ans)
 
-    def test_create_room_twice_get_409(self):
+    def test_errors_pass_through(self):
         try:
             self.logic.create_room(10.0, "room0")
             self.assertFalse("should have thrown error")
         except Exception as e:
             self.assertEqual(409, e.status_code)
-
-    def test_if_room_doesnt_exist_connect_404(self):
-        try:
-            self.logic.connect(10.0, "nonexistent")
-            self.assertFalse("should have thrown error")
-        except Exception as e:
-            self.assertEqual(404, e.status_code)
-
-    def test_if_room_doesnt_exist_get_moments_range_404(self):
-        try:
-            self.logic.get_moments_range(
-                10.0, ("nonexistent", None, None))
-            self.assertFalse("should have thrown error")
-        except Exception as e:
-            self.assertEqual(404, e.status_code)
 
 
 class ConnectionIds(unittest.TestCase):
