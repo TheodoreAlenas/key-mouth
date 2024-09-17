@@ -11,14 +11,23 @@
 .bubble {background-color: #fff;}
 
 [data-sch=dark] .event {color: #b0b4b8;}
-[data-sch=dark] .erase {background-color: #000; color: #303438;}
-[data-sch=dark] .delete {background-color: #000; color: #506468;}
+[data-sch=dark] .erase {background-color: #707478; color: #fff0;}
+[data-sch=dark] .delete {background-color: #a01; color: #fff;}
 [data-sch=dark] .bubbleTop {color: #808488;}
 
 .event {color: #123;}
-.erase {background-color: #def; color: #abc;}
-.delete {background-color: #def; color: #789;}
+.erase {background-color: #c0c4c8; color: #fff0;}
+.delete {background-color: #fcc; color: #000;}
 .bubbleTop {color: #789;}
+
+.moment:not(:focus) .erase {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    transform: translateY(0.1em) scaleY(1.4);
+    overflow: hidden;
+    margin: 0;
+}
 
 [data-sch=dark] .moment:focus {background-color: #000;}
 [data-sch=dark] .moment:focus .erase {background-color: #000;}
