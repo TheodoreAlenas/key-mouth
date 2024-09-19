@@ -77,9 +77,15 @@ class AfterSocketLogic:
         return self.rooms.given(room_id, f)
 
     def close(self, time, _):
+        unsaved_pages = {}
         for room in self.rooms.get_all():
             room.conn_bcaster.close_room(time)
-        self.db.set_reloadable_state(last_id=self.last_id)
+            unsaved_pages[room.room_id] = \
+                room.output_accumulator.get_unsaved_page()
+        self.db.set_reloadable_state(
+            last_id=self.last_id,
+            unsaved_pages=unsaved_pages
+        )
         return ([], None)
 
 

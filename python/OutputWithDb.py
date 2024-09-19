@@ -44,3 +44,6 @@ class OutputWithDb:
             "firstMomentIdx": l.first_moment_idx,
             "events": from_db + not_yet_in_db
         }
+
+    def get_unsaved_page(self):
+        return self.evt_db.get_last_page()

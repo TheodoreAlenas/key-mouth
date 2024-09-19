@@ -54,6 +54,7 @@ class RoomRestartData:
 @dataclass
 class AfterSocketLogicRestartData:
     last_id: any
+    unsaved_pages: dict
 
 
 class Db:
@@ -92,9 +93,11 @@ class Db:
             ))
         return res
 
-    def set_reloadable_state(self, last_id):
-        s = AfterSocketLogicRestartData(last_id=last_id)
-        self.reloadable_state = s
+    def set_reloadable_state(self, last_id, unsaved_pages):
+        self.reloadable_state = AfterSocketLogicRestartData(
+            last_id=last_id,
+            unsaved_pages=unsaved_pages
+        )
 
     def get_reloadable_state(self):
         return self.reloadable_state
