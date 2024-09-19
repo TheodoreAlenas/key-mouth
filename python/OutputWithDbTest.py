@@ -27,7 +27,7 @@ class A(unittest.TestCase):
         a = []
         a.append(self.o.push(0, 'newMoment', 10.0))
         a.append(self.o.push(1, 'write', 'hello'))
-        self.o.store_last_moment(11.0)
+        self.o.conclude_moment(11.0)
         b = self.o.get_last_few()['moments']
         self.assertEqual(a, b)
 
@@ -35,10 +35,10 @@ class A(unittest.TestCase):
         a = []
         a.append(self.o.push(0, 'newMoment', 10.0))
         a.append(self.o.push(1, 'write', 'a'))
-        self.o.store_last_moment(11.0)
+        self.o.conclude_moment(11.0)
         a.append(self.o.push(0, 'newMoment', 10.0))
         a.append(self.o.push(1, 'write', 'b'))
-        self.o.store_last_moment(12.0)
+        self.o.conclude_moment(12.0)
         b = self.o.get_last_few()['moments']
         self.assertEqual(a, b)
 
@@ -47,6 +47,6 @@ class A(unittest.TestCase):
         a.append(self.o.push(0, 'newMoment', 10.0))
         a.append(self.o.push(1, 'write', 'a'))
         a.append(self.o.push(1, 'write', 'b'))
-        self.o.store_last_moment(12.0)
+        self.o.conclude_moment(12.0)
         b = self.o.get_last_few()['moments']
         self.assertEqual(a, b)

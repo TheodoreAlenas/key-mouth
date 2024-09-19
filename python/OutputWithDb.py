@@ -18,7 +18,7 @@ class OutputWithDb:
         self.evt_stream = OutputMapper(db.get_len(), 0)
         self.debug_context_str = debug_context_str
 
-    def store_last_moment(self, time):
+    def conclude_moment(self, time):
         self.evt_stream.stream_models = []
         baked_moment = self.evt_db.get_moment()
         self.db.add_moment(baked_moment)
