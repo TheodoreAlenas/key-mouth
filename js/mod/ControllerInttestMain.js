@@ -45,15 +45,14 @@ function withController(uri, ret, callback) {
 }
 
 const expShutdownMsg = [
-    {key: 0, time: "-", names: "(#)0", messages: []},
-    {key: 1, time: "-", names: "(#)1", messages: [{message: [
+    {key: 0, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[room created]"},
         {type: "event", body: "[server shutting down]"}
     ]}]},
-    {key: 2, time: "-", names: "(#)1", messages: [{message: [
+    {key: 1, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[server started]"}
     ]}]},
-    {key: 3, time: "-", names: "(#)1", messages: [{message: [
+    {key: 2, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[connected]"}
     ]}]}
 ]
@@ -62,14 +61,16 @@ const realShutdownMsg = {v: null}
 withController(uriRestarted, realShutdownMsg, function(_, close) {
     setTimeout(function() {
         close()
-        test.assertEqual("seeing shutdown",
-                         expShutdownMsg, realShutdownMsg.v.moments)
+        for (let i = 0; i < expShutdownMsg.length; i++) {
+            test.assertEqual("seeing shutdown, moment #" + i,
+                             expShutdownMsg[i],
+                             realShutdownMsg.v.moments[i])
+        }
     }, 100)
 })
 
 const expOneMoment = [
-    {key: 0, time: "-", names: "(#)0", messages: []},
-    {key: 1, time: "-", names: "(#)2", messages: [
+    {key: 0, time: "-", names: "(#)2", messages: [
         {message: [{type: "event", body: "[room created]"}]},
         {message: [{type: "event", body: "[connected]"},
                    {type: "write", body: "too soon"}]}
@@ -98,12 +99,11 @@ setTimeout(function() {
 }, 200)
 
 const expTwoMoments = [
-    {key: 0, time: "-", names: "(#)0", messages: []},
-    {key: 1, time: "-", names: "(#)2", messages: [
+    {key: 0, time: "-", names: "(#)2", messages: [
         {message: [{type: "event", body: "[room created]"}]},
         {message: [{type: "event", body: "[connected]"}]}
     ]},
-    {key: 2, time: "-", names: "(#)1", messages: [
+    {key: 1, time: "-", names: "(#)1", messages: [
         {message: [{type: "write", body: "late"}]}
     ]}
 ]
@@ -130,8 +130,7 @@ setTimeout(function() {
 }, 500)
 
 const expConnDis = [
-    {key: 0, time: "-", names: "(#)0", messages: []},
-    {key: 1, time: "-", names: "(#)3", messages: [
+    {key: 0, time: "-", names: "(#)3", messages: [
         {message: [{type: "event", body: "[room created]"}]},
         {message: [{type: "event", body: "[connected]"},
                    {type: "event", body: "[disconnected]"}]},

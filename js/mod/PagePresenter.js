@@ -3,20 +3,6 @@
 
 import accumulateDiffs from './accumulateDiffs.js'
 
-/*
-  pastMoments
-  lastMoments   doesn't overlap pastMoments
-  lastMoment
-
-  There's a load later messages button.
-  If the lastMoments touch the pastMoments,
-  they merge and the ceiling lowers.
-  If the lastMoments have some of the desired moments,
-  these moments are kept and the in-between are fetched from the DB.
-  If the lastMoments don't have any of the desired moments,
-  all those moments are fetched from the DB.
- */
-
 export default class PagePresenter {
 
     constructor(firstMomentIdx) {
@@ -26,29 +12,22 @@ export default class PagePresenter {
         }
         this.firstMomentIdx = firstMomentIdx
         this.moments = []
-        this.last = []
-        this.lastTime = null
     }
     push(viewEvent) {
         if (viewEvent.type === 'newMoment') {
             this.moments.push({
-                time: this.lastTime,
-                raw: this.last
+                time: viewEvent.body,
+                raw: []
             })
-            this.last = []
-            this.lastTime = viewEvent.body
         }
         else {
-            this.last.push(viewEvent)
+            this.moments[this.moments.length - 1].raw.push(viewEvent)
         }
     }
     getMomentViews(getNames) {
         let i = this.firstMomentIdx
         const views = this.moments.map(({time, raw}) =>
             getViewModel(i++, presTime(time), getNames, raw))
-        if (this.last.length !== 0) views.push(
-            getViewModel(i, presTime(this.lastTime), getNames,
-                         this.last))
         return views
     }
     touchesTop() {
