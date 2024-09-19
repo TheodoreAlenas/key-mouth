@@ -1,4 +1,4 @@
-import EventPresenter from './EventPresenter.js'
+import PagePresenter from './PagePresenter.js'
 
 export default class Presenter {
     constructor(pageSize) {
@@ -7,7 +7,7 @@ export default class Presenter {
     }
     push(event) {
         if (this.ep === null) {
-            this.ep = new EventPresenter(event.firstMomentIdx)
+            this.ep = new PagePresenter(event.firstMomentIdx)
             for (let e of event.moments) this.ep.push(e)
             this.ep.keepLast(this.pageSize)
         }

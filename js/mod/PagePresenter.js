@@ -17,7 +17,7 @@ import accumulateDiffs from './accumulateDiffs.js'
   all those moments are fetched from the DB.
  */
 
-export default class EventPresenter {
+export default class PagePresenter {
 
     constructor(firstMomentIdx) {
         if (typeof(firstMomentIdx) !== 'number') {

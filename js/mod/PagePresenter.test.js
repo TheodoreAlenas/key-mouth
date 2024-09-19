@@ -1,17 +1,17 @@
-import EventPresenter from './EventPresenter.js'
+import PagePresenter from './PagePresenter.js'
 import TestCase from './TestCase.js'
 
 const test = new TestCase()
 let ep = null
 
-ep = new EventPresenter(0)
+ep = new PagePresenter(0)
 test.assertEqual(
     "none is none",
     [],
     ep.getMomentViews(x => x)
 )
 
-ep = new EventPresenter(7)
+ep = new PagePresenter(7)
 ep.push({connId: 4, type: "write", body: "llo"})
 ep.push({connId: 4, type: "delete", body: "llo"})
 ep.push({connId: 4, type: "delete", body: "e"})
@@ -29,7 +29,7 @@ test.assertEqual(
     ep.getMomentViews(x => "con" + x)
 )
 
-ep = new EventPresenter(7)
+ep = new PagePresenter(7)
 ep.push({connId: 4, type: "write", body: "h"})
 ep.push({connId: 5, type: "write", body: "HELLO"})
 ep.push({connId: 4, type: "write", body: "i"})
@@ -42,7 +42,7 @@ test.assertEqual(
     ep.getMomentViews(x => "con" + x)
 )
 
-ep = new EventPresenter(7)
+ep = new PagePresenter(7)
 ep.push({connId: 0, type: "newMoment", body: 732})
 let v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
@@ -52,7 +52,7 @@ test.assertEqual(
     v
 )
 
-ep = new EventPresenter(7)
+ep = new PagePresenter(7)
 ep.push({connId: 4, type: "write", body: "HELLO"})
 ep.push({connId: 0, type: "newMoment", body: 732})
 ep.push({connId: 4, type: "write", body: "hi again"})
@@ -71,7 +71,7 @@ test.assertEqual(
     v
 )
 
-ep = new EventPresenter(7)
+ep = new PagePresenter(7)
 ep.push({connId: 0, type: "shutdown", body: null})
 v = ep.getMomentViews(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
