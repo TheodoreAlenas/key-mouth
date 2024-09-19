@@ -1,6 +1,7 @@
 import accumulateDiffs from './accumulateDiffs.js'
 import TestCase from './TestCase.js'
 
+console.log('accumulateDiffs')
 const test = new TestCase()
 
 test.assertEqual(

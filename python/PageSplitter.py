@@ -2,24 +2,24 @@ from dataclasses import dataclass
 
 
 @dataclass
-class RoomData:
-    moments_n: int = 0
-
-
-@dataclass
 class Res:
-    should_split_page: bool
-    should_say_new_page: bool
+    should_split: bool
+    should_say_new: bool
+    next_moment_idx: int | None
 
 
 class PageSplitter:
 
-    def __init__(self, moments_per_page, room: RoomData):
+    def __init__(self, moments_per_page, next_moment_idx):
         self.moments_per_page = moments_per_page
+        self.next_moment_idx = next_moment_idx
         self.room = room
 
     def update(self) -> Res:
-        self.room.moments_n += 1
-        should_split = self.room.moments_n % self.moments_per_page == 0
+        self.next_moment_idx += 1
+        should_split = self.next_moment_idx % self.moments_per_page == 0
         return PageSplitterRes(
-            should_split, should_split or self.room.moments_n == 0)
+            should_split=should_split,
+            should_say_next=should_split or self.next_moment_idx == 0,
+            next_moment_idx=self.next_moment_idx
+        )

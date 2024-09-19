@@ -1,6 +1,7 @@
 import PagePresenter from './PagePresenter.js'
 import TestCase from './TestCase.js'
 
+console.log('PagePresenter')
 const test = new TestCase()
 let ep = null
 let v = null
