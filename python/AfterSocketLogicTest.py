@@ -16,7 +16,9 @@ class AParsing(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
 
@@ -76,7 +78,9 @@ class Broadcasting(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
         _, self.conn_1 = self.logic.connect(10.0, "room0")
@@ -117,7 +121,9 @@ class Rooms(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
         self.logic.create_room(10.0, "room0")
 
     def test_renamed_room_listed_renamed(self):
@@ -142,7 +148,9 @@ class ConnectionIds(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
         self.logic.create_room(10.0, "room0")
         self.logic.create_room(10.0, "room1")
         _, self.conn_1 = self.logic.connect(10.0, "room0")
@@ -167,7 +175,9 @@ class Moments(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
         self.logic.create_room(10.0, "room0")
 
     def test_connect_get_others_last_moment(self):
@@ -196,7 +206,9 @@ class DbBasics(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
         self.logic.create_room(10.0, "room0")
 
     def test_database_starts_empty(self):
@@ -220,7 +232,9 @@ class DbLoadRoom(unittest.TestCase):
             conf_timing=ConfTiming(
                 min_silence=3.0,
                 min_moment=0.5
-            ))
+            ),
+            moments_per_page=100
+        )
 
     def test_use_other_db_start_blank(self):
         logic_1 = self.get_logic(10.0, Db())

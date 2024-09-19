@@ -13,7 +13,6 @@ class PageSplitter:
     def __init__(self, moments_per_page, next_moment_idx):
         self.moments_per_page = moments_per_page
         self.next_moment_idx = next_moment_idx
-        self.room = room
 
     def update(self) -> Res:
         self.next_moment_idx += 1

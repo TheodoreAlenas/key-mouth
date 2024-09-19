@@ -8,7 +8,7 @@ import unittest
 class RA(unittest.TestCase):
 
     def setUp(self):
-        self.rooms = Rooms(10.0, Db(), [])
+        self.rooms = Rooms(10.0, Db(), [], moments_per_page=100)
 
     def test_init_no_rooms(self):
         self.assertEqual(0, len(self.rooms.get_all()))

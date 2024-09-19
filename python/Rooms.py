@@ -9,9 +9,10 @@ from MomentSplitter import ConfTiming, MomentSplitterData
 
 class Rooms:
 
-    def __init__(self, time, db, rooms_restart_data):
+    def __init__(self, time, db, rooms_restart_data, moments_per_page):
         self.db = db
         self.rooms_ram = {}
+        self.moments_per_page = moments_per_page
         for d in rooms_restart_data:
             r = Room(
                 splitter_data=MomentSplitterData(
@@ -20,7 +21,9 @@ class Rooms:
                 ),
                 room_id=d.room_id,
                 name=d.name,
-                db_room=db.get_room(d.room_id))
+                db_room=db.get_room(d.room_id),
+                moments_per_page=self.moments_per_page,
+            )
             self.rooms_ram[d.room_id] = r
 
     def create(self, time, room_id):
@@ -32,7 +35,8 @@ class Rooms:
                     nobody_talked_yet=True
                 ),
                 room_id=room_id,
-                db_room=self.db.get_room(room_id)
+                db_room=self.db.get_room(room_id),
+                moments_per_page=self.moments_per_page,
             )
             self.rooms_ram[room_id] = r
         self.without(room_id, create_and_set)

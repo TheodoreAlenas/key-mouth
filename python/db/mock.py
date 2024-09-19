@@ -75,7 +75,8 @@ class Db:
             res.append(RoomRestartData(
                 room_id=room_id,
                 name=r.name,
-                last_moment_time=r.last_moment_time))
+                last_moment_time=r.last_moment_time,
+            ))
         return res
 
     def save_state(self, last_id):

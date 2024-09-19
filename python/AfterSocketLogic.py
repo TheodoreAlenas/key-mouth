@@ -11,7 +11,7 @@ from Rooms import Rooms
 
 class AfterSocketLogic:
 
-    def __init__(self, time, db, conf_timing):
+    def __init__(self, time, db, conf_timing, moments_per_page):
         self._conf_timing = conf_timing
         self.db = db
         saved = self.db.reload_state()
@@ -21,7 +21,12 @@ class AfterSocketLogic:
             self.last_id = saved.last_id
         self.conns = {}
         restart_data = db.get_restart_data()
-        self.rooms = Rooms(time, db, restart_data)
+        self.rooms = Rooms(
+            time=time,
+            db=db,
+            rooms_restart_data=restart_data,
+            moments_per_page=moments_per_page,
+        )
         for room in self.rooms.get_all():
             room.conn_bcaster = Broadcaster(0, room, self._conf_timing)
             room.conn_bcaster.say_started(time)

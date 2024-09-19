@@ -13,15 +13,10 @@ class IntTestWidgets:
             self.raised_exceptions.append(msg)
             raise Exception("for inttest: " + msg)
 
-    def add_room_and_restart(self, logic, db):
+    def add_room_and_restart(self, logic, create_logic):
         logic.create_room(time(), 'pre\nmade')
         logic.close(time(), None)
-        return AfterSocketLogic(
-        time=time(),
-            db=db,
-            conf_timing=ConfTiming(
-                min_silence=0.2,
-                min_moment=0.2
-            ))
-
-        return create_logic()
+        return create_logic(conf_timing=ConfTiming(
+            min_silence=0.2,
+            min_moment=0.2
+        ))

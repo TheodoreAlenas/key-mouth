@@ -31,21 +31,25 @@ if a in environ and environ[a] == 'yes':
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+moments_per_page = 50
+conf_timing=ConfTiming(
+    min_silence=3.0,
+    min_moment=1.0
+)
 id_to_sock = {}
 mutex = threading.Lock()
 db_only_use_in_inttest_and_logic_init = Db()
-def create_logic():
+def create_logic(conf_timing):
     return AfterSocketLogic(
         time=time(),
         db=db_only_use_in_inttest_and_logic_init,
-        conf_timing=ConfTiming(
-            min_silence=3.0,
-            min_moment=1.0
-        ))
-logic = create_logic()
+        conf_timing=conf_timing,
+        moments_per_page=moments_per_page
+    )
+logic = create_logic(conf_timing)
 if inttest is not None:
-    logic = inttest.add_room_and_restart(
-        logic, db_only_use_in_inttest_and_logic_init)
+    logic = inttest.add_room_and_restart(logic, create_logic)
 a = 'KEYMOUTH_ADD_A_ROOM'
 if a in environ and environ[a] == 'yes':
     logic.create_room(time(), 'test-room')
