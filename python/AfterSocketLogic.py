@@ -14,7 +14,7 @@ class AfterSocketLogic:
     def __init__(self, time, db, conf_timing, moments_per_page):
         self._conf_timing = conf_timing
         self.db = db
-        saved = self.db.reload_state()
+        saved = self.db.get_reloadable_state()
         if saved is None:
             self.last_id = 100
         else:
@@ -64,7 +64,7 @@ class AfterSocketLogic:
         return ([], [{"id": r.room_id, "name": r.name}
                      for r in self.rooms.get_all()])
 
-    def get_moments_range(self, _, room_start_end):
+    def get_pages_range(self, _, room_start_end):
         room_id, start, end = room_start_end
         def f(r):
             db_model = r.db.get_range(start, end)
@@ -73,13 +73,13 @@ class AfterSocketLogic:
             to_stream = OutputMapper(first, 0)
             for e in events:
                 to_stream.push(e)
-            return ([], to_stream.stream_models)
+            return ([], to_stream.get_last_page())
         return self.rooms.given(room_id, f)
 
     def close(self, time, _):
         for room in self.rooms.get_all():
             room.conn_bcaster.close_room(time)
-        self.db.save_state(last_id=self.last_id)
+        self.db.set_reloadable_state(last_id=self.last_id)
         return ([], None)
 
 

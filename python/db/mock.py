@@ -5,37 +5,50 @@ from db.exceptions import RoomExistsException, RoomDoesntExistException
 from dataclasses import dataclass
 
 
+@dataclass
+class LastPages:
+    pages: list
+    first_page_idx: int
+    first_moment_idx: int
+
+
 class RoomMoments:
 
-    def __init__(self, last_moment_time, room_id, moments):
-        self.last_moment_time = last_moment_time
+    def __init__(self, room_id):
         self.room_id = room_id
         self.name = None
-        self.moments = moments
+        self.pages = []
+
+    def get_last_page_first_moment_idx(self):
+        if self.pages == []:
+            return 0
+        return self.pages[-1]['firstMomentIdx']
 
     def rename(self, name):
         self.name = name
 
-    def add_moment(self, moment):
-        self.moments.append(moment)
-        self.last_moment_time = moment['time']
+    def push_page(self, page):
+        self.pages.append(page)
 
-    def get_last_few(self):
-        m = self.moments
-        return {"start": 0, "end": len(m), "moments": m}
+    def get_last_pages(self):
+        return LastPages(
+            pages=self.pages,
+            first_page_idx=0,
+            first_moment_idx=0
+        )
 
     def get_len(self):
-        return len(self.moments)
+        return len(self.pages)
 
     def get_range(self, start, end):
-        return self.moments[start:end]
+        return self.pages[start:end]
 
 
 @dataclass
 class RoomRestartData:
     room_id: any
     name: str
-    last_moment_time: float
+    last_page_first_moment_idx: int
 
 
 @dataclass
@@ -49,24 +62,23 @@ class Db:
         self.reloadable_state = None
         self.rooms = {}
 
-    def create_room(self, time, name):
-        if name in self.rooms:
-            raise RoomExistsException("[DbMoct] room '" + name +
+    def create_room(self, time, room_id):
+        if room_id in self.rooms:
+            raise RoomExistsException("[DbMoct] room '" + room_id +
                                       "' already exists")
-        self.rooms[name] = RoomMoments(
-            time, name, [])
+        self.rooms[room_id] = RoomMoments(room_id)
 
-    def delete_room(self, name):
-        if not name in self.rooms:
-            raise RoomDoesntExistException("[DbMoct] room '" + name +
+    def delete_room(self, room_id):
+        if not room_id in self.rooms:
+            raise RoomDoesntExistException("[DbMoct] room '" + room_id +
                                            "' doesnt exist")
-        self.rooms.pop(name)
+        self.rooms.pop(room_id)
 
-    def get_room(self, name) -> RoomMoments:
-        if not name in self.rooms:
-            raise RoomDoesntExistException("[DbMock] room '" + name +
+    def get_room(self, room_id) -> RoomMoments:
+        if not room_id in self.rooms:
+            raise RoomDoesntExistException("[DbMock] room '" + room_id +
                                            "' doesn't exist")
-        return self.rooms[name]
+        return self.rooms[room_id]
 
     def get_restart_data(self):
         res = []
@@ -75,15 +87,16 @@ class Db:
             res.append(RoomRestartData(
                 room_id=room_id,
                 name=r.name,
-                last_moment_time=r.last_moment_time,
+                last_page_first_moment_idx=
+                r.get_last_page_first_moment_idx(),
             ))
         return res
 
-    def save_state(self, last_id):
+    def set_reloadable_state(self, last_id):
         s = AfterSocketLogicRestartData(last_id=last_id)
         self.reloadable_state = s
 
-    def reload_state(self):
+    def get_reloadable_state(self):
         return self.reloadable_state
 
 

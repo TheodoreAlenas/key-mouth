@@ -1,5 +1,18 @@
 from OutputWithDb import OutputWithDb
-from PageSplitter import PageSplitter
+
+
+class PageSplitter:
+
+    def __init__(self, moments_per_page, next_moment_idx):
+        self.moments_per_page = moments_per_page
+        self.next_moment_idx = next_moment_idx
+
+    def get_should_split(self):
+        self.next_moment_idx += 1
+        return self.next_moment_idx % self.moments_per_page == 0
+
+    def get_next_moment_idx(self):
+        return self.next_moment_idx
 
 
 class Room:
@@ -15,6 +28,7 @@ class Room:
             moments_per_page=moments_per_page,
             next_moment_idx=next_moment_idx
         )
+        self.nobody_talked_yet = True
         self.conns = []
 
     def rename(self, name):

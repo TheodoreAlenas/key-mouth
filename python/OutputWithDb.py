@@ -18,10 +18,10 @@ class OutputWithDb:
         self.evt_stream = OutputMapper(db.get_len(), 0)
         self.debug_context_str = debug_context_str
 
-    def conclude_moment(self, time):
-        self.evt_stream.stream_models = []
-        baked_moment = self.evt_db.get_moment()
-        self.db.add_moment(baked_moment)
+    def save_last_page(self):
+        self.evt_stream.update_page_ended()
+        page = self.evt_db.get_last_page()
+        self.db.push_page(page)
 
     def push(self, conn_id, event_type, body):
         ve = ViewEvent(
@@ -29,18 +29,18 @@ class OutputWithDb:
             event_type=event_type,
             body=body
         )
-        self.evt_db.push(ve)
+        self.evt_db.push_event(ve)
         return self.evt_stream.push(ve)
 
-    def get_last_few(self):
-        l = self.db.get_last_few()
-        events = db_model_to_events(l['moments'])
-        a = OutputMapper(l['start'], 0)
+    def get_last_pages(self):
+        l = self.db.get_last_pages()
+        events = db_model_to_events(l.pages)
+        a = OutputMapper(first_moment_idx=l.first_moment_idx)
         for e in events:
             a.push(e)
-        from_db = a.stream_models
-        not_yet_in_db = self.evt_stream.stream_models
+        from_db = a.get_last_page()
+        not_yet_in_db = self.evt_stream.get_last_page()
         return {
-            "firstMomentIdx": l['start'],
-            "moments": from_db + not_yet_in_db
+            "firstMomentIdx": l.first_moment_idx,
+            "events": from_db + not_yet_in_db
         }

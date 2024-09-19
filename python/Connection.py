@@ -16,7 +16,7 @@ class Connection:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        last_few = self.room.output_accumulator.get_last_few()
+        last_few = self.room.output_accumulator.get_last_pages()
         conn_msg = self._handle_parsed(time, "connect")
         return ([(self.conn_id, last_few)] + conn_msg, self)
 
@@ -35,14 +35,19 @@ class Connection:
 
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
-        r = self.splitter.update(time)
-        if r.should_split:
-            self.room.output_accumulator.conclude_moment(time)
-            #page_res = self.room.page_splitter.update()
-            #if page_res.should_split:
-            #    self.room.output_accumulator
-        if r.should_say_new_moment:
+
+        if self.room.nobody_talked_yet:
+            to_bcast += self._push(0, 'newPage', 0)
             to_bcast += self._push(0, 'newMoment', time)
+        self.room.nobody_talked_yet = False
+
+        if self.splitter.get_should_split(time):
+            if self.room.page_splitter.get_should_split():
+                self.room.output_accumulator.save_last_page()
+                nmi = self.room.page_splitter.get_next_moment_idx()
+                to_bcast += self._push(0, 'newPage', nmi)
+            to_bcast += self._push(0, 'newMoment', time)
+
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
 
@@ -55,7 +60,6 @@ class Broadcaster(Connection):
 
     def close_room(self, time):
         self._handle_parsed(time, "shutdown")
-        self.room.output_accumulator.conclude_moment(time)
 
     def say_created(self, time):
         self._handle_parsed(time, "create")

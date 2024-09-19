@@ -9,46 +9,38 @@ class ConfTiming:
 
 @dataclass
 class MomentSplitterData:
-    last_moment_time: float
-    nobody_talked_yet: bool
-
-
-@dataclass
-class MomentSplitterRes:
-    should_split: bool
-    should_say_new_moment: bool
+    last_moment_time: float | None = None
 
 
 class MomentSplitter:
 
     def __init__(self, conf_timing, room):
         self._conf_timing = conf_timing
-        self.last_spoke = 0.0
+        self.last_spoke = None
         self.room = room
 
-    def update(self, time):
-        nobody_had_talked = self._update_nobody_talked()
-        should_split = self._get_should_split(time, nobody_had_talked)
+    def get_should_split(self, time):
+        started_speaking = self._get_started_speaking(time)
+        moment_lasted = self._get_moment_lasted(time)
+        should_split = started_speaking and moment_lasted
         self._update_timers(time, should_split)
-        return MomentSplitterRes(
-            should_split, should_split or nobody_had_talked)
+        return should_split
 
-    def _update_nobody_talked(self):
-        nobody_had_talked = self.room.nobody_talked_yet
-        self.room.nobody_talked_yet = False
-        return nobody_had_talked
+    def _get_started_speaking(self, time):
+        if self.last_spoke is None:
+            return True
+        else:
+            return (time - self.last_spoke >=
+                    self._conf_timing.min_silence)
 
-    def _get_should_split(self, time, nobody_had_talked):
-        if nobody_had_talked:
+    def _get_moment_lasted(self, time):
+        if self.room.last_moment_time is None:
             return False
-
-        started_speaking = (time - self.last_spoke >=
-                            self._conf_timing.min_silence)
-        moment_lasted = (time - self.room.last_moment_time >=
-                         self._conf_timing.min_moment)
-        return started_speaking and moment_lasted
+        else:
+            return (time - self.room.last_moment_time >=
+                    self._conf_timing.min_moment)
 
     def _update_timers(self, time, should_split):
         self.last_spoke = time
-        if should_split:
+        if should_split or self.room.last_moment_time is None:
             self.room.last_moment_time = time

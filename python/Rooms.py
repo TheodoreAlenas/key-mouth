@@ -16,8 +16,7 @@ class Rooms:
         for d in rooms_restart_data:
             r = Room(
                 splitter_data=MomentSplitterData(
-                    last_moment_time=d.last_moment_time,
-                    nobody_talked_yet=True
+                    last_moment_time=None,
                 ),
                 room_id=d.room_id,
                 name=d.name,
@@ -33,7 +32,6 @@ class Rooms:
             r = Room(
                 splitter_data=MomentSplitterData(
                     last_moment_time=time,
-                    nobody_talked_yet=True
                 ),
                 room_id=room_id,
                 db_room=self.db.get_room(room_id),

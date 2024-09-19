@@ -1,52 +1,40 @@
 from OutputWithDb import OutputWithDb
+from db.mock import Db
 import unittest
-
-
-class Db:
-
-    def __init__(self):
-        self.s = []
-
-    def get_len(self):
-        return len(self.s)
-
-    def add_moment(self, moment):
-        self.s.append(moment)
-
-    def get_last_few(self):
-        return {'start': 0, 'end': len(self.s), 'moments': self.s}
 
 
 class A(unittest.TestCase):
 
     def setUp(self):
-        self.db = Db()
-        self.o = OutputWithDb(Db())
+        db = Db()
+        db.create_room(time=100, room_id="room0")
+        room = db.get_room(room_id="room0")
+        self.o = OutputWithDb(db=room)
+        self.a = []
+        self.a.append(self.o.push(0, 'newPage', 0))
+        self.a.append(self.o.push(0, 'newMoment', 10.0))
+        self.a.append(self.o.push(1, 'write', 'a'))
 
     def test_push_store_get(self):
-        a = []
-        a.append(self.o.push(0, 'newMoment', 10.0))
-        a.append(self.o.push(1, 'write', 'hello'))
-        self.o.conclude_moment(11.0)
-        b = self.o.get_last_few()['moments']
-        self.assertEqual(a, b)
+        self.o.save_last_page()
+        b = self.o.get_last_pages()['events']
+        self.assertEqual(self.a, b)
 
     def test_push_store_push_store_get(self):
-        a = []
-        a.append(self.o.push(0, 'newMoment', 10.0))
-        a.append(self.o.push(1, 'write', 'a'))
-        self.o.conclude_moment(11.0)
-        a.append(self.o.push(0, 'newMoment', 10.0))
-        a.append(self.o.push(1, 'write', 'b'))
-        self.o.conclude_moment(12.0)
-        b = self.o.get_last_few()['moments']
-        self.assertEqual(a, b)
+        self.o.save_last_page()
+        self.a.append(self.o.push(0, 'newPage', 1))
+        self.a.append(self.o.push(0, 'newMoment', 10.0))
+        self.a.append(self.o.push(1, 'write', 'b'))
+        self.o.save_last_page()
+        b = self.o.get_last_pages()['events']
+        self.assertEqual(self.a, b)
 
     def test_push_push_store_get(self):
-        a = []
-        a.append(self.o.push(0, 'newMoment', 10.0))
-        a.append(self.o.push(1, 'write', 'a'))
-        a.append(self.o.push(1, 'write', 'b'))
-        self.o.conclude_moment(12.0)
-        b = self.o.get_last_few()['moments']
-        self.assertEqual(a, b)
+        self.a.append(self.o.push(1, 'write', 'b'))
+        self.o.save_last_page()
+        b = self.o.get_last_pages()['events']
+        self.assertEqual(self.a, b)
+
+
+if __name__ == "__main__":
+    unittest.main()

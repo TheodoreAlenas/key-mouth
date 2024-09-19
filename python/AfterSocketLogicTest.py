@@ -24,12 +24,20 @@ class AParsing(unittest.TestCase):
 
     def test_0_one_conn_one_msg(self):
         res, conn = self.logic.connect(10.0, "room0")
+        self.maxDiff = None
         self.assertEqual(
             [
-                (conn.conn_id, {'firstMomentIdx': 0, 'moments': [
+                (conn.conn_id, {'firstMomentIdx': 0, 'events': [
                     {
                         "momentIdx": 0,
                         "diffIdx": 0,
+                        "connId": 0,
+                        "type": "newPage",
+                        "body": 0
+                    },
+                    {
+                        "momentIdx": 0,
+                        "diffIdx": 1,
                         "connId": 0,
                         "type": "newMoment",
                         "body": 10.0
@@ -184,17 +192,20 @@ class Moments(unittest.TestCase):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, _ = conn_1.handle_input(10.1, "+1")
         res_3, conn_2 = self.logic.connect(10.2, "room0")
-        a = res_1[0][1]['moments'] + [res_1[1][1]] + [res_2[0][1]]
-        b = res_3[0][1]['moments']
+        a = res_1[0][1]['events'] + [res_1[1][1]] + [res_2[0][1]]
+        b = res_3[0][1]['events']
         self.assertEqual(a, b)
 
     def test_on_connect_get_a_stored_moment(self):
         res_1, conn_1 = self.logic.connect(10.0, "room0")
         res_2, _ = conn_1.handle_input(10.1, "+old")
         res_3, conn_2 = self.logic.connect(99.0, "room0")
-        a = res_1[0][1]['moments'] + [res_1[1][1]] + [res_2[0][1]]
-        b = res_3[0][1]['moments']
+        a = res_1[0][1]['events'] + [res_1[1][1]] + [res_2[0][1]]
+        b = res_3[0][1]['events']
         self.assertEqual(a, b)
+
+
+# TODO the moment splitter tests no longer test "new moment" on first
 
 
 class DbBasics(unittest.TestCase):
@@ -207,20 +218,40 @@ class DbBasics(unittest.TestCase):
                 min_silence=3.0,
                 min_moment=0.5
             ),
-            moments_per_page=100
+            moments_per_page   =   2
         )
         self.logic.create_room(10.0, "room0")
 
     def test_database_starts_empty(self):
         self.logic.connect(10.0, "room0")
-        _, moments = self.logic.get_moments_range(10.2, ("room0", 0, 100))
-        self.assertEqual([], moments)
+        _, pages = self.logic.get_pages_range(10.1, ("room0", 0, 100))
+        self.assertEqual([], pages)
 
-    def test_interrupt_and_fetch_moment_get_socket_moment(self):
+    def test_one_moment_no_pages_saved(self):
         res_1, _ = self.logic.connect(10.0, "room0")
-        self.logic.connect(100.1, "room0")
-        _, m = self.logic.get_moments_range(100.7, ("room0", 0, 2))
-        self.assertEqual(res_1[0][1]['moments'] + [res_1[1][1]], m)
+        self.logic.connect(100.0, "room0")
+        _, m = self.logic.get_pages_range(100.7, ("room0", 0, 1))
+        self.assertEqual([], m)
+
+    def test_2_moments_with_config_for_page_split_get_page(self):
+        res_1, _ = self.logic.connect(10.0, "room0")
+        res_2, _ = self.logic.connect(100.0, "room0")
+        res_3, _ = self.logic.connect(200.0, "room0")
+        self.maxDiff = None
+        _, m = self.logic.get_pages_range(200.1, ("room0", 0, 1))
+        self.assertEqual(
+            res_2[0][1]['events'],
+            res_1[0][1]['events'] + [r[1] for r in res_1[1:]]
+        )
+        self.assertEqual(
+            res_3[0][1]['events'],
+            res_2[0][1]['events'] + [r[1] for r in res_2[1:]
+                                     if r[0] == 101]
+        )
+        self.assertEqual(
+            res_3[0][1]['events'],
+            m
+        )
 
 
 class DbLoadRoom(unittest.TestCase):
@@ -254,9 +285,10 @@ class DbLoadRoom(unittest.TestCase):
         logic_1.close(10.2, None)
         logic_2 = self.get_logic(10.3, db)
         res, _ = logic_2.connect(10.4, "room0")
-        catch_up = [e['type'] for e in res[-2][1]['moments']]
-        self.assertEqual(['shutdown', 'newMoment', 'start'],
-                         catch_up[-3:])
+        catch_up = [e['type'] for e in res[0][1]['events']]
+        self.assertEqual(
+            ['shutdown', 'newPage', 'newMoment', 'start'],
+            catch_up[-4:])
         self.assertEqual('connect', res[-1][1]['type'])
 
     def test_shutdown_twice_no_missing_broadcaster_error(self):
@@ -269,7 +301,7 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(10.5, db)
         logic.close(10.6, None)
 
-    def test_use_same_db_see_last_moment(self):
+    def test_use_same_db_see_last_page(self):
         db = Db()
 
         logic = self.get_logic(10.0, db)
@@ -281,9 +313,9 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(10.05, db)
         res, _ = logic.connect(10.06, "room0")
 
-        self.assertEqual(   2   , res[-1][1]['momentIdx'])
+        self.assertEqual(   1   , res[-1][1]['momentIdx'])
 
-    def test_use_same_db_see_stored_moment_and_last(self):
+    def test_use_same_db_see_stored_page_and_last(self):
         db = Db()
 
         logic = self.get_logic(10.0, db)
@@ -297,7 +329,7 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(99.2, db)
         res, _ = logic.connect(99.3, "room0")
 
-        self.assertEqual(   3   , res[-1][1]['momentIdx'])
+        self.assertEqual(   2   , res[-1][1]['momentIdx'])
 
     def test_room_names_reload(self):
         db = Db()
