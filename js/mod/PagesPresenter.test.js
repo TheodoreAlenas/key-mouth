@@ -1,8 +1,7 @@
 import PagesPresenter from './PagesPresenter.js'
 import TestCase from './TestCase.js'
 
-console.log('PagesPresenter')
-const test = new TestCase()
+const test = new TestCase('PagesPresenter')
 let p = null
 let v = null
 
@@ -58,5 +57,4 @@ v = p.getViewModel(x => "con" + x)
 for (let e of v) if (typeof(e.time) == 'string') e.time = 'times erased'
 test.assertEqual("2 pages 1 moment each", exp, v)
 
-test.printResults()
-if (test.getFails() !== 0) process.exit(1)
+export default test

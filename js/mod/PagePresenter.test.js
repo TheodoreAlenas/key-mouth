@@ -1,8 +1,7 @@
 import PagePresenter from './PagePresenter.js'
 import TestCase from './TestCase.js'
 
-console.log('PagePresenter')
-const test = new TestCase()
+const test = new TestCase('PagePresenter')
 let ep = null
 let v = null
 
@@ -70,5 +69,4 @@ test.assertEqual(
     v
 )
 
-test.printResults()
-if (test.getFails() !== 0) process.exit(1)
+export default test

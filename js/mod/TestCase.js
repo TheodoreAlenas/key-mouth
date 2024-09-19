@@ -2,32 +2,27 @@
 // License at the bottom
 
 export default class TestCase {
-    line = ""
-    fails = []
-    assertEqual(testName, a, b) {
+    constructor(name) {
+        this.line = name + ': '
+        this.fails = []
+    }
+    assertEqual(name, a, b) {
         if (isSubset(a, b) && isSubset(b, a)) {
             this.line += '.'
         }
         else {
             this.line += 'F'
-            this.fails.push({failed: testName, a, b})
+            this.fails.push({failed: name, a, b})
         }
     }
     printResults() {
-        console.log(this.line)
-        this.fails.forEach(function(e) {
-            console.log(JSON.stringify(e, null, 4))
-        })
-    }
-    getFails() {
-        return this.fails.length
+        console.log(this.line + JSON.stringify(this.fails, null, 2))
     }
 }
 
 function isSubset(a, b) {
-    if (a === b) return true
-    if (typeof(a) !== typeof(b)) return false
     if (typeof(a) !== 'object') return a === b
+    if (typeof(b) !== 'object') return a === b
     return undefined === Object.keys(a).find(k => !isSubset(a[k], b[k]))
 }
 

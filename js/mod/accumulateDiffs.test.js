@@ -1,8 +1,7 @@
 import accumulateDiffs from './accumulateDiffs.js'
 import TestCase from './TestCase.js'
 
-console.log('accumulateDiffs')
-const test = new TestCase()
+const test = new TestCase('accumulateDiffs')
 
 test.assertEqual(
     "none is none",
@@ -119,5 +118,4 @@ test.assertEqual(
          {connId: 5, type: "write", body: "HELLO"},
          {connId: 4, type: "write", body: "i"}]))
 
-test.printResults()
-if (test.getFails() !== 0) process.exit(1)
+export default test
