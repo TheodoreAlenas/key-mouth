@@ -24,6 +24,7 @@ class Rooms:
                 db_room=db.get_room(d.room_id),
                 moments_per_page=self.moments_per_page,
             )
+            # TODO: call the page splitter using the incomplete page
             self.rooms_ram[d.room_id] = r
 
     def create(self, time, room_id):

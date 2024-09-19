@@ -120,6 +120,7 @@ async def root(websocket: WebSocket, room: str):
     try:
         await websocket.accept()
         metadata = await websocket.receive_json()
+        #if metadata["version"] != "0.2.0":
         if metadata["version"] != 0:
             print("Error: the client uses an unsupported version: "
                   + str(metadata["version"]))
