@@ -28,7 +28,7 @@ export default class PagesPresenter {
     }
     keepLast(n) {
         const len = this.pages.length
-        if (n > len) return
+        if (n >= len) return
         const r = []
         for (let i = len - n; i < len; i++) r.push(this.pages[i])
         this.pages = r
