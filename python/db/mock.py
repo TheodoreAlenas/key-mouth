@@ -49,10 +49,11 @@ class RoomRestartData:
     room_id: any
     name: str
     last_page_first_moment_idx: int
+    pages_n: int
 
 
 @dataclass
-class AfterSocketLogicRestartData:
+class ReloadableState:
     last_id: any
     unsaved_pages: dict
 
@@ -65,13 +66,13 @@ class Db:
 
     def create_room(self, time, room_id):
         if room_id in self.rooms:
-            raise RoomExistsException("[DbMoct] room '" + room_id +
+            raise RoomExistsException("[DbMock] room '" + room_id +
                                       "' already exists")
         self.rooms[room_id] = RoomMoments(room_id)
 
     def delete_room(self, room_id):
         if not room_id in self.rooms:
-            raise RoomDoesntExistException("[DbMoct] room '" + room_id +
+            raise RoomDoesntExistException("[DbMock] room '" + room_id +
                                            "' doesnt exist")
         self.rooms.pop(room_id)
 
@@ -90,11 +91,12 @@ class Db:
                 name=r.name,
                 last_page_first_moment_idx=
                 r.get_last_page_first_moment_idx(),
+                pages_n=len(r.pages)
             ))
         return res
 
     def set_reloadable_state(self, last_id, unsaved_pages):
-        self.reloadable_state = AfterSocketLogicRestartData(
+        self.reloadable_state = ReloadableState(
             last_id=last_id,
             unsaved_pages=unsaved_pages
         )

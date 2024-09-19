@@ -12,10 +12,11 @@ class ViewEvent:
 
 class OutputWithDb:
 
-    def __init__(self, db, debug_context_str="context unset"):
+    def __init__(self, db, next_moment_idx=0,
+                 debug_context_str="context unset"):
         self.db = db
         self.evt_db = DbMapper()
-        self.evt_stream = OutputMapper(db.get_len(), 0)
+        self.evt_stream = OutputMapper(next_moment_idx, 0)
         self.debug_context_str = debug_context_str
 
     def save_last_page(self):
@@ -31,6 +32,10 @@ class OutputWithDb:
         )
         self.evt_db.push_event(ve)
         return self.evt_stream.push(ve)
+
+    def push_event(self, event):
+        self.evt_db.push_event(event)
+        return self.evt_stream.push(event)
 
     def get_last_pages(self):
         l = self.db.get_last_pages()

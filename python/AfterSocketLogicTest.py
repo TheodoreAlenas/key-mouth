@@ -313,7 +313,7 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(10.05, db)
         res, _ = logic.connect(10.06, "room0")
 
-        self.assertEqual(   1   , res[-1][1]['momentIdx'])
+        self.assertEqual(   2   , res[-1][1]['momentIdx'])
 
     def test_use_same_db_see_stored_page_and_last(self):
         db = Db()
@@ -329,7 +329,7 @@ class DbLoadRoom(unittest.TestCase):
         logic = self.get_logic(99.2, db)
         res, _ = logic.connect(99.3, "room0")
 
-        self.assertEqual(   2   , res[-1][1]['momentIdx'])
+        self.assertEqual(   3   , res[-1][1]['momentIdx'])
 
     def test_room_names_reload(self):
         db = Db()

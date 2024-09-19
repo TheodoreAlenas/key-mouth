@@ -63,7 +63,7 @@ class RoomRestartData:
 
 
 @dataclass
-class AfterSocketLogicRestartData:
+class ReloadableState:
     last_id: any
 
 
@@ -163,7 +163,7 @@ class Db:
         s = self._db['reloadableState'].find_one({})
         if s is None:
             return None
-        return AfterSocketLogicRestartData(last_id=s['lastId'])
+        return ReloadableState(last_id=s['lastId'])
 
 
 """

@@ -9,7 +9,8 @@ from MomentSplitter import ConfTiming, MomentSplitterData
 
 class Rooms:
 
-    def __init__(self, time, db, rooms_restart_data, moments_per_page):
+    def __init__(self, time, db, rooms_restart_data, moments_per_page,
+                 unsaved_pages={}):
         self.db = db
         self.rooms_ram = {}
         self.moments_per_page = moments_per_page
@@ -22,8 +23,9 @@ class Rooms:
                 name=d.name,
                 db_room=db.get_room(d.room_id),
                 moments_per_page=self.moments_per_page,
+                unsaved_page=unsaved_pages[d.room_id],
+                next_moment_idx=d.pages_n * moments_per_page,
             )
-            # TODO: call the page splitter using the incomplete page
             self.rooms_ram[d.room_id] = r
 
     def create(self, time, room_id):

@@ -15,10 +15,11 @@ class AfterSocketLogic:
         self._conf_timing = conf_timing
         self.db = db
         saved = self.db.get_reloadable_state()
-        if saved is None:
-            self.last_id = 100
-        else:
+        self.last_id = 100
+        unsaved_pages = {}
+        if saved is not None:
             self.last_id = saved.last_id
+            unsaved_pages = saved.unsaved_pages
         self.conns = {}
         restart_data = db.get_restart_data()
         self.rooms = Rooms(
@@ -26,6 +27,7 @@ class AfterSocketLogic:
             db=db,
             rooms_restart_data=restart_data,
             moments_per_page=moments_per_page,
+            unsaved_pages=unsaved_pages,
         )
         for room in self.rooms.get_all():
             room.conn_bcaster = Broadcaster(0, room, self._conf_timing)
