@@ -15,6 +15,9 @@ class Rooms:
         self.rooms_ram = {}
         self.moments_per_page = moments_per_page
         for d in rooms_restart_data:
+            unsaved_page=None
+            if d.room_id in unsaved_pages:
+                unsaved_page = unsaved_pages[d.room_id]
             r = Room(
                 splitter_data=MomentSplitterData(
                     last_moment_time=None,
@@ -23,7 +26,7 @@ class Rooms:
                 name=d.name,
                 db_room=db.get_room(d.room_id),
                 moments_per_page=self.moments_per_page,
-                unsaved_page=unsaved_pages[d.room_id],
+                unsaved_page=unsaved_page,
                 next_moment_idx=d.pages_n * moments_per_page,
             )
             self.rooms_ram[d.room_id] = r

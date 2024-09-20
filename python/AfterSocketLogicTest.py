@@ -285,10 +285,12 @@ class DbLoadRoom(unittest.TestCase):
         logic_1.close(10.2, None)
         logic_2 = self.get_logic(10.3, db)
         res, _ = logic_2.connect(10.4, "room0")
-        catch_up = [e['type'] for e in res[0][1]['events']]
+        types = [e['type'] for e in res[0][1]['events']]
         self.assertEqual(
-            ['shutdown', 'newPage', 'newMoment', 'start'],
-            catch_up[-4:])
+            ['newPage',
+             'newMoment', 'create', 'shutdown',
+             'newMoment', 'start'],
+            types)
         self.assertEqual('connect', res[-1][1]['type'])
 
     def test_shutdown_twice_no_missing_broadcaster_error(self):

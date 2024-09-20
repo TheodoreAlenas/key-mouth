@@ -27,6 +27,7 @@ class Room:
         self.name = name
         self.output_accumulator = OutputWithDb(
             db=db_room,
+            next_moment_idx=next_moment_idx,
             debug_context_str="in " + room_id,
         )
         self.page_splitter = PageSplitter(

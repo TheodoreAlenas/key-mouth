@@ -1,15 +1,13 @@
 
 # License at the bottom
 
-from Room import Room
 from MomentSplitter import ConfTiming, MomentSplitter
 from exceptions import LogicHttpException
 
 
 class Connection:
 
-    def __init__(self, conn_id, room: Room,
-                 conf_timing: ConfTiming):
+    def __init__(self, conn_id, room, conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
         self.splitter = MomentSplitter(conf_timing, room.splitter_data)
@@ -37,7 +35,8 @@ class Connection:
         to_bcast = []
 
         if self.room.nobody_talked_yet:
-            to_bcast += self._push(0, 'newPage', 0)
+            if self.room.page_splitter.get_next_moment_idx() == 0:
+                to_bcast += self._push(0, 'newPage', 0)
             to_bcast += self._push(0, 'newMoment', time)
         self.room.nobody_talked_yet = False
 
