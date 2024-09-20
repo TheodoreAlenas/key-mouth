@@ -14,7 +14,7 @@ class MomentSplitterData:
 
 class MomentSplitter:
 
-    def __init__(self, conf_timing, room):
+    def __init__(self, conf_timing, room: MomentSplitterData):
         self._conf_timing = conf_timing
         self.last_spoke = None
         self.room = room

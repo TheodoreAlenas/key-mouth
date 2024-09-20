@@ -30,15 +30,6 @@ export default class PagePresenter {
             getViewModel(i++, presTime(time), getNames, raw))
         return views
     }
-    touchesTop() {
-        return this.firstMomentIdx === 0
-    }
-    keepLast(n) {
-        if (n > this.moments.length) return
-        const ground = this.moments.length - n
-        this.moments = this.moments.filter((_, i) => i > ground)
-        this.firstMomentIdx += n
-    }
 }
 
 function presTime(secondsSince1970) {

@@ -1,6 +1,7 @@
 
 # License at the bottom
 
+from MomentSplitter import MomentSplitter
 from Connection import Connection, Broadcaster
 from exceptions import LogicHttpException
 from db.event_adapter import db_model_to_events
@@ -30,7 +31,14 @@ class AfterSocketLogic:
             unsaved_pages=unsaved_pages,
         )
         for room in self.rooms.get_all():
-            room.conn_bcaster = Broadcaster(0, room, self._conf_timing)
+            room.conn_bcaster = Broadcaster(
+                conn_id=0,
+                room=room,
+                moment_splitter=MomentSplitter(
+                    conf_timing=self._conf_timing,
+                    room=room.moment_splitter_data,
+                )
+            )
             room.conn_bcaster.say_started(time)
 
     def if_room_is_missing_throw(self, room_id):
@@ -42,14 +50,28 @@ class AfterSocketLogic:
         def create_conn(room):
             self.last_id += 1
             i = self.last_id
-            self.conns[i] = Connection(i, room, self._conf_timing)
+            self.conns[i] = Connection(
+                conn_id=i,
+                room=room,
+                moment_splitter=MomentSplitter(
+                    conf_timing=self._conf_timing,
+                    room=room.moment_splitter_data,
+                )
+            )
             return self.conns[i].connect(time, None)
         return self.rooms.given(room_id, create_conn)
 
     def create_room(self, time, room_id):
         self.rooms.create(time, room_id)
         def create_bcaster(room):
-            room.conn_bcaster = Broadcaster(0, room, self._conf_timing)
+            room.conn_bcaster = Broadcaster(
+                conn_id=0,
+                room=room,
+                moment_splitter=MomentSplitter(
+                    conf_timing=self._conf_timing,
+                    room=room.moment_splitter_data,
+                )
+            )
             room.conn_bcaster.say_created(time)
             return ([], None)
         return self.rooms.given(room_id, create_bcaster)

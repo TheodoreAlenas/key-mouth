@@ -1,19 +1,15 @@
 
 # License at the bottom
 
-from MomentSplitter import ConfTiming, MomentSplitter
 from exceptions import LogicHttpException
 
 
 class Connection:
 
-    def __init__(self, conn_id, room, conf_timing: ConfTiming):
+    def __init__(self, conn_id, room, moment_splitter):
         self.conn_id = conn_id
         self.room = room
-        self.splitter = MomentSplitter(
-            conf_timing=conf_timing,
-            room=room.moment_splitter_data,
-        )
+        self.splitter = moment_splitter
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
@@ -37,22 +33,12 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
 
-        def say_new_page(to_bcast, next_moment_idx):
-            to_bcast += self._push(0, 'newPage', next_moment_idx)
-
-        def say_new_moment(to_bcast):
+        if self.splitter.get_should_split(time):
+            if self.room.splitter.get_should_split():
+                self.room.output_accumulator.save_last_page()
+                to_bcast += self._push(
+                    0, 'newPage', self.room.splitter.next_moment_idx)
             to_bcast += self._push(0, 'newMoment', time)
-
-        def save_last_page(_):
-            self.room.output_accumulator.save_last_page()
-
-        self.room.splitter.split(
-            should_split_moment=self.splitter.get_should_split(time),
-            first_arg=to_bcast,
-            say_new_page=say_new_page,
-            say_new_moment=say_new_moment,
-            save_last_page=save_last_page,
-        )
 
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
@@ -68,6 +54,8 @@ class Broadcaster(Connection):
         self._handle_parsed(time, "shutdown")
 
     def say_created(self, time):
+        self._push(0, 'newPage', 0)
+        self._push(0, 'newMoment', time)
         self._handle_parsed(time, "create")
 
     def say_started(self, time):

@@ -27,7 +27,9 @@ export default class Presenter {
         }
     }
     _pushFirstBatch(event) {
-        this.p = new PagesPresenter(event.firstMomentIdx)
+        this.p = new PagesPresenter({
+            firstPageIdx: event.firstPageIdx
+        })
         for (let e of event.events) this.p.push(e)
         this.p.keepLast(this.maxPages)
     }
@@ -49,7 +51,7 @@ export default class Presenter {
             moreBottomButton: null,
             moments: this.p.getViewModel(getConnName)
         }
-        if (!this.p.getTouchesTop()) {
+        if (this.p.getTouchesTop() === false) {
             r.moreTopButton = {
                 label: "Load previous messages",
                 onClick: function() {

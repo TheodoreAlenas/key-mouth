@@ -47,12 +47,10 @@ function withController(uri, ret, callback, eavesdropper) {
 const expShutdownMsg = [
     {key: 0, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[room created]"},
-        {type: "event", body: "[server shutting down]"}
-    ]}]},
-    {key: 1, time: "-", names: "(#)1", messages: [{message: [
+        {type: "event", body: "[server shutting down]"},
         {type: "event", body: "[server started]"}
     ]}]},
-    {key: 2, time: "-", names: "(#)1", messages: [{message: [
+    {key: 1, time: "-", names: "(#)1", messages: [{message: [
         {type: "event", body: "[connected]"}
     ]}]}
 ]
@@ -75,8 +73,10 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
             "expected shutdown init event types",
             [
                 "newPage",
-                "newMoment", "create", "shutdown",
-                "newMoment", "start"
+                "newMoment",
+                "create",
+                "shutdown",
+                "start"
             ],
             event.events.map(e => e.type)
         )

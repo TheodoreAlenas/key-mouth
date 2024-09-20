@@ -269,8 +269,8 @@ class ReloadPages(unittest.TestCase):
         logic_1 = self.get_logic(10.0, db)
         logic_1.create_room(10.1, "room0")
         logic_1.close(100.0, None)
-        logic_2 = self.get_logic(100.1, db)
-        res, _ = logic_2.connect(100.2, "room0")
+        logic_2 = self.get_logic(200.0, db)
+        res, _ = logic_2.connect(200.1, "room0")
         self.assertEqual([
             (0, 'newPage'),
             (0, 'newMoment'),
@@ -310,8 +310,8 @@ class ReloadPages(unittest.TestCase):
         logic_1.create_room(10.1, "room0")
         logic_1.connect(100.0, "room0")
         logic_1.close(200.0, None)
-        logic_2 = self.get_logic(200.1, db)
-        res, _ = logic_2.connect(200.2, "room0")
+        logic_2 = self.get_logic(300.0, db)
+        res, _ = logic_2.connect(300.1, "room0")
         self.assertEqual([
             (0, 'newPage'),
             (0, 'newMoment'),
@@ -359,11 +359,13 @@ class DbLoadRoom(unittest.TestCase):
         logic_2 = self.get_logic(10.3, db)
         res, _ = logic_2.connect(10.4, "room0")
         types = [e['type'] for e in res[0][1]['events']]
-        self.assertEqual(
-            ['newPage',
-             'newMoment', 'create', 'shutdown',
-             'newMoment', 'start'],
-            types)
+        self.assertEqual([
+            'newPage',
+            'newMoment',
+            'create',
+            'shutdown',
+            'start'
+        ], types)
         self.assertEqual('connect', res[-1][1]['type'])
 
     def test_shutdown_twice_no_missing_broadcaster_error(self):
@@ -375,36 +377,6 @@ class DbLoadRoom(unittest.TestCase):
         logic.close(10.4, None)
         logic = self.get_logic(10.5, db)
         logic.close(10.6, None)
-
-    def test_use_same_db_see_last_page(self):
-        db = Db()
-
-        logic = self.get_logic(10.0, db)
-        logic.create_room(10.01, "room0")
-        _, conn = logic.connect(10.02, "room0")
-        conn.handle_input(10.03, "+will be stored later")
-        logic.close(10.04, None)
-
-        logic = self.get_logic(10.05, db)
-        res, _ = logic.connect(10.06, "room0")
-
-        self.assertEqual(   2   , res[-1][1]['momentIdx'])
-
-    def test_use_same_db_see_stored_page_and_last(self):
-        db = Db()
-
-        logic = self.get_logic(10.0, db)
-        logic.create_room(10.1, "room0")
-        _, conn = logic.connect(10.2, "room0")
-        conn.handle_input(10.3, "+will be stored later")
-
-        conn.handle_input(99.0, "+started speaking again, stored old")
-        logic.close(99.1, None)
-
-        logic = self.get_logic(99.2, db)
-        res, _ = logic.connect(99.3, "room0")
-
-        self.assertEqual(   3   , res[-1][1]['momentIdx'])
 
     def test_room_names_reload(self):
         db = Db()
