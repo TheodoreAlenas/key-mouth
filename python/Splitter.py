@@ -11,6 +11,9 @@ class Splitter:
     def split(self, should_split_moment, first_arg,
               say_new_page, say_new_moment, save_last_page):
 
+        if self.nobody_talked_yet and should_split_moment:
+            raise Exception('nobody_talked_yet and should_split_moment')
+
         if self.nobody_talked_yet:
             self.nobody_talked_yet = False
             if self.next_moment_idx == 0:

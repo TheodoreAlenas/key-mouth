@@ -2,10 +2,6 @@ from AfterSocketLogic import AfterSocketLogic
 from MomentSplitter import ConfTiming
 from db.mock import Db
 import unittest
-from OutputWithDbTest import A
-from MomentSplitterTest import MSA
-from SplitterTest import SplitterA
-from RoomsTest import RA
 
 
 class AParsing(unittest.TestCase):
@@ -255,6 +251,82 @@ class DbBasics(unittest.TestCase):
         )
 
 
+class ReloadPages(unittest.TestCase):
+
+    def get_logic(self, time, db_mock):
+        return AfterSocketLogic(
+            time=time,
+            db=db_mock,
+            conf_timing=ConfTiming(
+                min_silence=3.0,
+                min_moment=0.5
+            ),
+            moments_per_page=2
+        )
+
+    def test_fill_page_restart_see_2_pages(self):
+        db = Db()
+        logic_1 = self.get_logic(10.0, db)
+        logic_1.create_room(10.1, "room0")
+        logic_1.close(100.0, None)
+        logic_2 = self.get_logic(100.1, db)
+        res, _ = logic_2.connect(100.2, "room0")
+        self.assertEqual([
+            (0, 'newPage'),
+            (0, 'newMoment'),
+            (1, 'create'),
+            (1, 'newMoment'),
+            (2, 'shutdown'),
+            (2, 'newPage'),
+            (2, 'newMoment'),
+            (3, 'start'),
+        ], [(e['momentIdx'], e['type']) for e in res[0][1]['events']])
+        self.assertEqual('connect', res[-1][1]['type'])
+
+    def test_restart_with_almost_full_page_and_fill(self):
+        db = Db()
+        logic_1 = self.get_logic(10.0, db)
+        logic_1.create_room(10.1, "room0")
+        logic_1.close(10.2, None)
+        logic_2 = self.get_logic(100.0, db)
+        logic_2.connect(200.0, "room0")
+        res, _ = logic_2.connect(200.1, "room0")
+        self.assertEqual([
+            (0, 'newPage'),
+            (0, 'newMoment'),
+            (1, 'create'),
+            (1, 'shutdown'),
+            (1, 'newMoment'),
+            (2, 'start'),
+            (2, 'newPage'),
+            (2, 'newMoment'),
+            (3, 'connect'),
+        ], [(e['momentIdx'], e['type']) for e in res[0][1]['events']])
+        self.assertEqual('connect', res[-1][1]['type'])
+
+    def test_make_2_pages_restart_see_2_pages(self):
+        db = Db()
+        logic_1 = self.get_logic(10.0, db)
+        logic_1.create_room(10.1, "room0")
+        logic_1.connect(100.0, "room0")
+        logic_1.close(200.0, None)
+        logic_2 = self.get_logic(200.1, db)
+        res, _ = logic_2.connect(200.2, "room0")
+        self.assertEqual([
+            (0, 'newPage'),
+            (0, 'newMoment'),
+            (1, 'create'),
+            (1, 'newMoment'),
+            (2, 'connect'),
+            (2, 'newPage'),
+            (2, 'newMoment'),
+            (3, 'shutdown'),
+            (3, 'newMoment'),
+            (4, 'start'),
+        ], [(e['momentIdx'], e['type']) for e in res[0][1]['events']])
+        self.assertEqual('connect', res[-1][1]['type'])
+
+
 class DbLoadRoom(unittest.TestCase):
 
     def get_logic(self, time, db_mock):
@@ -265,7 +337,7 @@ class DbLoadRoom(unittest.TestCase):
                 min_silence=3.0,
                 min_moment=0.5
             ),
-            moments_per_page=100
+            moments_per_page=2
         )
 
     def test_use_other_db_start_blank(self):

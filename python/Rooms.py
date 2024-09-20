@@ -11,17 +11,14 @@ from MomentSplitter import ConfTiming, MomentSplitterData
 class Rooms:
 
     def __init__(self, time, db, rooms_restart_data, moments_per_page,
-                 unsaved_pages={}):
+                 unsaved_pages):
         self.db = db
         self.rooms_ram = {}
         self.moments_per_page = moments_per_page
         for d in rooms_restart_data:
-            unsaved_page=None
             next_moment_idx = d.pages_n * moments_per_page
-            unsaved_moments = 0
-            if d.room_id in unsaved_pages:
-                unsaved_page = unsaved_pages[d.room_id]
-                unsaved_moments = len(unsaved_page)
+            unsaved_page = unsaved_pages[d.room_id]
+            unsaved_moments = len(unsaved_page['moments'])
             r = Room(
                 room_id=d.room_id,
                 name=d.name,

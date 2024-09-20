@@ -12,7 +12,7 @@ echo $? >> $f
 echo
 echo " ===  back end tests  ==="
 echo
-python python/AfterSocketLogicTest.py
+python python/run_unit_tests.py
 echo $? >> $f
 echo
 echo " ===  non-db integration tests  ==="
