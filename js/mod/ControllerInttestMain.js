@@ -3,7 +3,7 @@ import UriRoom from './UriRoom.js'
 import uriFirstArg from './uriFirstArg.js'
 import TestCase from './TestCase.js'
 
-const test = new TestCase()
+const test = new TestCase('integration test')
 
 const uriRestarted = new UriRoom(uriFirstArg.room, "pre\nmade")
 const uriMissing = new UriRoom(uriFirstArg.room, "doesn't exist")
@@ -19,7 +19,7 @@ test.assertEqual("server mutex released and got 200", 200, res.status)
 res = await uriNew.fetchPutRoom()
 test.assertEqual("creating room twice throws error", 409, res.status)
 
-let shouldThrow = new Controller(uriMissing, 732)
+let shouldThrow = new Controller({uri: uriMissing, maxPages: 10})
 let threw = false
 shouldThrow.onSocketError = function() {threw = true}
 shouldThrow.onReadySocket = function() {}
@@ -27,8 +27,8 @@ setTimeout(function() {
     test.assertEqual("missing room returns error", true, threw)
 }, 100)
 
-function withController(uri, ret, callback) {
-    const wi = new Controller(uri, 10)
+function withController(uri, ret, callback, eavesdropper) {
+    const wi = new Controller({uri, maxPages: 10, eavesdropper})
 
     wi.setInputValue = function() {}
     wi.setMoments = function(v) {
@@ -58,6 +58,7 @@ const expShutdownMsg = [
 ]
 const realShutdownMsg = {v: null}
 
+const forEavesDropper = { i: 0 }
 withController(uriRestarted, realShutdownMsg, function(_, close) {
     setTimeout(function() {
         close()
@@ -67,6 +68,29 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
                              realShutdownMsg.v.moments[i])
         }
     }, 100)
+}, function(event) {
+    const ed = forEavesDropper
+    if (ed.i === 0) {
+        test.assertEqual(
+            "expected shutdown init event types",
+            [
+                "newPage",
+                "newMoment", "create", "shutdown",
+                "newMoment", "start"
+            ],
+            event.events.map(e => e.type)
+        )
+    }
+    else if (ed.i === 1) {
+        test.assertEqual("shutdown event #1", "newMoment", event.type)
+    }
+    else if (ed.i === 2) {
+        test.assertEqual("shutdown event #2", "connect", event.type)
+    }
+    else {
+        test.assertEqual("no excess events on shutdown", true, false)
+    }
+    ed.i += 1
 })
 
 const expOneMoment = [
@@ -95,7 +119,7 @@ setTimeout(function() {
         t.assertEqual('', expOneMoment, realOneMoment[i].v.moments)
     }
     test.assertEqual(
-        "all oneMessage", 10, 10 - t.getFails())
+        "all oneMessage", 10, 10 - t.fails.length)
 }, 200)
 
 const expTwoMoments = [
@@ -126,7 +150,7 @@ setTimeout(function() {
         t.assertEqual('', expTwoMoments, realTwoMoments[i].v.moments)
     }
     test.assertEqual(
-        "all twoMoments", 10, 10 - t.getFails())
+        "all twoMoments", 10, 10 - t.fails.length)
 }, 500)
 
 const expConnDis = [
@@ -160,10 +184,10 @@ setTimeout(function() {
         t.assertEqual('', expConnDis, realConnDis[i].v.moments)
     }
     test.assertEqual(
-        "all connDis", 10, 10 - t.getFails())
+        "all connDis", 10, 10 - t.fails.length)
 }, 150)
 
 setTimeout(function() {
     test.printResults()
-    if (test.getFails() > 0) process.exit(1)
+    if (test.fails.length > 0) process.exit(1)
 }, 500)

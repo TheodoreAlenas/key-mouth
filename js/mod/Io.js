@@ -1,16 +1,16 @@
 
 export default class Io {
-    constructor(uri, onReadySocket, onSocketError) {
+    constructor(args) {
         try {
-            return this.constructorUnhandled(
-                uri, onReadySocket, onSocketError)
+            return this._constructor(args)
         }
         catch (e) {
-            console.error("Error constructing web io")
+            console.error("Error constructing web io, args:")
+            console.error(args)
             throw e
         }
     }
-    constructorUnhandled(uri, onReadySocket, onSocketError) {
+    _constructor({uri, onReadySocket, onSocketError}) {
         this.uri = uri
         this.socket = new WebSocket(uri.webSocket())
         this.socket.addEventListener('error', onSocketError)

@@ -24,7 +24,7 @@ export default class Controller {
             throw e
         }
     }
-    _constructor({uri, maxPages}) {
+    _constructor({uri, maxPages, eavesdropper}) {
         const self = this
         function onReadySocket(io) {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
@@ -32,9 +32,10 @@ export default class Controller {
         function onSocketError(arg) {
             self.onSocketError(arg)
         }
-        this.io = new Io(uri, onReadySocket, onSocketError)
+        this.io = new Io({uri, onReadySocket, onSocketError})
         this.presenter = new Presenter({maxPages})
         this.io.onEvent(function(event) {
+            if (eavesdropper) eavesdropper(event)
             self.presenter.push(event)
             self.setMoments(self.presenter.getViewModel(getConnName))
         })
