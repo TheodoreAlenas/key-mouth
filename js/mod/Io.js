@@ -68,7 +68,7 @@ export default class Io {
 function onOpenSendVersionAnd(socket, onReadySocket, io) {
     socket.addEventListener("open", function() {
         try {
-            socket.send('{"version": 0}')
+            socket.send('{"version": "0.2.0"}')
             onReadySocket(io)
         }
         catch (e) {
