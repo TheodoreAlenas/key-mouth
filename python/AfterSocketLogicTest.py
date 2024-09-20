@@ -4,6 +4,7 @@ from db.mock import Db
 import unittest
 from OutputWithDbTest import A
 from MomentSplitterTest import MSA
+from SplitterTest import SplitterA
 from RoomsTest import RA
 
 

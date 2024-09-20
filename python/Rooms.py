@@ -4,6 +4,7 @@
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from exceptions import LogicHttpException
 from Room import Room
+from Splitter import Splitter
 from MomentSplitter import ConfTiming, MomentSplitterData
 
 
@@ -16,31 +17,42 @@ class Rooms:
         self.moments_per_page = moments_per_page
         for d in rooms_restart_data:
             unsaved_page=None
+            next_moment_idx = d.pages_n * moments_per_page
+            unsaved_moments = 0
             if d.room_id in unsaved_pages:
                 unsaved_page = unsaved_pages[d.room_id]
+                unsaved_moments = len(unsaved_page)
             r = Room(
-                splitter_data=MomentSplitterData(
-                    last_moment_time=None,
-                ),
                 room_id=d.room_id,
                 name=d.name,
                 db_room=db.get_room(d.room_id),
-                moments_per_page=self.moments_per_page,
                 unsaved_page=unsaved_page,
-                next_moment_idx=d.pages_n * moments_per_page,
+                next_moment_idx=next_moment_idx,
+                moment_splitter_data=MomentSplitterData(
+                    last_moment_time=None,
+                ),
+                splitter=Splitter(
+                    moments_per_page=self.moments_per_page,
+                    next_moment_idx=next_moment_idx + unsaved_moments,
+                ),
             )
             self.rooms_ram[d.room_id] = r
 
     def create(self, time, room_id):
         def create_and_set():
             self.db.create_room(time, room_id)
+            moment_splitter_data = MomentSplitterData(
+                last_moment_time=time,
+            )
             r = Room(
-                splitter_data=MomentSplitterData(
-                    last_moment_time=time,
-                ),
                 room_id=room_id,
                 db_room=self.db.get_room(room_id),
-                moments_per_page=self.moments_per_page,
+                next_moment_idx=0,
+                moment_splitter_data=moment_splitter_data,
+                splitter=Splitter(
+                    moments_per_page=self.moments_per_page,
+                    next_moment_idx=0,
+                )
             )
             self.rooms_ram[room_id] = r
         self.without(room_id, create_and_set)

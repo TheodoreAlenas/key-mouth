@@ -10,7 +10,10 @@ class Connection:
     def __init__(self, conn_id, room, conf_timing: ConfTiming):
         self.conn_id = conn_id
         self.room = room
-        self.splitter = MomentSplitter(conf_timing, room.splitter_data)
+        self.splitter = MomentSplitter(
+            conf_timing=conf_timing,
+            room=room.moment_splitter_data,
+        )
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
@@ -34,18 +37,22 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
 
-        if self.room.nobody_talked_yet:
-            if self.room.page_splitter.get_next_moment_idx() == 0:
-                to_bcast += self._push(0, 'newPage', 0)
-            to_bcast += self._push(0, 'newMoment', time)
-        self.room.nobody_talked_yet = False
+        def say_new_page(to_bcast, next_moment_idx):
+            to_bcast += self._push(0, 'newPage', next_moment_idx)
 
-        if self.splitter.get_should_split(time):
-            if self.room.page_splitter.get_should_split():
-                self.room.output_accumulator.save_last_page()
-                nmi = self.room.page_splitter.get_next_moment_idx()
-                to_bcast += self._push(0, 'newPage', nmi)
+        def say_new_moment(to_bcast):
             to_bcast += self._push(0, 'newMoment', time)
+
+        def save_last_page(_):
+            self.room.output_accumulator.save_last_page()
+
+        self.room.splitter.split(
+            should_split_moment=self.splitter.get_should_split(time),
+            first_arg=to_bcast,
+            say_new_page=say_new_page,
+            say_new_moment=say_new_moment,
+            save_last_page=save_last_page,
+        )
 
         to_bcast += self._push(self.conn_id, inp_type, body)
         return to_bcast
