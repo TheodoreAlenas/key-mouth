@@ -26,14 +26,3 @@ class Splitter:
                     next_moment_idx=self.next_moment_idx
                 )
             say_new_moment(first_arg)
-
-    def split_with_nop_callbacks(self, should_split_moment):
-        def nop(_, next_mome):
-            pass
-        self.split(
-            should_split_moment=should_split_moment,
-            first_arg=None,
-            say_new_page=nop,
-            say_new_moment=nop,
-            save_last_page=nop,
-        )
