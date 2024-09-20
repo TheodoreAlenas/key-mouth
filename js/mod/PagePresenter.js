@@ -48,7 +48,7 @@ function getViewModel(key, time, getNames, events) {
     const massaged = events.map(massageEvent)
     const r = accumulateDiffs(massaged)
     const names = r.map(e => getNames(e.connId))
-    const messages = r.map(e => ({message: e.message}))
+    const messages = r.map(e => e.message)
     return {key, time, names, messages}
 }
 

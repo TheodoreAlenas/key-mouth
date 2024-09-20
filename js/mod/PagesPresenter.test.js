@@ -16,12 +16,12 @@ v = p.getViewModel(x => "con" + x)
 test.assertEqual("none is none", [], v)
 
 const exp = [
-    {key: 7, time: "times erased", names: ["con4"], messages: [{
-        message: [{type: "write", body: "one"}]
-    }]},
-    {key: 8, time: "times erased", names: ["con4"], messages: [{
-        message: [{type: "write", body: "two"}]
-    }]},
+    {key: 7, time: "times erased", names: ["con4"], messages: [
+        [{type: "write", body: "one"}]
+    ]},
+    {key: 8, time: "times erased", names: ["con4"], messages: [
+        [{type: "write", body: "two"}]
+    ]},
 ]
 
 p = new PagesPresenter({firstPageIdx: 0})

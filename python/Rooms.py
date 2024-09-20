@@ -40,14 +40,13 @@ class Rooms:
     def create(self, time, room_id):
         def create_and_set():
             self.db.create_room(time, room_id)
-            moment_splitter_data = MomentSplitterData(
-                last_moment_time=None,
-            )
             r = Room(
                 room_id=room_id,
                 db_room=self.db.get_room(room_id),
                 next_moment_idx=0,
-                moment_splitter_data=moment_splitter_data,
+                moment_splitter_data=MomentSplitterData(
+                    last_moment_time=None,
+                ),
                 splitter=Splitter(
                     moments_per_page=self.moments_per_page,
                     next_moment_idx=0,

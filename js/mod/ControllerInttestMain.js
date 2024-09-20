@@ -45,14 +45,14 @@ function withController(uri, ret, callback, eavesdropper) {
 }
 
 const expShutdownMsg = [
-    {key: 0, time: "-", names: "(#)1", messages: [{message: [
+    {key: 0, time: "-", names: "(#)1", messages: [[
         {type: "event", body: "[room created]"},
         {type: "event", body: "[server shutting down]"},
         {type: "event", body: "[server started]"}
-    ]}]},
-    {key: 1, time: "-", names: "(#)1", messages: [{message: [
+    ]]},
+    {key: 1, time: "-", names: "(#)1", messages: [[
         {type: "event", body: "[connected]"}
-    ]}]}
+    ]]}
 ]
 const realShutdownMsg = {v: null}
 
@@ -95,9 +95,9 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
 
 const expOneMoment = [
     {key: 0, time: "-", names: "(#)2", messages: [
-        {message: [{type: "event", body: "[room created]"}]},
-        {message: [{type: "event", body: "[connected]"},
-                   {type: "write", body: "too soon"}]}
+        [{type: "event", body: "[room created]"}],
+        [{type: "event", body: "[connected]"},
+         {type: "write", body: "too soon"}]
     ]}
 ]
 const realOneMoment = []
@@ -124,11 +124,11 @@ setTimeout(function() {
 
 const expTwoMoments = [
     {key: 0, time: "-", names: "(#)2", messages: [
-        {message: [{type: "event", body: "[room created]"}]},
-        {message: [{type: "event", body: "[connected]"}]}
+        [{type: "event", body: "[room created]"}],
+        [{type: "event", body: "[connected]"}]
     ]},
     {key: 1, time: "-", names: "(#)1", messages: [
-        {message: [{type: "write", body: "late"}]}
+        [{type: "write", body: "late"}]
     ]}
 ]
 const realTwoMoments = []
@@ -155,10 +155,10 @@ setTimeout(function() {
 
 const expConnDis = [
     {key: 0, time: "-", names: "(#)3", messages: [
-        {message: [{type: "event", body: "[room created]"}]},
-        {message: [{type: "event", body: "[connected]"},
-                   {type: "event", body: "[disconnected]"}]},
-        {message: [{type: "event", body: "[connected]"}]}
+        [{type: "event", body: "[room created]"}],
+        [{type: "event", body: "[connected]"},
+         {type: "event", body: "[disconnected]"}],
+        [{type: "event", body: "[connected]"}]
     ]}
 ]
 const realConnDis = []

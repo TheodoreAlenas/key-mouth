@@ -29,7 +29,7 @@ function PersonToLi({person, i, styles}) {
     try {
         return <li id={person.id} key={i}>
                    <pre className={styles.bubble}>
-                       {person.message.map(
+                       {person.map(
                            (diff, i) => DiffToSpan({diff, i, styles}))}
                    </pre>
                </li>
