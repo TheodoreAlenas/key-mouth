@@ -1,28 +1,55 @@
-import PagePresenter from './PagePresenter.js'
+import PagesPresenter from './PagesPresenter.js'
 
 export default class Presenter {
-    constructor(pageSize) {
-        this.pageSize = pageSize
-        this.ep = null
+    constructor({maxPages}) {
+        this.maxPages = maxPages
+        if (typeof(maxPages) !== 'number') {
+            throw new Error("typeof(maxPages) = " + typeof(maxPages))
+        }
+        this.p = null
     }
     push(event) {
-        if (this.ep === null) {
-            this.ep = new PagePresenter(event.firstMomentIdx)
-            for (let e of event.moments) this.ep.push(e)
-            this.ep.keepLast(this.pageSize)
+        if (this.p === null) {
+            try {this._pushFirstBatch(event)}
+            catch (err) {
+                console.error("error pushing initial load:")
+                console.error(event)
+                console.error(err)
+            }
         }
         else {
-            this.ep.push(event)
-            this.ep.keepLast(this.pageSize)
+            try {this._pushOneEvent(event)}
+            catch (err) {
+                console.error("error pushing single event:")
+                console.error(event)
+                console.error(err)
+            }
         }
     }
+    _pushFirstBatch(event) {
+        this.p = new PagesPresenter(event.firstMomentIdx)
+        for (let e of event.events) this.p.push(e)
+        this.p.keepLast(this.maxPages)
+    }
+    _pushOneEvent(event) {
+        this.p.push(event)
+        this.p.keepLast(this.maxPages)
+    }
     getViewModel(getConnName) {
+        try {return this._getViewModel(getConnName)}
+        catch (err) {
+            console.error("couldn't get the view model")
+            console.error(err)
+            throw err
+        }
+    }
+    _getViewModel(getConnName) {
         const r = {
             moreTopButton: null,
             moreBottomButton: null,
-            moments: this.ep.getMomentViews(getConnName)
+            moments: this.p.getViewModel(getConnName)
         }
-        if (!this.ep.touchesTop()) {
+        if (!this.p.getTouchesTop()) {
             r.moreTopButton = {
                 label: "Load previous messages",
                 onClick: function() {

@@ -14,17 +14,17 @@ export default class Controller {
         try {j = JSON.stringify(v)}
         finally {throw new Error(f + ' unset, arg: ' + (j ? j : v))}
     }
-    constructor(uri, pageSize) {
+    constructor(args) {
         try {
-            this.constructorUnhandled(uri, pageSize)
+            this._constructor(args)
         }
         catch (e) {
-            console.error("Error constructing web interactor, " +
-                          "typeof(uri) = " + uri + " (exp object)")
+            console.error("Error constructing the controller, args:")
+            console.error(args)
             throw e
         }
     }
-    constructorUnhandled(uri, pageSize) {
+    _constructor({uri, maxPages}) {
         const self = this
         function onReadySocket(io) {
             self.onReadySocket(new Unlocked(io, self.setInputValue))
@@ -33,7 +33,7 @@ export default class Controller {
             self.onSocketError(arg)
         }
         this.io = new Io(uri, onReadySocket, onSocketError)
-        this.presenter = new Presenter(pageSize)
+        this.presenter = new Presenter({maxPages})
         this.io.onEvent(function(event) {
             self.presenter.push(event)
             self.setMoments(self.presenter.getViewModel(getConnName))
