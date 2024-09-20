@@ -4,7 +4,7 @@
 export default class TestCase {
     constructor(name) {
         this.line = name + ': '
-        this.fails = []
+        this.fails = []  // yes it's public
     }
     assertEqual(name, a, b) {
         if (isSubset(a, b) && isSubset(b, a)) {
