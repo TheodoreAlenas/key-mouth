@@ -24,8 +24,6 @@ export default class PagesPresenter {
         return vm
     }
     getTouchesTop() {
-        console.log('from PagesPresenter.js')
-        console.log(this.firstPageIdx)
         return this.firstPageIdx === 0
     }
     keepLast(n) {

@@ -47,6 +47,7 @@ class OutputWithDb:
         not_yet_in_db = self.evt_stream.get_last_page()
         return {
             "firstMomentIdx": l.first_moment_idx,
+            "firstPageIdx": l.first_page_idx,
             "events": from_db + not_yet_in_db
         }
 

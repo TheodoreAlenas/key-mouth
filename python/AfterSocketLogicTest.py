@@ -24,29 +24,33 @@ class AParsing(unittest.TestCase):
         self.maxDiff = None
         self.assertEqual(
             [
-                (conn.conn_id, {'firstMomentIdx': 0, 'events': [
-                    {
-                        "momentIdx": 0,
-                        "diffIdx": 0,
-                        "connId": 0,
-                        "type": "newPage",
-                        "body": 0
-                    },
-                    {
-                        "momentIdx": 0,
-                        "diffIdx": 1,
-                        "connId": 0,
-                        "type": "newMoment",
-                        "body": 10.0
-                    },
-                    {
-                        "momentIdx": 1,
-                        "diffIdx": 0,
-                        "connId": 0,
-                        "type": "create",
-                        "body": None
-                    }
-                ]}),
+                (conn.conn_id, {
+                    'firstMomentIdx': 0,
+                    'firstPageIdx': 0,
+                    'events': [
+                        {
+                            "momentIdx": 0,
+                            "diffIdx": 0,
+                            "connId": 0,
+                            "type": "newPage",
+                            "body": 0
+                        },
+                        {
+                            "momentIdx": 0,
+                            "diffIdx": 1,
+                            "connId": 0,
+                            "type": "newMoment",
+                            "body": 10.0
+                        },
+                        {
+                            "momentIdx": 1,
+                            "diffIdx": 0,
+                            "connId": 0,
+                            "type": "create",
+                            "body": None
+                        }
+                    ]
+                }),
                 (conn.conn_id, {
                     "momentIdx": 1,
                     "diffIdx": 1,
