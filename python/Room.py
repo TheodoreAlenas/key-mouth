@@ -1,5 +1,5 @@
 from db.event_adapter import db_model_to_events
-from OutputWithDb import OutputWithDb
+from OutputWithDb import OutputWithDb, OutputMapper
 
 
 class Room:
@@ -9,7 +9,6 @@ class Room:
                  unsaved_page=None, name=None):
         self.room_id = room_id
         self.db = db_room
-        self.splitter = splitter
         self.name = name
         self.moment_splitter_data = moment_splitter_data
         self.splitter = splitter
@@ -26,3 +25,11 @@ class Room:
     def rename(self, name):
         self.db.rename(name)
         self.name = name
+
+    def get_pages_range(self, start, end):
+        to_stream = OutputMapper(start, 0)
+        db_model = self.db.get_range(start, end)
+        events = db_model_to_events(db_model)
+        for e in events:
+            to_stream.push(e)
+        return to_stream.get_last_page()
