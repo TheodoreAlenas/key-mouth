@@ -29,14 +29,12 @@ class RoomForConn:
 class AfterSocketLogic:
 
     def __init__(self, time, db, conf_timing, moments_per_page):
+        self.conns = {}
         self.new = ConnectionFactory(conf_timing=conf_timing)
-        self._conf_timing = conf_timing
-        self.db = db
         self.room_reloader = RoomReloader(
             moments_per_page=moments_per_page,
             db=DbForRoomReloader(db),
         )
-        self.conns = {}
         self.rooms = Rooms(
             db=db,
             room_reloader=self.room_reloader,
