@@ -1,5 +1,5 @@
-from Connection import Connection, Broadcaster
-from MomentSplitter import MomentSplitter
+from mains.Connection import Connection, Broadcaster
+from lib.MomentSplitter import MomentSplitter
 
 
 class ConnectionFactory:

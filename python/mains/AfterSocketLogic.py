@@ -1,10 +1,10 @@
 
 # License at the bottom
 
-from exceptions import LogicHttpException
-from Rooms import Rooms
-from RoomReloader import RoomReloader
-from ConnectionFactory import ConnectionFactory
+from lib.exceptions import LogicHttpException
+from mains.Rooms import Rooms
+from mains.RoomReloader import RoomReloader
+from mains.ConnectionFactory import ConnectionFactory
 
 
 class DbForRoomReloader:

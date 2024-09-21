@@ -1,4 +1,4 @@
-from MomentSplitter import \
+from lib.MomentSplitter import \
     MomentSplitter, ConfTiming, MomentSplitterData
 import unittest
 

@@ -1,5 +1,4 @@
-from AfterSocketLogic import AfterSocketLogic
-from MomentSplitter import ConfTiming
+from lib.MomentSplitter import ConfTiming
 from time import time
 
 

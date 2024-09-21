@@ -1,8 +1,8 @@
 import unittest
-from AfterSocketLogicTest import *
-from OutputWithDbTest import *
-from MomentSplitterTest import *
-from SplitterTest import *
-from RoomsTest import *
+from mains.AfterSocketLogicTest import *
+from mains.RoomsTest import *
+from lib.OutputWithDbTest import *
+from lib.MomentSplitterTest import *
+from lib.SplitterTest import *
 
 unittest.main()

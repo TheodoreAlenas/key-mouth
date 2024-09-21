@@ -1,4 +1,4 @@
-from OutputWithDb import OutputWithDb
+from lib.OutputWithDb import OutputWithDb
 from db.mock import Db
 import unittest
 

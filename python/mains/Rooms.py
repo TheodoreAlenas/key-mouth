@@ -2,7 +2,7 @@
 # License at the bottom
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
-from exceptions import LogicHttpException
+from lib.exceptions import LogicHttpException
 
 
 class Rooms:

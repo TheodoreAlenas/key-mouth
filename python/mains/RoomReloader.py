@@ -1,9 +1,9 @@
 
 # License at the bottom
 
-from Room import Room
-from MomentSplitter import MomentSplitterData
-from Splitter import Splitter
+from lib.Room import Room
+from lib.MomentSplitter import MomentSplitterData
+from lib.Splitter import Splitter
 from dataclasses import dataclass
 
 

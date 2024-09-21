@@ -1,4 +1,4 @@
-from Splitter import Splitter
+from lib.Splitter import Splitter
 import unittest
 
 

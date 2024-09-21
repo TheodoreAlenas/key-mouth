@@ -1,5 +1,5 @@
 from db.event_adapter import DbMapper, db_model_to_events
-from OutputMapper import OutputMapper
+from lib.OutputMapper import OutputMapper
 from dataclasses import dataclass
 
 

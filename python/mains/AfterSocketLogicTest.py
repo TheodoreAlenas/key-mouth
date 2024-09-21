@@ -1,5 +1,5 @@
-from AfterSocketLogic import AfterSocketLogic
-from MomentSplitter import ConfTiming
+from mains.AfterSocketLogic import AfterSocketLogic
+from lib.MomentSplitter import ConfTiming
 from db.mock import Db
 import unittest
 

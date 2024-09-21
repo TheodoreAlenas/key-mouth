@@ -1,8 +1,8 @@
-from Rooms import Rooms
-from RoomReloader import RoomReloader
+from mains.Rooms import Rooms
+from mains.RoomReloader import RoomReloader
 from db.mock import Db
 from db.exceptions import RoomExistsException, RoomDoesntExistException
-from exceptions import LogicHttpException
+from lib.exceptions import LogicHttpException
 import unittest
 
 

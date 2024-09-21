@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from exceptions import LogicHttpException
+from lib.exceptions import LogicHttpException
 
 
 class Connection:

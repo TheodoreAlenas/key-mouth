@@ -1,5 +1,5 @@
 from db.event_adapter import db_model_to_events
-from OutputWithDb import OutputWithDb, OutputMapper
+from lib.OutputWithDb import OutputWithDb, OutputMapper
 
 
 class Room:

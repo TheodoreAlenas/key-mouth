@@ -1,8 +1,8 @@
 
 # License at the bottom
 
-from AfterSocketLogic import AfterSocketLogic, LogicHttpException
-from MomentSplitter import ConfTiming
+from mains.AfterSocketLogic import AfterSocketLogic, LogicHttpException
+from lib.MomentSplitter import ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
@@ -18,7 +18,7 @@ else:
 inttest = None
 a = 'KEYMOUTH_INTTEST_WIDGETS'
 if a in environ and environ[a] == 'yes':
-    from IntTestWidgets import IntTestWidgets
+    from mains.IntTestWidgets import IntTestWidgets
     inttest = IntTestWidgets()
 
 app = FastAPI()
