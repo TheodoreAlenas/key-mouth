@@ -8,6 +8,17 @@ from db.event_adapter import db_model_to_events
 from OutputMapper import OutputMapper
 from dataclasses import dataclass
 from Rooms import Rooms
+from RoomReloader import RoomReloader
+
+
+class RoomReloaderLimitedDb:
+
+    def __init__(self, db):
+        self.db = db
+        self.get_reloadable_state = db.get_reloadable_state
+        self.set_reloadable_state = db.set_reloadable_state
+        self.get_restart_data = db.get_restart_data
+        self.get_room = db.get_room
 
 
 class AfterSocketLogic:
@@ -15,21 +26,19 @@ class AfterSocketLogic:
     def __init__(self, time, db, conf_timing, moments_per_page):
         self._conf_timing = conf_timing
         self.db = db
-        saved = self.db.get_reloadable_state()
+        self.room_reloader = RoomReloader(
+            moments_per_page=moments_per_page,
+            db=RoomReloaderLimitedDb(db),
+        )
+        self.conns = {}
+        self.rooms = Rooms(
+            db=db,
+            room_reloader=self.room_reloader,
+        )
+        saved = self.rooms.load()
         self.last_id = 100
-        unsaved_pages = {}
         if saved is not None:
             self.last_id = saved.last_id
-            unsaved_pages = saved.unsaved_pages
-        self.conns = {}
-        restart_data = db.get_restart_data()
-        self.rooms = Rooms(
-            time=time,
-            db=db,
-            rooms_restart_data=restart_data,
-            moments_per_page=moments_per_page,
-            unsaved_pages=unsaved_pages,
-        )
         for room in self.rooms.get_all():
             room.conn_bcaster = Broadcaster(
                 conn_id=0,
@@ -101,14 +110,10 @@ class AfterSocketLogic:
         return self.rooms.given(room_id, f)
 
     def close(self, time, _):
-        unsaved_pages = {}
-        for room in self.rooms.get_all():
-            room.conn_bcaster.close_room(time)
-            unsaved_pages[room.room_id] = \
-                room.output_accumulator.get_unsaved_page()
-        self.db.set_reloadable_state(
+        self.room_reloader.close(
+            time=time,
             last_id=self.last_id,
-            unsaved_pages=unsaved_pages
+            rooms=self.rooms.get_all(),
         )
         return ([], None)
 

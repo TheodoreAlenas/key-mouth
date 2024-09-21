@@ -1,20 +1,32 @@
 from Rooms import Rooms
+from RoomReloader import RoomReloader
 from db.mock import Db
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from exceptions import LogicHttpException
 import unittest
 
 
+class LimitedDb:
+
+    def __init__(self, db):
+        self.db = db
+        self.get_reloadable_state = db.get_reloadable_state
+        self.get_restart_data = db.get_restart_data
+        self.get_room = db.get_room
+
+
 class RA(unittest.TestCase):
 
     def setUp(self):
+        db = Db()
         self.rooms = Rooms(
-            time=10.0,
-            db=Db(),
-            rooms_restart_data=[],
-            moments_per_page=100,
-            unsaved_pages={},
+            db=db,
+            room_reloader=RoomReloader(
+                moments_per_page=100,
+                db=LimitedDb(db),
+            )
         )
+        self.rooms.load()
 
     def test_init_no_rooms(self):
         self.assertEqual(0, len(self.rooms.get_all()))

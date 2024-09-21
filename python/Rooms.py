@@ -3,55 +3,22 @@
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from exceptions import LogicHttpException
-from Room import Room
-from Splitter import Splitter
-from MomentSplitter import ConfTiming, MomentSplitterData
 
 
 class Rooms:
 
-    def __init__(self, time, db, rooms_restart_data, moments_per_page,
-                 unsaved_pages):
+    def __init__(self, db, room_reloader):
         self.db = db
-        self.rooms_ram = {}
-        self.moments_per_page = moments_per_page
-        for d in rooms_restart_data:
-            unsaved_page = unsaved_pages[d.room_id]
-            moment_splitter_data = MomentSplitterData(
-                last_moment_time=unsaved_page['moments'][-1]['time'],
-            )
-            next_moment_idx = d.pages_n * moments_per_page
-            unsaved_moments = len(unsaved_page['moments'])
-            splitter=Splitter(
-                moments_per_page=moments_per_page,
-                next_moment_idx=next_moment_idx + 1 + unsaved_moments,
-            )
-            r = Room(
-                room_id=d.room_id,
-                name=d.name,
-                db_room=db.get_room(d.room_id),
-                unsaved_page=unsaved_page,
-                next_moment_idx=next_moment_idx,
-                moment_splitter_data=moment_splitter_data,
-                splitter=splitter,
-            )
-            self.rooms_ram[d.room_id] = r
+        self.room_reloader = room_reloader
+
+    def load(self):
+        self.rooms_ram, saved = self.room_reloader.load()
+        return saved
 
     def create(self, time, room_id):
         def create_and_set():
             self.db.create_room(time, room_id)
-            r = Room(
-                room_id=room_id,
-                db_room=self.db.get_room(room_id),
-                next_moment_idx=0,
-                moment_splitter_data=MomentSplitterData(
-                    last_moment_time=None,
-                ),
-                splitter=Splitter(
-                    moments_per_page=self.moments_per_page,
-                    next_moment_idx=0,
-                )
-            )
+            r = self.room_reloader.create(room_id)
             self.rooms_ram[room_id] = r
         self.without(room_id, create_and_set)
 
