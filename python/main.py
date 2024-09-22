@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from mains.AfterSocketLogic import AfterSocketLogic, LogicHttpException
+from mains.DependencyRegistrar import DependencyRegistrar, LogicHttpException
 from lib.MomentSplitter import ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,7 +41,7 @@ id_to_sock = {}
 mutex = threading.Lock()
 db_only_use_in_inttest_and_logic_init = Db()
 def create_logic(conf_timing):
-    return AfterSocketLogic(
+    return DependencyRegistrar(
         time=time(),
         db=db_only_use_in_inttest_and_logic_init,
         conf_timing=conf_timing,

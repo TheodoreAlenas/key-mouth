@@ -26,7 +26,7 @@ class RoomForConn:
         self.output_accumulator = room.output_accumulator
 
 
-class AfterSocketLogic:
+class DependencyRegistrar:
 
     def __init__(self, time, db, conf_timing, moments_per_page):
         self.room_reloader = RoomReloader(

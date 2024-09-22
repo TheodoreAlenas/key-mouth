@@ -1,4 +1,4 @@
-from mains.AfterSocketLogic import AfterSocketLogic
+from mains.DependencyRegistrar import DependencyRegistrar
 from lib.MomentSplitter import ConfTiming
 from db.mock import Db
 import unittest
@@ -7,7 +7,7 @@ import unittest
 class AParsing(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketLogic(
+        self.logic = DependencyRegistrar(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
@@ -81,7 +81,7 @@ class AParsing(unittest.TestCase):
 class Broadcasting(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketLogic(
+        self.logic = DependencyRegistrar(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
@@ -124,7 +124,7 @@ class Broadcasting(unittest.TestCase):
 class Rooms(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketLogic(
+        self.logic = DependencyRegistrar(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
@@ -151,7 +151,7 @@ class Rooms(unittest.TestCase):
 class ConnectionIds(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketLogic(
+        self.logic = DependencyRegistrar(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
@@ -178,7 +178,7 @@ class ConnectionIds(unittest.TestCase):
 class Moments(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketLogic(
+        self.logic = DependencyRegistrar(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
@@ -212,7 +212,7 @@ class Moments(unittest.TestCase):
 class DbBasics(unittest.TestCase):
 
     def setUp(self):
-        self.logic = AfterSocketLogic(
+        self.logic = DependencyRegistrar(
             time=8.0,
             db=Db(),
             conf_timing=ConfTiming(
@@ -258,7 +258,7 @@ class DbBasics(unittest.TestCase):
 class ReloadPages(unittest.TestCase):
 
     def get_logic(self, time, db_mock):
-        return AfterSocketLogic(
+        return DependencyRegistrar(
             time=time,
             db=db_mock,
             conf_timing=ConfTiming(
@@ -334,7 +334,7 @@ class ReloadPages(unittest.TestCase):
 class DbLoadRoom(unittest.TestCase):
 
     def get_logic(self, time, db_mock):
-        return AfterSocketLogic(
+        return DependencyRegistrar(
             time=time,
             db=db_mock,
             conf_timing=ConfTiming(
