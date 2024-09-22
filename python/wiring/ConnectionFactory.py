@@ -1,4 +1,4 @@
-from mains.Connection import Connection, Broadcaster
+from wiring.Connection import Connection, Broadcaster
 from lib.MomentSplitter import MomentSplitter
 
 

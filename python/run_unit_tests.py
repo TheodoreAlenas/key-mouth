@@ -1,6 +1,6 @@
 import unittest
-from mains.DependencyRegistrarTest import *
-from mains.RoomsTest import *
+from wiring.MainTest import *
+from wiring.RoomsTest import *
 from lib.PersistentOutputMapperTest import *
 from lib.MomentSplitterTest import *
 from lib.PageSplitterTest import *

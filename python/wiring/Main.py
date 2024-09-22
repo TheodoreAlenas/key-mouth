@@ -2,9 +2,9 @@
 # License at the bottom
 
 from lib.exceptions import LogicHttpException
-from mains.Rooms import Rooms
-from mains.RoomReloader import RoomReloader
-from mains.ConnectionFactory import ConnectionFactory
+from wiring.Rooms import Rooms
+from wiring.RoomReloader import RoomReloader
+from wiring.ConnectionFactory import ConnectionFactory
 
 
 class DbForRoomReloader:
@@ -34,7 +34,7 @@ class RoomForConn:
         self.pers_out_map = room.pers_out_map
 
 
-class DependencyRegistrar:
+class Main:
 
     def __init__(self, time, db, conf_timing, moments_per_page):
         self.room_reloader = RoomReloader(

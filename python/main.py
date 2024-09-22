@@ -1,7 +1,7 @@
 
 # License at the bottom
 
-from mains.DependencyRegistrar import DependencyRegistrar, LogicHttpException
+from wiring.Main import Main, LogicHttpException
 from lib.MomentSplitter import ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,7 +18,7 @@ else:
 inttest = None
 a = 'KEYMOUTH_INTTEST_WIDGETS'
 if a in environ and environ[a] == 'yes':
-    from mains.IntTestWidgets import IntTestWidgets
+    from IntTestWidgets import IntTestWidgets
     inttest = IntTestWidgets()
 
 app = FastAPI()
@@ -41,7 +41,7 @@ id_to_sock = {}
 mutex = threading.Lock()
 db_only_use_in_inttest_and_logic_init = Db()
 def create_logic(conf_timing):
-    return DependencyRegistrar(
+    return Main(
         time=time(),
         db=db_only_use_in_inttest_and_logic_init,
         conf_timing=conf_timing,

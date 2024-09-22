@@ -1,5 +1,5 @@
-from mains.Rooms import Rooms
-from mains.RoomReloader import RoomReloader
+from wiring.Rooms import Rooms
+from wiring.RoomReloader import RoomReloader
 from db.mock import Db
 from db.exceptions import RoomExistsException, RoomDoesntExistException
 from lib.exceptions import LogicHttpException
