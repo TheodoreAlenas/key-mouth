@@ -1,11 +1,11 @@
-from lib.Splitter import Splitter
+from lib.PageSplitter import PageSplitter
 import unittest
 
 
-class SplitterA(unittest.TestCase):
+class PageSplitterA(unittest.TestCase):
 
     def test_3_per_page_zebra(self):
-        s = Splitter(
+        s = PageSplitter(
             moments_per_page=3,
             next_moment_idx=0,
         )
@@ -14,7 +14,7 @@ class SplitterA(unittest.TestCase):
 
     def test_starting_from_arbitrary_point(self):
         a = [
-            Splitter(
+            PageSplitter(
                 moments_per_page=3,
                 next_moment_idx=i
             ).get_should_split()

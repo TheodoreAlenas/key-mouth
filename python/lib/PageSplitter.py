@@ -1,5 +1,5 @@
 
-class Splitter:
+class PageSplitter:
 
     def __init__(self, moments_per_page, next_moment_idx):
         self.moments_per_page = moments_per_page

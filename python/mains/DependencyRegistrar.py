@@ -29,7 +29,7 @@ class RoomForConn:
     def __init__(self, room):
         self.room_id = room.room_id
         self.conns = room.conns
-        self.splitter = room.splitter
+        self.page_splitter = room.page_splitter
         self.moment_splitter_data = room.moment_splitter_data
         self.output_accumulator = room.output_accumulator
 

@@ -3,7 +3,7 @@
 
 from lib.Room import Room
 from lib.MomentSplitter import MomentSplitterData
-from lib.Splitter import Splitter
+from lib.PageSplitter import PageSplitter
 from dataclasses import dataclass
 
 
@@ -29,7 +29,7 @@ class RoomReloader(Data):
             )
             next_moment_idx = d.pages_n * self.moments_per_page
             unsaved_moments = len(unsaved_page['moments'])
-            splitter=Splitter(
+            page_splitter=PageSplitter(
                 moments_per_page=self.moments_per_page,
                 next_moment_idx=next_moment_idx + 1 + unsaved_moments,
             )
@@ -40,7 +40,7 @@ class RoomReloader(Data):
                 unsaved_page=unsaved_page,
                 next_moment_idx=next_moment_idx,
                 moment_splitter_data=moment_splitter_data,
-                splitter=splitter,
+                page_splitter=page_splitter,
             )
             rooms_ram[d.room_id] = r
         return (rooms_ram, saved)
@@ -53,7 +53,7 @@ class RoomReloader(Data):
             moment_splitter_data=MomentSplitterData(
                 last_moment_time=None,
             ),
-            splitter=Splitter(
+            page_splitter=PageSplitter(
                 moments_per_page=self.moments_per_page,
                 next_moment_idx=0,
             )

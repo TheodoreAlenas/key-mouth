@@ -206,9 +206,6 @@ class Moments(unittest.TestCase):
         self.assertEqual(a, b)
 
 
-# TODO the moment splitter tests no longer test "new moment" on first
-
-
 class DbBasics(unittest.TestCase):
 
     def setUp(self):

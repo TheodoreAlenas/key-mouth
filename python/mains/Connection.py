@@ -9,7 +9,7 @@ class Connection:
     def __init__(self, conn_id, room, moment_splitter):
         self.conn_id = conn_id
         self.room = room
-        self.splitter = moment_splitter
+        self.moment_splitter = moment_splitter
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
@@ -33,11 +33,11 @@ class Connection:
     def _handle_parsed(self, time, inp_type, body=None):
         to_bcast = []
 
-        if self.splitter.get_should_split(time):
-            if self.room.splitter.get_should_split():
+        if self.moment_splitter.get_should_split(time):
+            if self.room.page_splitter.get_should_split():
                 self.room.output_accumulator.save_last_page()
-                to_bcast += self._push(
-                    0, 'newPage', self.room.splitter.next_moment_idx)
+                nmi = self.room.page_splitter.next_moment_idx
+                to_bcast += self._push(0, 'newPage', nmi)
             to_bcast += self._push(0, 'newMoment', time)
 
         to_bcast += self._push(self.conn_id, inp_type, body)

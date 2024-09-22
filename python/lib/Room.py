@@ -5,13 +5,13 @@ from lib.OutputWithDb import OutputWithDb, OutputMapper
 class Room:
 
     def __init__(self, room_id, db_room,
-                 next_moment_idx, moment_splitter_data, splitter,
+                 next_moment_idx, moment_splitter_data, page_splitter,
                  unsaved_page=None, name=None):
         self.room_id = room_id
         self.db = db_room
         self.name = name
         self.moment_splitter_data = moment_splitter_data
-        self.splitter = splitter
+        self.page_splitter = page_splitter
         self.output_accumulator = OutputWithDb(
             db=db_room,
             next_moment_idx=next_moment_idx,
