@@ -11,61 +11,35 @@ In a typical messenger there are bubbles per sent message,
 and this app has a bubble per significant moment,
 such as someone interrupting a conversation or people pausing.
 
-## Essential features
-
-- [x] interrupting breaks the moment
-- [x] silence breaks the moment
-- [x] isolated chat rooms
-- [x] visible deletions
-- [x] visible dates
-- [ ] a new message can reference an old one, creating links both ways
-- [x] persistent storage
-- [ ] authentication
-- [ ] locked rooms that require an invitation
-- [ ] administration bans
-
-## Secondary features
-
-- [ ] image uploading
-- [ ] some stages of the upload act like messages, perhaps 0%, 50%, 100%
-- [ ] uploading an amount of text which appears folded
-- [ ] editing a copy of someone's uploaded text
-- [ ] drawing strokes on someone's uploaded image
-- [ ] these edits appear to the others like messages in real time
-- [ ] guest chat rooms that don't need authentication, at some tradeoff
-
-## Unlikely features
-
-- [ ] audio/video calls
-- [ ] integration with video platforms to display videos inside the app
-- [ ] GUI apps outside the browser
-
 ## Code structure
 
-The architecture is inspired by
-Robert C. Martin's Clean Architecture book.
-It allows fast tests to be thorough and convenient to write,
-at the cost of underutilizing thrird party frameworks
-and adding some abstraction.
+Since I lacked the skills for the app, I had to go incrementally.
+This meant I needed a fast way to prove the code is roughly correct.
 
-I'd recommend reading the scripts first
-because I run them often.
+- Limiting the `import` shows what code may be responsible for a bug.
+- A dev mode shows that there is some way for the system to run right.
+- Tests show when there is some way for the system to run wrong.
+- Some tests mimic debugging, making "debugging" re-runnable.
+
+I have bad experiences from hierarchies
+such as subdirectories, deep indentation and deep call stacks.
+There are multiple directories and some short files in the codebase
+but I dislike both directories and short files.
+The project started as very few big files
+and eventually code got extracted,
+days after I started wanting to extract it.
+Most extractions were done because it was hard to track down
+how the different abilities of the system
+related to variables and functions.
 
 ### Web
 
 The client sends `+h`, `+i`, `-i` through the socket.
 
-The server sends the diffs back.
-It does not send something closer to the final view.
-The data is more complicated and varied from server to client,
-so it's JSON,
-but with a format that makes it reasonably easy
-to turn it into protobuff in the future.
+The server sends the diffs back as JSON
+in a forman that's easy to turn into protobuff in the future.
 
-The socket never tells the client to do a fetch request
-on another endpoint.
-This did use to happen,
-but eventually the socket was made to give the information itself.
+The socket messages don't prompt for fetch requests on other endpoints.
 
 ### Server
 
@@ -126,25 +100,70 @@ it will be reused to create the view model of fetched events.
 
 ## Story
 
-This project was for me to learn NextJS and Python's FastAPI.
-I became an intern
-in a chatbot company called [Helvia](https://helvia.ai)
-in July 2024.
+I took up this project to learn NextJS and Python's FastAPI,
+when I interned in the chatbot company [Helvia](https://helvia.ai)
+in July 2024, between 5th and 6th year in the University of Athens.
 I started in the operations and a month later
-I was told to practice with their tools to go to the backend.
+I was told to practice development go to the backend.
 
 Although I had written small CLI programs before
 and I wasn't a complete beginner in the languages,
 I didn't grasp events, state management, sessions, users
 and the web technologies.
+I did read Robert C. Martin's Clean Architecture book however,
+which proved to be helpful.
 
 I was told I could make a taks management app,
 but I said I had an idea in my head
 and they told me I could try it instead.
 
-Now that the project has progressed it looks staightforward,
-but the concept only outlined roughly what should be possible.
-An early concept was
+I really should have done the task management app.
+I generally refused to listen and I broke a lot of unwritten rules
+regarding who to talk to and what opinions to question,
+and I honestly regret the way I talked because it didn't help anyone.
+In the end, I can't exclude that maybe I was given this project
+because they wanted to take a breath from me.
+The internship was 3 months full time
+and the last 2 monts were spent on this project.
+
+I was also looking for an apartment so I was stuck in Athens in August,
+when people go to their parent's villages.
+I was mentally declining,
+I had fantasies where I showcase a beautiful web app
+and the company claps.
+If you've taken on an ambicious project before
+then you know that this is not how the world works,
+and I knew it too.
+The people in the company are fantastic
+and I'm not asking for claps from them,
+but I was going crazy and I was full of shit.
+
+### UI
+
+Today the project looks staightforward
+but there was no point of reference.
+
+The concept had 2 parts:
+
+> I wish I could see what the others are typing.
+> Sometimes it takes them too long to type a message
+> and then it turns out they misunderstood me.
+> If I knew what they were typing, I could tell them to stop.
+
+and, the harder one:
+
+> Since I'll be able to see the other person
+> deleting something in real time,
+> I'd like to be able to scroll up in the older messages
+> and still be able to tell roughly what happened at that moment.
+> Maybe what they deleted appears as text with a strike through.
+
+This implied something much broader:
+time-dependent phenomena should appear in a way that tells the story,
+*without animations*.
+I didn't understand this requirement well enough to phrase it this way.
+
+Here is part of the oldest concept:
 
 ```
 Tom:
@@ -157,8 +176,9 @@ Tom and Tedd together:
 
 Then I realized I can't use key up and key down events
 because on mobile there's auto-correction.
-But if there's a text box, one can edit the middle.
-A later concept was:
+This means there should be a text box.
+But if there's a text box, one can edit the middle,
+so that brought the next wave of concepts:
 
 ```
 Tom: I was thinking if you'd want
@@ -166,51 +186,173 @@ Tom: [I wa]nted to ask you[ if you'd want]
 Tom: to go to Tedd's party
 ```
 
-If you have some experience, you may notice a flaw.
-I didn't have the experience, so it took me a week.
-In essense, how many write events and deletion events
+The first week, every day I thought I'm almost done,
+until the end of the week when I discovered something scary.
+
+If you have some experience, you may notice the flaw.
+How many write events and deletion events
 does one need to fetch from the database
 in order to know how to present a message?
+Possibly all of them.
+Imagine someone fills up the text box during a heated conversation,
+leaves for some coffee,
+the others keep talking fast,
+and then he comes back and edits the middle of the text box.
+One would need to get all those events to construct the view.
+You may disagree for a moment but
+if you notice, every workaround is painful.
 
-The first week, every day I would think I'll be done in two more days.
-I went from plan to code back and forth multiple times a day,
-because every part of a plan
-was proven ineffective by a few lines of implementation code.
-The experience reminded me of the way people advertise waterfall,
-because indeed I was too overwhelmed to code without plans.
+I started to believe there could be a mathematical proof
+that the fundamental requirements for this app are self-contradicting.
 
-The second week
-the code stabilized to the point where
-I could extract it into different files
-and write tests.
-The company was supportive and I was told to continue.
+In the end, I decided to ignore the intricasies
+and treat any change in the text box as a deletion from the end
+or an addition to the end.
+Changes to the middle of the text box were deletion and addition:
 
-The third week I worked massive amounts.
-On the evening of Friday I served a pitiful web app
-without a database.
-It didn't display deleted text properly,
-it would look like
+```
+Tom: I wa[s thinking if you'd want]n[s thinking if you'd want]t[...
+```
+
+The second week the code somewhat stabilized,
+the third I worked massive amounts and I deployed this:
 
 ```
 Hi ehre-e-r-h-ethere
 ```
 
-because the protocol was `+e+h+r+e-e-r-h-e`
-and the temporary implementation
-was to display everything but plus signs.
+because the protocol was `+e +h +r +e -e -r -h -e`
+and I just removed leading `+` signs.
 
-I was mentally declining because I was stuck in Athens in August
-and the streets were empty.
-I had fantasies of showcasing a beautiful web app
-to the company and getting claps in the online meeting.
-I was full of shit
-and I started to de-value a lot for the sake of the project.
+Then it progressed:
 
-The fourth week I implemented many features
-and I did a ton of refactoring.
-I started to understand the state management and the flow of events
-through the system,
-so the code started to reference my understanding.
+```
+                10/8/2024 09:32:41 AM
+Tom: Hi [ehre]there
+                10/8/2024 09:32:43 AM
+Tom: Mark oh nice you're here
+Mark: Oh hi
+```
 
-And that's the story thus far,
-24th of August 2024.
+I kept thinking this app can't possibly look familiar,
+until I came up with the next design:
+
+```
+09:32:41 AM, Tom
+o  Hi [ehre]there
+
+09:32:43 AM, Tom, Mark
+o  Mark oh nice you're here
+o  Oh hi
+```
+
+and in the middle of the second month it became `Hi |there`
+where if one clicks it, it expands into `Hi [ehre]there`.
+
+### The evolution of the logic
+
+The first week,
+writing any line of code required me to comprehend the whole system,
+and every line of code proved all the plans ineffective.
+
+For that reason I decided to set up a bit of everything
+and make some web app without CSS
+which can support one socket connection
+and has no concept of a chatroom.
+The user would only be able to write text properly,
+if they deleted text something arbitrary would happen.
+
+Thankfully I was familiar with HTML and CSS,
+however I didn't know React, what a socket is
+or how to handle events.
+
+The first week there was only one Python file:
+
+```python
+data = await websocket.receive_text()
+if ...
+for ...
+websocket.send_json(reply)
+```
+
+I'm generally obsessed with tests
+so I knew I had to detach as much code as possible
+from FastApi to be able to test it later.
+It was simple:
+
+```python
+data = await websocket.receive_text()
+reply = f(data)
+websocket.send_json(reply)
+```
+
+Then I supported multiple connections.
+The biggest challenge is that I didn't want the `await` keyword
+in my code because I assumed it would make the tests painful.
+That however meant I couldn't pass the socket into an object.
+
+```python
+logic.add_socket(websocket)  # cancelled
+while True:
+    data = await websocket.receive_text()
+    logic.handle_input(data)
+```
+
+I came up with a solution that surprized me:
+
+```python
+res = conn.handle_input(time(), data)
+for conn_id, json in res:
+    id_to_sock[conn_id].send_json(json)
+```
+
+I'm sure that by this point there were tests.
+
+The code grew and there were many functions that took the current time
+as one of their arguments and perhaps returned a response,
+maybe alongside other data.
+So the conclusion was:
+
+```python
+await wrap(conn.handle_input, data)
+```
+
+and every function took `f(time, other)` and returned `(res, other)`.
+
+The files were `main.py` and `AfterSocketLogic.py`.
+Once `wrap` got error handling and a mutex,
+even the other endpoints started using it,
+so `AfterSocketLogic.py` was used for renaming chat rooms too.
+Much later it became a central hub that imported other files,
+later I extracted as much code as possible out of it
+and then it got the name `wiring/Main.py`.
+
+There are similar stories around the other modules
+and `Controller.js`
+which used to be called `WebInteractor.js` somehow.
+
+### Unfamiliar web dev skills
+
+Event handling started as
+if statements and while loops fiddled in place.
+Then, after a lot of thought, I saw a pattern:
+the server took note of happenings
+and phrased them to the sockets and to the database.
+I read something similar before, in the Clean Architecture book.
+There were some audacious plans about vast changes
+but in the end the data mappers were just written
+one by one incrementally.
+
+Pagination was added in the middle of the second month.
+I thought I could fetch a number of moments from the database
+when scrolling far up.
+The problem was how to scroll back down.
+By the time the lower moments arrive,
+maybe the cached bottom moments that come in real time
+have moved and left a gap.
+That's not much of an edge case.
+After a lot of sketches, I realized there are 3 states:
+bottom-only, contiguous and detached,
+and they need to be considered by various if statements.
+With pagination, moments would come in pre-split pages
+and a lot of problems would become simpler.
