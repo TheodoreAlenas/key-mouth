@@ -258,7 +258,7 @@ and every line of code proved all the plans ineffective.
 For that reason I decided to set up a bit of everything
 and make some web app without CSS
 which can support one socket connection
-and has no concept of a chatroom.
+and has no concept of a chat room.
 The user would only be able to write text properly,
 if they deleted text something arbitrary would happen.
 
@@ -303,7 +303,7 @@ I came up with a solution that surprized me:
 ```python
 res = conn.handle_input(time(), data)
 for conn_id, json in res:
-    id_to_sock[conn_id].send_json(json)
+    await id_to_sock[conn_id].send_json(json)
 ```
 
 I'm sure that by this point there were tests.

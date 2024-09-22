@@ -90,7 +90,7 @@ class Main:
     def get_pages_range(self, _, room_start_end):
         room_id, start, end = room_start_end
         def f(room):
-            return ([], room.get_pages_range(start, end))
+            return ([], room.pers_out_map.get_pages_range(start, end))
         return self.rooms.given(room_id, f)
 
     def close(self, time, _):

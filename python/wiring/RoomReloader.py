@@ -4,6 +4,7 @@
 from lib.Room import Room
 from lib.MomentSplitter import MomentSplitterData
 from lib.PageSplitter import PageSplitter
+from lib.PersistentOutputMapper import PersistentOutputMapper
 from dataclasses import dataclass
 
 
@@ -33,12 +34,17 @@ class RoomReloader(Data):
                 moments_per_page=self.moments_per_page,
                 next_moment_idx=next_moment_idx + 1 + unsaved_moments,
             )
+            db_room = self.db.get_room(d.room_id)
             r = Room(
                 room_id=d.room_id,
                 name=d.name,
-                db_room=self.db.get_room(d.room_id),
-                unsaved_page=unsaved_page,
-                next_moment_idx=next_moment_idx,
+                db_room=db_room,
+                pers_out_map=PersistentOutputMapper(
+                    db=db_room,
+                    next_moment_idx=next_moment_idx,
+                    unsaved_page=unsaved_page,
+                    debug_context_str="in " + d.room_id,
+                ),
                 moment_splitter_data=moment_splitter_data,
                 page_splitter=page_splitter,
             )
@@ -46,10 +52,17 @@ class RoomReloader(Data):
         return (rooms_ram, saved)
 
     def create(self, room_id):
+        db_room = self.db.get_room(room_id)
         return Room(
             room_id=room_id,
-            db_room=self.db.get_room(room_id),
-            next_moment_idx=0,
+            name=None,
+            db_room=db_room,
+            pers_out_map=PersistentOutputMapper(
+                db=db_room,
+                next_moment_idx=0,
+                unsaved_page=None,
+                debug_context_str="in " + room_id,
+            ),
             moment_splitter_data=MomentSplitterData(
                 last_moment_time=None,
             ),
