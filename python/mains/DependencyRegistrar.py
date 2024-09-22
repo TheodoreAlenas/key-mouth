@@ -16,6 +16,14 @@ class DbForRoomReloader:
         self.get_room = db.get_room
 
 
+class DbForRooms:
+
+    def __init__(self, db):
+        self.create_room = db.create_room
+        self.delete_room = db.delete_room
+        self.get_room = db.get_room
+
+
 class RoomForConn:
 
     def __init__(self, room):
@@ -34,7 +42,7 @@ class DependencyRegistrar:
             db=DbForRoomReloader(db),
         )
         self.rooms = Rooms(
-            db=db,
+            db=DbForRooms(db),
             room_reloader=self.room_reloader,
         )
         saved = self.rooms.load()
