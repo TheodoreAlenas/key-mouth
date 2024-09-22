@@ -5,7 +5,7 @@ class BackCheck(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(BackCheck, self).__init__(*args, **kwargs)
-        with open("git-ignores/systest-logs-back.gitig") as f:
+        with open("git-ignores/inttest-logs-back.gitig") as f:
             self.lines = f.readlines()
 
     def test_open_connections_closed(self):

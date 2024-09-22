@@ -8,7 +8,7 @@
     timeout 2.2s uvicorn                        \
             --host localhost                    \
             --port 8001                         \
-            --log-config systest-log-config.ini \
+            --log-config inttest-log-config.ini \
             main:app
 ) &
 
@@ -20,12 +20,12 @@ sleep 1.2
     export KEYMOUTH_WS=ws://localhost:8001
 
     timeout 1s node js/mod/ControllerInttestMain.js
-    echo $? > git-ignores/systest-front-result.gitig
+    echo $? > git-ignores/inttest-front-result.gitig
 ) &
 
 wait
 
-python python/systest_check.py || exit 1
-r="$(head git-ignores/systest-front-result.gitig)"
+python python/inttest_check.py || exit 1
+r="$(head git-ignores/inttest-front-result.gitig)"
 echo "the front end returned $r"
 exit "$r"
