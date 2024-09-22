@@ -1,5 +1,4 @@
 from wiring.Main import Main
-from lib.MomentSplitter import ConfTiming
 from db.mock import Db
 import unittest
 
@@ -10,10 +9,8 @@ class AParsing(unittest.TestCase):
         self.logic = Main(
             time=8.0,
             db=Db(),
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=100
         )
         self.logic.create_room(10.0, "room0")
@@ -84,10 +81,8 @@ class Broadcasting(unittest.TestCase):
         self.logic = Main(
             time=8.0,
             db=Db(),
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=100
         )
         self.logic.create_room(10.0, "room0")
@@ -127,10 +122,8 @@ class Rooms(unittest.TestCase):
         self.logic = Main(
             time=8.0,
             db=Db(),
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=100
         )
         self.logic.create_room(10.0, "room0")
@@ -154,10 +147,8 @@ class ConnectionIds(unittest.TestCase):
         self.logic = Main(
             time=8.0,
             db=Db(),
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=100
         )
         self.logic.create_room(10.0, "room0")
@@ -181,10 +172,8 @@ class Moments(unittest.TestCase):
         self.logic = Main(
             time=8.0,
             db=Db(),
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=100
         )
         self.logic.create_room(10.0, "room0")
@@ -212,10 +201,8 @@ class DbBasics(unittest.TestCase):
         self.logic = Main(
             time=8.0,
             db=Db(),
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page   =   2
         )
         self.logic.create_room(10.0, "room0")
@@ -258,10 +245,8 @@ class ReloadPages(unittest.TestCase):
         return Main(
             time=time,
             db=db_mock,
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=2
         )
 
@@ -334,10 +319,8 @@ class DbLoadRoom(unittest.TestCase):
         return Main(
             time=time,
             db=db_mock,
-            conf_timing=ConfTiming(
-                min_silence=3.0,
-                min_moment=0.5
-            ),
+            min_silence=3.0,
+            min_moment=0.5,
             moments_per_page=2
         )
 

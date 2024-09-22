@@ -1,4 +1,3 @@
-from lib.MomentSplitter import ConfTiming
 from time import time
 
 
@@ -15,7 +14,7 @@ class IntTestWidgets:
     def add_room_and_restart(self, logic, create_logic):
         logic.create_room(time(), 'pre\nmade')
         logic.close(time(), None)
-        return create_logic(conf_timing=ConfTiming(
+        return create_logic(
             min_silence=0.2,
             min_moment=0.2
-        ))
+        )

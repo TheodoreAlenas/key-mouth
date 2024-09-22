@@ -2,20 +2,16 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ConfTiming:
-    min_silence: float
-    min_moment: float
-
-
-@dataclass
 class MomentSplitterData:
     last_moment_time: float | None = None
 
 
 class MomentSplitter:
 
-    def __init__(self, conf_timing, room: MomentSplitterData):
-        self._conf_timing = conf_timing
+    def __init__(self, min_silence, min_moment,
+                 room: MomentSplitterData):
+        self.min_silence = min_silence
+        self.min_moment = min_moment
         self.last_spoke = None
         self.room = room
 
@@ -31,14 +27,14 @@ class MomentSplitter:
             return True
         else:
             return (time - self.last_spoke >=
-                    self._conf_timing.min_silence)
+                    self.min_silence)
 
     def _get_moment_lasted(self, time):
         if self.room.last_moment_time is None:
             return False
         else:
             return (time - self.room.last_moment_time >=
-                    self._conf_timing.min_moment)
+                    self.min_moment)
 
     def _update_timers(self, time, should_split):
         self.last_spoke = time

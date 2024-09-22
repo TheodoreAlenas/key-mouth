@@ -3,7 +3,6 @@
 
 from wiring.Main import Main
 from lib.exceptions import LogicHttpException
-from lib.MomentSplitter import ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
@@ -34,21 +33,21 @@ if a in environ and environ[a] == 'yes':
     )
 
 moments_per_page = 50
-conf_timing=ConfTiming(
-    min_silence=3.0,
-    min_moment=1.0
-)
+min_silence = 3.0
+min_moment = 1.0
+
 id_to_sock = {}
 mutex = threading.Lock()
 db_only_use_in_inttest_and_logic_init = Db()
-def create_logic(conf_timing):
+def create_logic(min_silence, min_moment):
     return Main(
         time=time(),
         db=db_only_use_in_inttest_and_logic_init,
-        conf_timing=conf_timing,
+        min_silence=min_silence,
+        min_moment=min_moment,
         moments_per_page=moments_per_page
     )
-logic = create_logic(conf_timing)
+logic = create_logic(min_silence=min_silence, min_moment=min_moment)
 if inttest is not None:
     logic = inttest.add_room_and_restart(logic, create_logic)
 a = 'KEYMOUTH_ADD_A_ROOM'

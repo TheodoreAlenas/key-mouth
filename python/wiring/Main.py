@@ -36,7 +36,8 @@ class RoomForConn:
 
 class Main:
 
-    def __init__(self, time, db, conf_timing, moments_per_page):
+    def __init__(self, time, db,
+                 min_silence, min_moment, moments_per_page):
         self.room_reloader = RoomReloader(
             moments_per_page=moments_per_page,
             db=DbForRoomReloader(db),
@@ -47,8 +48,9 @@ class Main:
         )
         saved = self.rooms.load()
         self.new = ConnectionFactory(
-            conf_timing=conf_timing,
-            last_id=saved.last_id
+            min_silence=min_silence,
+            min_moment=min_moment,
+            last_id=saved.last_id,
         )
         for room in self.rooms.get_all():
             room.conn_bcaster = self.new.broadcaster(RoomForConn(room))

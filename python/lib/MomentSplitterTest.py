@@ -1,19 +1,20 @@
-from lib.MomentSplitter import \
-    MomentSplitter, ConfTiming, MomentSplitterData
+from lib.MomentSplitter import MomentSplitter, MomentSplitterData
 import unittest
 
 
 class MSA(unittest.TestCase):
 
     def setUp(self):
-        conf = ConfTiming(
-            min_silence=10.0,
-            min_moment=1.0
-        )
+        def create_splitter(room):
+            return MomentSplitter(
+                min_silence=10.0,
+                min_moment=1.0,
+                room=room,
+            )
         room = MomentSplitterData()
-        self.s1 = MomentSplitter(conf_timing=conf, room=room)
-        self.s2 = MomentSplitter(conf_timing=conf, room=room)
-        self.s3 = MomentSplitter(conf_timing=conf, room=room)
+        self.s1 = create_splitter(room)
+        self.s2 = create_splitter(room)
+        self.s3 = create_splitter(room)
 
     def test_update_noSplit(self):
         r = self.s1.get_should_split(10.1)
