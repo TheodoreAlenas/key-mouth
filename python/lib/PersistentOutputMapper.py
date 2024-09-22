@@ -10,7 +10,7 @@ class ViewEvent:
     body: any
 
 
-class OutputWithDb:
+class PersistentOutputMapper:
 
     def __init__(self, db, next_moment_idx=0,
                  debug_context_str="context unset"):

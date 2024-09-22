@@ -13,7 +13,7 @@ class Connection:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        last_few = self.room.output_accumulator.get_last_pages()
+        last_few = self.room.pers_out_map.get_last_pages()
         conn_msg = self._handle_parsed(time, "connect")
         return ([(self.conn_id, last_few)] + conn_msg, self)
 
@@ -35,7 +35,7 @@ class Connection:
 
         if self.moment_splitter.get_should_split(time):
             if self.room.page_splitter.get_should_split():
-                self.room.output_accumulator.save_last_page()
+                self.room.pers_out_map.save_last_page()
                 nmi = self.room.page_splitter.next_moment_idx
                 to_bcast += self._push(0, 'newPage', nmi)
             to_bcast += self._push(0, 'newMoment', time)
@@ -44,7 +44,7 @@ class Connection:
         return to_bcast
 
     def _push(self, conn_id, event_type, body):
-        v = self.room.output_accumulator.push(conn_id, event_type, body)
+        v = self.room.pers_out_map.push(conn_id, event_type, body)
         return [(conn, v) for conn in self.room.conns]
 
 

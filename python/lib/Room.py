@@ -1,5 +1,6 @@
 from db.event_adapter import db_model_to_events
-from lib.OutputWithDb import OutputWithDb, OutputMapper
+from lib.PersistentOutputMapper import \
+    PersistentOutputMapper, OutputMapper
 
 
 class Room:
@@ -12,14 +13,14 @@ class Room:
         self.name = name
         self.moment_splitter_data = moment_splitter_data
         self.page_splitter = page_splitter
-        self.output_accumulator = OutputWithDb(
+        self.pers_out_map = PersistentOutputMapper(
             db=db_room,
             next_moment_idx=next_moment_idx,
             debug_context_str="in " + room_id,
         )
         if unsaved_page is not None:
             for e in db_model_to_events([unsaved_page]):
-                self.output_accumulator.push_event(e)
+                self.pers_out_map.push_event(e)
         self.conns = []
 
     def rename(self, name):

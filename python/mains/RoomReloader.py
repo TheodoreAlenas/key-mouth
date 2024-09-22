@@ -64,7 +64,7 @@ class RoomReloader(Data):
         for room in rooms:
             room.conn_bcaster.close_room(time)
             unsaved_pages[room.room_id] = \
-                room.output_accumulator.get_unsaved_page()
+                room.pers_out_map.get_unsaved_page()
         self.db.set_reloadable_state(
             last_id=last_id,
             unsaved_pages=unsaved_pages

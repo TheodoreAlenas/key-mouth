@@ -1,4 +1,4 @@
-from lib.OutputWithDb import OutputWithDb
+from lib.PersistentOutputMapper import PersistentOutputMapper
 from db.mock import Db
 import unittest
 
@@ -9,7 +9,7 @@ class A(unittest.TestCase):
         db = Db()
         db.create_room(time=100, room_id="room0")
         room = db.get_room(room_id="room0")
-        self.o = OutputWithDb(db=room)
+        self.o = PersistentOutputMapper(db=room)
         self.a = []
         self.a.append(self.o.push(0, 'newPage', 0))
         self.a.append(self.o.push(0, 'newMoment', 10.0))
