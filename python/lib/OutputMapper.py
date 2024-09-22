@@ -13,6 +13,8 @@ class OutputMapper:
         return self.last_page
 
     def push(self, event):
+        if event.event_type == 'newPage':
+            self.di = 0
         m = {
             'momentIdx': self.mi,
             'diffIdx': self.di,

@@ -238,6 +238,17 @@ class DbBasics(unittest.TestCase):
             m
         )
 
+    def test_get_second_page(self):
+        self.logic.connect(10.0, "room0")
+        self.logic.connect(100.0, "room0")
+        self.logic.connect(200.0, "room0")
+        self.logic.connect(300.0, "room0")
+        res, _ = self.logic.connect(400.0, "room0")
+        self.maxDiff = None
+        _, m = self.logic.get_pages_range(200.1, ("room0", 1, 2))
+        self.assertNotEqual([], m)
+        self.assertEqual(res[0][1]['events'][-len(m):], m)
+
 
 class ReloadPages(unittest.TestCase):
 

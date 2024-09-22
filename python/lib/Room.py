@@ -28,7 +28,8 @@ class Room:
         self.name = name
 
     def get_pages_range(self, start, end):
-        to_stream = OutputMapper(start, 0)
+        mpp = self.page_splitter.moments_per_page
+        to_stream = OutputMapper(start * mpp, 0)
         db_model = self.db.get_range(start, end)
         events = db_model_to_events(db_model)
         for e in events:
