@@ -55,13 +55,16 @@ class RoomRestartData:
 @dataclass
 class ReloadableState:
     last_id: any
-    unsaved_pages: dict
+    unsaved_pages: dict | None
 
 
 class Db:
 
     def __init__(self):
-        self.reloadable_state = None
+        self.reloadable_state = ReloadableState(
+            last_id=None,
+            unsaved_pages=None
+        )
         self.rooms = {}
 
     def create_room(self, time, room_id):

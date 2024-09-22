@@ -4,12 +4,14 @@ from lib.MomentSplitter import MomentSplitter
 
 class ConnectionFactory:
 
-    def __init__(self, conf_timing):
+    def __init__(self, conf_timing, last_id):
         self.conf_timing = conf_timing
+        self.last_id = last_id or 100
 
-    def connection(self, conn_id, room):
+    def connection(self, room):
+        self.last_id += 1
         return Connection(
-            conn_id=conn_id,
+            conn_id=self.last_id,
             room=room,
             moment_splitter=MomentSplitter(
                 conf_timing=self.conf_timing,

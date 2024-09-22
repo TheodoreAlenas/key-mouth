@@ -29,8 +29,6 @@ class RoomForConn:
 class AfterSocketLogic:
 
     def __init__(self, time, db, conf_timing, moments_per_page):
-        self.conns = {}
-        self.new = ConnectionFactory(conf_timing=conf_timing)
         self.room_reloader = RoomReloader(
             moments_per_page=moments_per_page,
             db=DbForRoomReloader(db),
@@ -40,9 +38,10 @@ class AfterSocketLogic:
             room_reloader=self.room_reloader,
         )
         saved = self.rooms.load()
-        self.last_id = 100
-        if saved is not None:
-            self.last_id = saved.last_id
+        self.new = ConnectionFactory(
+            conf_timing=conf_timing,
+            last_id=saved.last_id
+        )
         for room in self.rooms.get_all():
             room.conn_bcaster = self.new.broadcaster(RoomForConn(room))
             room.conn_bcaster.say_started(time)
@@ -54,10 +53,8 @@ class AfterSocketLogic:
 
     def connect(self, time, room_id):
         def create_conn(room):
-            self.last_id += 1
-            i = self.last_id
-            self.conns[i] = self.new.connection(i, RoomForConn(room))
-            return self.conns[i].connect(time, None)
+            conn = self.new.connection(RoomForConn(room))
+            return conn.connect(time, None)
         return self.rooms.given(room_id, create_conn)
 
     def create_room(self, time, room_id):
@@ -89,7 +86,7 @@ class AfterSocketLogic:
     def close(self, time, _):
         self.room_reloader.close(
             time=time,
-            last_id=self.last_id,
+            last_id=self.new.last_id,
             rooms=self.rooms.get_all(),
         )
         return ([], None)
