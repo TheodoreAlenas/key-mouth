@@ -1,7 +1,8 @@
 
 # License at the bottom
 
-from wiring.Main import Main, LogicHttpException
+from wiring.Main import Main
+from lib.exceptions import LogicHttpException
 from lib.MomentSplitter import ConfTiming
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
