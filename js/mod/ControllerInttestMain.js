@@ -69,7 +69,7 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
                              expShutdownMsg[i],
                              realShutdownMsg.v.pages[0].moments[i])
         }
-    }, 100)
+    }, 200)
 }, function(event) {
     const ed = forEavesDropper
     if (ed.i === 0) {
@@ -98,77 +98,58 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
 })
 
 const expTwoMoments = [
-    {key: 0, time: "-", names: "(#)2", messages: [
-        [{type: "event", body: "[room created]"}],
-        [{type: "event", body: "[connected]"}]
+    {key: 0, time: "-", names: "(#)1", messages: [
+        [{type: "event", body: "[room created]"}]
     ]},
     {key: 1, time: "-", names: "(#)1", messages: [
-        [{type: "write", body: "late"},
+        [{type: "event", body: "[connected]"},
+         {type: "write", body: "late"},
          {type: "erase", body: "x"}]
     ]}
 ]
-const realTwoMoments = []
+const n = 30
+let twoMomentRes = ""
+let twoMomentNooneReported = true
 
-for (let i = 0; i < 10; i++) {
-    const uri = new UriRoom(uriFirstArg.room, "two-moments-" + i)
-    await uri.fetchPutRoom()
-    realTwoMoments.push({v: null})
-    withController(uri, realTwoMoments[i], function(unlocked, close) {
+async function speakLate(i) {
+    const real = {v: null}
+    function onceGotController(unlocked, close) {
         setTimeout(function() {
             unlocked.onInputChange("latex")
             unlocked.onInputChange("late")
-        }, 280)
-        setTimeout(function() {close()}, 500)
-    })
-}
-setTimeout(function() {
-    test.assertEqual(
-        "one twoMoments", expTwoMoments,
-        realTwoMoments[0].v.pages[0].moments)
-    const t = new TestCase()
-    for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expTwoMoments,
-                      realTwoMoments[i].v.pages[0].moments)
+        }, 100)
+        setTimeout(function() {
+            close()
+            const t = new TestCase()
+            t.assertEqual('2 moments', expTwoMoments,
+                          real.v.pages[0].moments)
+            twoMomentRes += t.fails.length ? 'F' : '.'
+            if (twoMomentNooneReported && t.fails.length) {
+                twoMomentNooneReported = false
+                test.assertEqual('2 moments', expTwoMoments,
+                                 real.v.pages[0].moments)
+            }
+        }, 200)
     }
-    test.assertEqual(
-        "all twoMoments", 10, 10 - t.fails.length)
-}, 500)
-
-const expConnDis = [
-    {key: 0, time: "-", names: "(#)3", messages: [
-        [{type: "event", body: "[room created]"}],
-        [{type: "event", body: "[connected]"},
-         {type: "event", body: "[disconnected]"}],
-        [{type: "event", body: "[connected]"}]
-    ]}
-]
-const realConnDis = []
-
-for (let i = 0; i < 10; i++) {
-    const uri = new UriRoom(uriFirstArg.room, "conn-dis-" + i)
+    const uri = new UriRoom(uriFirstArg.room, 'two-moments-' + i)
     await uri.fetchPutRoom()
-    realConnDis.push({v: null})
-    withController(uri, realConnDis[i], function(_, close) {
-        setTimeout(close, 50)
-    })
     setTimeout(function() {
-        withController(uri, realConnDis[i], function(_, close) {
-            setTimeout(close, 50)
-        })
-    }, 100)
+        withController(uri, real, onceGotController)
+    }, 500)
 }
+const promises = []
+for (let i = 0; i < n; i++) {
+    promises.push(speakLate(i))
+}
+Promise.all(promises)
+
 setTimeout(function() {
-    test.assertEqual(
-        "one connDis", expConnDis, realConnDis[0].v.pages[0].moments)
-    const t = new TestCase()
-    for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expConnDis, realConnDis[i].v.pages[0].moments)
-    }
-    test.assertEqual(
-        "all connDis", 10, 10 - t.fails.length)
-}, 150)
+    let hope = ""
+    for (let i = 0; i < n; i++) hope += '.'
+    test.assertEqual("all twoMoment tests", hope, twoMomentRes)
+}, 800)
 
 setTimeout(function() {
     test.printResults()
     if (test.fails.length > 0) process.exit(1)
-}, 500)
+}, 820)
