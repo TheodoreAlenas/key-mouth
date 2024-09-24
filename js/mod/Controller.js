@@ -36,12 +36,18 @@ export default class Controller {
         this.presenter = new Presenter({maxPages})
         this.io.onEvent(function(event) {
             if (eavesdropper) eavesdropper(event)
-            self.presenter.push(event)
+            self.presenter.pushEvent(event)
             self.setMoments(self.presenter.getViewModel(getConnName))
         })
     }
     close() {
         this.io.close()
+    }
+}
+
+class NameMapper {
+    mapName(conn) {
+        return "Visitor#" + conn
     }
 }
 

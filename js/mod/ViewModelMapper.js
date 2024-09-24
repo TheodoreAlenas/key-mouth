@@ -1,34 +1,25 @@
 
 // License at the bottom
 
-import accumulateDiffs from './accumulateDiffs.js'
-
-export default class PagePresenter {
-
-    constructor(firstMomentIdx) {
-        if (typeof(firstMomentIdx) !== 'number') {
-            throw new Error(
-                "firstMomentIdx isn't number: " + firstMomentIdx)
-        }
-        this.firstMomentIdx = firstMomentIdx
-        this.moments = []
+export default class ViewModelMapper {
+    constructor(nameMapper) {
+        this.nameMapper = nameMapper
     }
-    pushEvent(viewEvent) {
-        if (viewEvent.type === 'newMoment') {
-            this.moments.push({
-                time: viewEvent.body,
-                raw: []
-            })
-        }
-        else {
-            this.moments[this.moments.length - 1].raw.push(viewEvent)
-        }
+    mapPages(pages) {
+        return pages.map(p => this.mapPage(p))
     }
-    getMomentViews(getNames) {
-        let i = this.firstMomentIdx
-        const views = this.moments.map(({time, raw}) =>
-            getViewModel(i++, presTime(time), getNames, raw))
-        return views
+    mapPage(page) {
+        return page.moments.map((m, i) =>
+            this.mapMoment(page.firstMomentIdx + i, m))
+    }
+    mapMoment(key, moment) {
+        const massaged = moment.diffs.map(massageEvent)
+        const acc = accumulateDiffs(massaged)
+
+        const time = presTime(moment.time)
+        const names = acc.map(e => this.nameMapper.mapName(e.connId))
+        const messages = acc.map(e => e.message)
+        return {key, time, names, messages}
     }
 }
 
@@ -42,14 +33,6 @@ function presTime(secondsSince1970) {
         return date.toLocaleTimeString()
     }
     return date.toLocaleString()
-}
-
-function getViewModel(key, time, getNames, events) {
-    const massaged = events.map(massageEvent)
-    const r = accumulateDiffs(massaged)
-    const names = r.map(e => getNames(e.connId))
-    const messages = r.map(e => e.message)
-    return {key, time, names, messages}
 }
 
 function massageEvent(event) {

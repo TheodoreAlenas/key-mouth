@@ -2,21 +2,29 @@ import PagePresenter from './PagePresenter.js'
 
 export default class PagesPresenter {
 
-    constructor({firstPageIdx}) {
+    constructor({firstPageIdx, maxPages}) {
         this.firstPageIdx = firstPageIdx
-        this.pages = []
+        this.lastPageIdx = firstPageIdx
+        this.maxPages = maxPages
+        this.above = []
+        this.last = []
     }
-    push(event) {
+    pushEvent(event) {
         if (event.type === "newPage") {
-            this.pages.push(new PagePresenter(event.body))
+            if (this.last.length >= this.maxPages) {
+                this.last.shift(1)
+                this.firstPageIdx += 1
+            }
+            this.last.push(new PagePresenter(event.body))
+            this.lastPageIdx += 1
         }
         else {
-            this.pages[this.pages.length - 1].push(event)
+            this.last[this.last.length - 1].pushEvent(event)
         }
     }
     getViewModel(getNames) {
         const vm = []
-        for (let page of this.pages) {
+        for (let page of this.last) {
             for (let moment of page.getMomentViews(getNames)) {
                 vm.push(moment)
             }
@@ -26,12 +34,11 @@ export default class PagesPresenter {
     getTouchesTop() {
         return this.firstPageIdx === 0
     }
-    keepLast(n) {
-        const len = this.pages.length
-        if (n >= len) return
-        const r = []
-        for (let i = len - n; i < len; i++) r.push(this.pages[i])
-        this.pages = r
-        this.firstPageIdx += n
+    setPageAbove(page) {
+        if (this.above.length === 0) {
+            this.above.push(page)
+            for (let x of this.last) this.above.push(x)
+            this.above.pop()
+        }
     }
 }

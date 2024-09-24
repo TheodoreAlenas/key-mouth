@@ -8,7 +8,7 @@ export default class Presenter {
         }
         this.p = null
     }
-    push(event) {
+    pushEvent(event) {
         if (this.p === null) {
             try {this._pushFirstBatch(event)}
             catch (err) {
@@ -28,14 +28,13 @@ export default class Presenter {
     }
     _pushFirstBatch(event) {
         this.p = new PagesPresenter({
-            firstPageIdx: event.firstPageIdx
+            firstPageIdx: event.firstPageIdx,
+            maxPages: this.maxPages,
         })
-        for (let e of event.events) this.p.push(e)
-        this.p.keepLast(this.maxPages)
+        for (let e of event.events) this.p.pushEvent(e)
     }
     _pushOneEvent(event) {
-        this.p.push(event)
-        this.p.keepLast(this.maxPages)
+        this.p.pushEvent(event)
     }
     getViewModel(getConnName) {
         try {return this._getViewModel(getConnName)}
