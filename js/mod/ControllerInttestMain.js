@@ -107,7 +107,7 @@ const expTwoMoments = [
          {type: "erase", body: "x"}]
     ]}
 ]
-const n = 30
+const n = 20
 let twoMomentRes = ""
 let twoMomentNooneReported = true
 

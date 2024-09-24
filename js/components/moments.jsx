@@ -34,8 +34,10 @@ export default function Moments({o, styles}) {
                 >{mt.label}</button>
             )
         }
-        for (let moment of state.fromO.moments) {
-            pres.push(Moment({moment, styles}))
+        for (let page of state.fromO.pages) {
+            for (let moment of page.moments) {
+                pres.push(Moment({moment, styles}))
+            }
         }
         finalPres = pres
     }
