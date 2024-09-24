@@ -4,13 +4,13 @@ class OutputMapper:
     def __init__(self, first_moment_idx, first_diff_idx=0):
         self.mi = first_moment_idx
         self.di = first_diff_idx
-        self.last_page = []
+        self.buf = []
 
-    def update_page_ended(self):
-        self.last_page = []
+    def clear(self):
+        self.buf = []
 
-    def get_last_page(self):
-        return self.last_page
+    def get(self):
+        return self.buf
 
     def push(self, event):
         if event.event_type == 'newPage':
@@ -22,7 +22,7 @@ class OutputMapper:
             'type': event.event_type,
             'body': event.body
         }
-        self.last_page.append(m)
+        self.buf.append(m)
         if event.event_type == 'newMoment':
             self.di = 0
             self.mi += 1

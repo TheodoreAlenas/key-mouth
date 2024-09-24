@@ -23,7 +23,7 @@ class PersistentOutputMapper:
                 self.push_event(e)
 
     def save_last_page(self):
-        self.evt_stream.update_page_ended()
+        self.evt_stream.clear()
         page = self.evt_db.get_last_page()
         self.db.push_page(page)
 
@@ -46,8 +46,8 @@ class PersistentOutputMapper:
         a = OutputMapper(first_moment_idx=l.first_moment_idx)
         for e in events:
             a.push(e)
-        from_db = a.get_last_page()
-        not_yet_in_db = self.evt_stream.get_last_page()
+        from_db = a.get()
+        not_yet_in_db = self.evt_stream.get()
         return {
             "firstMomentIdx": l.first_moment_idx,
             "firstPageIdx": l.first_page_idx,
@@ -64,7 +64,7 @@ class PersistentOutputMapper:
         mapper = OutputMapper(first_moment_idx, 0)
         for e in events:
             mapper.push(e)
-        return mapper.get_last_page()
+        return mapper.get()
 
     def get_unsaved_page(self):
         return self.evt_db.get_last_page()
