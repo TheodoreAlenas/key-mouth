@@ -26,6 +26,6 @@ export default function PageRoom({uriFirstArg, maxPages}) {
 }
 
 export async function getStaticProps() {
-    const maxPages = process.env.KEYMOUTH_MAX_PAGES || 10
+    const maxPages = Number(process.env.KEYMOUTH_MAX_PAGES || "10")
     return {props: {uriFirstArg, maxPages}}
 }

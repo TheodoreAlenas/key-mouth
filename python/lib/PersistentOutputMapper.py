@@ -15,16 +15,16 @@ class PersistentOutputMapper:
     def __init__(self, db, next_moment_idx, unsaved_page,
                  debug_context_str):
         self.db = db
-        self.evt_db = DbMapper()
-        self.evt_stream = OutputMapper(next_moment_idx, 0)
+        self.db_mapper = DbMapper()
+        self.output_mapper = OutputMapper(next_moment_idx, 0)
         self.debug_context_str = debug_context_str
         if unsaved_page is not None:
             for e in db_model_to_events([unsaved_page]):
                 self.push_event(e)
 
     def save_last_page(self):
-        self.evt_stream.clear()
-        page = self.evt_db.get_last_page()
+        self.output_mapper.clear()
+        page = self.db_mapper.get_last_page()
         self.db.push_page(page)
 
     def push(self, conn_id, event_type, body):
@@ -33,12 +33,12 @@ class PersistentOutputMapper:
             event_type=event_type,
             body=body
         )
-        self.evt_db.push_event(ve)
-        return self.evt_stream.push(ve)
+        self.db_mapper.push_event(ve)
+        return self.output_mapper.push(ve)
 
     def push_event(self, event):
-        self.evt_db.push_event(event)
-        return self.evt_stream.push(event)
+        self.db_mapper.push_event(event)
+        return self.output_mapper.push(event)
 
     def get_last_pages(self):
         l = self.db.get_last_pages()
@@ -47,7 +47,7 @@ class PersistentOutputMapper:
         for e in events:
             a.push(e)
         from_db = a.get()
-        not_yet_in_db = self.evt_stream.get()
+        not_yet_in_db = self.output_mapper.get()
         return {
             "firstMomentIdx": l.first_moment_idx,
             "firstPageIdx": l.first_page_idx,
@@ -67,4 +67,4 @@ class PersistentOutputMapper:
         return mapper.get()
 
     def get_unsaved_page(self):
-        return self.evt_db.get_last_page()
+        return self.db_mapper.get_last_page()

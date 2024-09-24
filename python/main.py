@@ -9,6 +9,15 @@ from time import time
 import threading
 from os import environ
 
+moments_per_page = 50
+min_silence = 3.0
+min_moment = 1.0
+
+a = 'KEYMOUTH_MOMENTS_PER_PAGE'
+if a in environ:
+    moments_per_page = int(environ[a])
+    assert moments_per_page > 0, f"{a} is set, but it's {environ[a]}"
+
 a = 'KEYMOUTH_RAM_DB'
 if a in environ and environ[a] == 'yes':
     from db.mock import Db
@@ -31,10 +40,6 @@ if a in environ and environ[a] == 'yes':
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-moments_per_page = 50
-min_silence = 3.0
-min_moment = 1.0
 
 id_to_sock = {}
 mutex = threading.Lock()
