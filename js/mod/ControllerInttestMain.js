@@ -103,7 +103,8 @@ const expTwoMoments = [
         [{type: "event", body: "[connected]"}]
     ]},
     {key: 1, time: "-", names: "(#)1", messages: [
-        [{type: "write", body: "late"}]
+        [{type: "write", body: "late"},
+         {type: "erase", body: "x"}]
     ]}
 ]
 const realTwoMoments = []
@@ -113,7 +114,10 @@ for (let i = 0; i < 10; i++) {
     await uri.fetchPutRoom()
     realTwoMoments.push({v: null})
     withController(uri, realTwoMoments[i], function(unlocked, close) {
-        setTimeout(function() {unlocked.onInputChange("late")}, 280)
+        setTimeout(function() {
+            unlocked.onInputChange("latex")
+            unlocked.onInputChange("late")
+        }, 280)
         setTimeout(function() {close()}, 500)
     })
 }
