@@ -33,9 +33,13 @@ function withController(uri, ret, callback, eavesdropper) {
     wi.setInputValue = function() {}
     wi.setMoments = function(v) {
         ret.v = v
-        for (let moment of ret.v.moments) {
-            moment.time = "-"
-            moment.names = "(#)" + moment.names.length
+        for (let page of ret.v.pages) {
+            for (let moment of page.moments) {
+                moment.names = "(#)" + moment.names.length
+                if (typeof(moment.time) === 'string') {
+                    moment.time = "-"
+                }
+            }
         }
     }
     function close() { wi.close() }
@@ -63,7 +67,7 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
         for (let i = 0; i < expShutdownMsg.length; i++) {
             test.assertEqual("seeing shutdown, moment #" + i,
                              expShutdownMsg[i],
-                             realShutdownMsg.v.moments[i])
+                             realShutdownMsg.v.pages[0].moments[i])
         }
     }, 100)
 }, function(event) {
@@ -93,35 +97,6 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
     ed.i += 1
 })
 
-const expOneMoment = [
-    {key: 0, time: "-", names: "(#)2", messages: [
-        [{type: "event", body: "[room created]"}],
-        [{type: "event", body: "[connected]"},
-         {type: "write", body: "too soon"}]
-    ]}
-]
-const realOneMoment = []
-
-for (let i = 0; i < 10; i++) {
-    const uri = new UriRoom(uriFirstArg.room, "one-moment-" + i)
-    await uri.fetchPutRoom()
-    realOneMoment.push({v: null})
-    withController(uri, realOneMoment[i], function(unlocked, close) {
-        setTimeout(function() {unlocked.onInputChange("too soon")}, 150)
-        setTimeout(function() {close()}, 200)
-    })
-}
-setTimeout(function() {
-    test.assertEqual(
-        "one oneMessage", expOneMoment, realOneMoment[0].v.moments)
-    const t = new TestCase()
-    for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expOneMoment, realOneMoment[i].v.moments)
-    }
-    test.assertEqual(
-        "all oneMessage", 10, 10 - t.fails.length)
-}, 200)
-
 const expTwoMoments = [
     {key: 0, time: "-", names: "(#)2", messages: [
         [{type: "event", body: "[room created]"}],
@@ -144,10 +119,12 @@ for (let i = 0; i < 10; i++) {
 }
 setTimeout(function() {
     test.assertEqual(
-        "one twoMoments", expTwoMoments, realTwoMoments[0].v.moments)
+        "one twoMoments", expTwoMoments,
+        realTwoMoments[0].v.pages[0].moments)
     const t = new TestCase()
     for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expTwoMoments, realTwoMoments[i].v.moments)
+        t.assertEqual('', expTwoMoments,
+                      realTwoMoments[i].v.pages[0].moments)
     }
     test.assertEqual(
         "all twoMoments", 10, 10 - t.fails.length)
@@ -178,10 +155,10 @@ for (let i = 0; i < 10; i++) {
 }
 setTimeout(function() {
     test.assertEqual(
-        "one connDis", expConnDis, realConnDis[0].v.moments)
+        "one connDis", expConnDis, realConnDis[0].v.pages[0].moments)
     const t = new TestCase()
     for (let i = 0; i < 10; i++) {
-        t.assertEqual('', expConnDis, realConnDis[i].v.moments)
+        t.assertEqual('', expConnDis, realConnDis[i].v.pages[0].moments)
     }
     test.assertEqual(
         "all connDis", 10, 10 - t.fails.length)

@@ -1,56 +1,19 @@
 import PagesPresenter from './PagesPresenter.js'
 
 export default class Presenter {
-    constructor({maxPages}) {
-        this.maxPages = maxPages
-        if (typeof(maxPages) !== 'number') {
-            throw new Error("typeof(maxPages) = " + typeof(maxPages))
-        }
-        this.p = null
+    constructor({pagesPresenter}) {
+        this.pagesPresenter = pagesPresenter
     }
     pushEvent(event) {
-        if (this.p === null) {
-            try {this._pushFirstBatch(event)}
-            catch (err) {
-                console.error("error pushing initial load:")
-                console.error(event)
-                console.error(err)
-            }
-        }
-        else {
-            try {this._pushOneEvent(event)}
-            catch (err) {
-                console.error("error pushing single event:")
-                console.error(event)
-                console.error(err)
-            }
-        }
+        this.pagesPresenter.pushEvent(event)
     }
-    _pushFirstBatch(event) {
-        this.p = new PagesPresenter({
-            firstPageIdx: event.firstPageIdx,
-            maxPages: this.maxPages,
-        })
-        for (let e of event.events) this.p.pushEvent(e)
-    }
-    _pushOneEvent(event) {
-        this.p.pushEvent(event)
-    }
-    getViewModel(getConnName) {
-        try {return this._getViewModel(getConnName)}
-        catch (err) {
-            console.error("couldn't get the view model")
-            console.error(err)
-            throw err
-        }
-    }
-    _getViewModel(getConnName) {
+    getViewModel() {
         const r = {
             moreTopButton: null,
             moreBottomButton: null,
-            moments: this.p.getViewModel(getConnName)
+            pages: this.pagesPresenter.getViewModel()
         }
-        if (this.p.getTouchesTop() === false) {
+        if (this.pagesPresenter.getTouchesTop() === false) {
             r.moreTopButton = {
                 label: "Load previous messages",
                 onClick: function() {

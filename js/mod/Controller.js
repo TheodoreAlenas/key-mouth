@@ -3,6 +3,8 @@
 
 import Io from './Io.js'
 import Presenter from './Presenter.js'
+import ViewModelMapper from './ViewModelMapper.js'
+import PagesPresenter from './PagesPresenter.js'
 
 export default class Controller {
     setMoments(v) {this._sayUnset('setMoments', v)}
@@ -33,26 +35,20 @@ export default class Controller {
             self.onSocketError(arg)
         }
         this.io = new Io({uri, onReadySocket, onSocketError})
-        this.presenter = new Presenter({maxPages})
+        const nameMapper = {mapName: conn => "Visitor#" + conn}
+        const viewModelMapper = new ViewModelMapper({nameMapper})
+        const pagesPresenter =
+              new PagesPresenter({maxPages, viewModelMapper})
+        this.presenter = new Presenter({pagesPresenter})
         this.io.onEvent(function(event) {
             if (eavesdropper) eavesdropper(event)
             self.presenter.pushEvent(event)
-            self.setMoments(self.presenter.getViewModel(getConnName))
+            self.setMoments(self.presenter.getViewModel())
         })
     }
     close() {
         this.io.close()
     }
-}
-
-class NameMapper {
-    mapName(conn) {
-        return "Visitor#" + conn
-    }
-}
-
-function getConnName(conn) {
-    return "Visitor#" + conn
 }
 
 class Unlocked {

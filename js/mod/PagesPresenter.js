@@ -1,44 +1,57 @@
-import PagePresenter from './PagePresenter.js'
+import ViewModelMapper from './ViewModelMapper.js'
+import Splitter from './Splitter.js'
 
 export default class PagesPresenter {
 
-    constructor({firstPageIdx, maxPages}) {
-        this.firstPageIdx = firstPageIdx
-        this.lastPageIdx = firstPageIdx
+    constructor({maxPages, viewModelMapper}) {
         this.maxPages = maxPages
-        this.above = []
-        this.last = []
+        if (typeof(maxPages) !== 'number') {
+            throw new Error("typeof(maxPages) = " + typeof(maxPages))
+        }
+        this.viewModelMapper = viewModelMapper
+        this.firstPageIdx = null
+        this.lastPageIdx = null
+        this.above = new Splitter()
+        this.last = new Splitter()
+        this.isBeginning = true
     }
     pushEvent(event) {
-        if (event.type === "newPage") {
-            if (this.last.length >= this.maxPages) {
-                this.last.shift(1)
-                this.firstPageIdx += 1
-            }
-            this.last.push(new PagePresenter(event.body))
-            this.lastPageIdx += 1
+        this._pushFirstBatch(event)
+        this.pushEvent = this._pushOneEvent
+    }
+    _pushFirstBatch(event) {
+        try {
+            this.firstPageIdx = event.firstPageIdx
+            this.lastPageIdx = event.firstPageIdx
+            for (let e of event.events) this.last.pushEvent(e)
         }
-        else {
-            this.last[this.last.length - 1].pushEvent(event)
+        catch (err) {
+            console.error("error pushing initial load:")
+            console.error(event)
+            console.error(err)
         }
     }
-    getViewModel(getNames) {
-        const vm = []
-        for (let page of this.last) {
-            for (let moment of page.getMomentViews(getNames)) {
-                vm.push(moment)
+    _pushOneEvent(event) {
+        try {
+            const r = this.last.pushEvent(event)
+            if (r === 'new page') {
+                this.lastPageIdx += 1
+                if (this.last.pages.length > this.maxPages) {
+                    this.last.pages.shift()
+                    this.firstPageIdx += 1
+                }
             }
         }
-        return vm
+        catch (err) {
+            console.error("error pushing event:")
+            console.error(event)
+            console.error(err)
+        }
+    }
+    getViewModel() {
+        return this.viewModelMapper.mapPages(this.last.pages)
     }
     getTouchesTop() {
         return this.firstPageIdx === 0
-    }
-    setPageAbove(page) {
-        if (this.above.length === 0) {
-            this.above.push(page)
-            for (let x of this.last) this.above.push(x)
-            this.above.pop()
-        }
     }
 }

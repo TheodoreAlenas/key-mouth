@@ -1,16 +1,20 @@
 
 // License at the bottom
 
+import accumulateDiffs from './accumulateDiffs.js'
+
 export default class ViewModelMapper {
-    constructor(nameMapper) {
+    constructor({nameMapper}) {
         this.nameMapper = nameMapper
     }
     mapPages(pages) {
         return pages.map(p => this.mapPage(p))
     }
     mapPage(page) {
-        return page.moments.map((m, i) =>
-            this.mapMoment(page.firstMomentIdx + i, m))
+        return {
+            moments: page.moments.map((m, i) =>
+                this.mapMoment(page.firstMomentIdx + i, m))
+        }
     }
     mapMoment(key, moment) {
         const massaged = moment.diffs.map(massageEvent)

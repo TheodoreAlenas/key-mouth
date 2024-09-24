@@ -20,16 +20,18 @@ export default class Splitter {
                 moments: [],
             }
             this.pages.push(this.lastPage)
+            return 'new page'
         }
-        else if (viewEvent.type === 'newMoment') {
+        else if (event.type === 'newMoment') {
             this.lastMoment = {
-                time: viewEvent.body,
+                time: event.body,
                 diffs: []
             }
             this.lastPage.moments.push(this.lastMoment)
         }
         else {
-            this.lastMoment.diffs.push(viewEvent)
+            this.lastMoment.diffs.push(event)
         }
+        return 'not new page'
     }
 }

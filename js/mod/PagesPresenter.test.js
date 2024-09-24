@@ -1,18 +1,22 @@
 import PagesPresenter from './PagesPresenter.js'
+import ViewModelMapper from './ViewModelMapper.js'
 import TestCase from './TestCase.js'
 
 const test = new TestCase('PagesPresenter')
 let p = null
 let v = null
 
-p = new PagesPresenter({firstPageIdx: 0})
-test.assertEqual("firstPageIdx 0 touches top", true, p.getTouchesTop())
+function newPP(n) {
+    return new PagesPresenter({
+        maxPages: n,
+        viewModelMapper: new ViewModelMapper({
+            nameMapper: {mapName: x => 'con' + x}
+        })
+    })
+}
 
-p = new PagesPresenter({firstPageIdx: 1})
-test.assertEqual("firstPageIdx 1 not at top", false, p.getTouchesTop())
-
-p = new PagesPresenter({firstPageIdx: 0})
-v = p.getViewModel(x => "con" + x)
+p = newPP(1)
+v = p.getViewModel()
 test.assertEqual("none is none", [], v)
 
 const exp = [
@@ -24,58 +28,62 @@ const exp = [
     ]},
 ]
 
-p = new PagesPresenter({firstPageIdx: 0})
-v = p.getViewModel(x => "con" + x)
+p = newPP(2)
+p.pushEvent({firstPageIdx: 0, events: []})
+v = p.getViewModel()
 test.assertEqual("no page, no moment, empty view model", [], v)
+test.assertEqual("no events, touches top", true, p.getTouchesTop())
 
-p = new PagesPresenter({firstPageIdx: 0})
+p = newPP(2)
+p.pushEvent({firstPageIdx: 0, events: []})
 p.pushEvent({connId: 0, type: "newPage", body: 7})
 p.pushEvent({connId: 0, type: "newMoment", body: 732.0})
 p.pushEvent({connId: 4, type: "write", body: "one"})
-v = p.getViewModel(x => "con" + x)
-for (let e of v) e.time = 'times erased'
-test.assertEqual("1 page 1 moment", [exp[0]], v)
+v = p.getViewModel()
+for (let e of v) for (let e2 of e.moments) e2.time = 'times erased'
+test.assertEqual("1 page 1 moment", [{moments: [exp[0]]}], v)
+test.assertEqual("1 page, touches top", true, p.getTouchesTop())
 
-p = new PagesPresenter({firstPageIdx: 0})
+p = newPP(2)
+p.pushEvent({firstPageIdx: 0, events: []})
 p.pushEvent({connId: 0, type: "newPage", body: 7})
 p.pushEvent({connId: 0, type: "newMoment", body: 732.0})
 p.pushEvent({connId: 4, type: "write", body: "one"})
 p.pushEvent({connId: 0, type: "newMoment", body: 1024.0})
 p.pushEvent({connId: 4, type: "write", body: "two"})
-v = p.getViewModel(x => "con" + x)
-for (let e of v) e.time = 'times erased'
-test.assertEqual("1 page 2 moments", exp, v)
+v = p.getViewModel()
+for (let e of v) for (let e2 of e.moments) e2.time = 'times erased'
+test.assertEqual("1 page 2 moments", [{moments: exp}], v)
+test.assertEqual("1 page 2 moments, at top", true, p.getTouchesTop())
 
-p = new PagesPresenter({firstPageIdx: 0})
+p = newPP(2)
+p.pushEvent({firstPageIdx: 0, events: []})
 p.pushEvent({connId: 0, type: "newPage", body: 7})
 p.pushEvent({connId: 0, type: "newMoment", body: 732.0})
 p.pushEvent({connId: 4, type: "write", body: "one"})
 p.pushEvent({connId: 0, type: "newPage", body: 8})
 p.pushEvent({connId: 0, type: "newMoment", body: 1024.0})
 p.pushEvent({connId: 4, type: "write", body: "two"})
-v = p.getViewModel(x => "con" + x)
-for (let e of v) e.time = 'times erased'
-test.assertEqual("2 pages 1 moment each", exp, v)
+v = p.getViewModel()
+for (let e of v) for (let e2 of e.moments) e2.time = 'times erased'
+test.assertEqual("2 pages 1 moment each",
+                 [{moments: [exp[0]]}, {moments: [exp[1]]}],
+                 v)
+test.assertEqual("2 pages, still at top", true, p.getTouchesTop())
 
-function redoV() {
-    v = p.getViewModel(x => "con" + x)
-    for (let e of v) e.time = 'times erased'
-}
-
-p.keepLast(3)
-redoV()
-test.assertEqual("keepLast(excess) doesn't bother", exp, v)
-
-p.keepLast(2)
-redoV()
-test.assertEqual("keepLast(len) doesn't bother", exp, v)
-
-p.keepLast(1)
-redoV()
-test.assertEqual("keepLast(1) keeps last 1", [exp[1]], v)
-
-p.keepLast(0)
-redoV()
-test.assertEqual("keepLast(0) makes []", [], v)
+p = newPP(1)
+p.pushEvent({firstPageIdx: 0, events: []})
+p.pushEvent({connId: 0, type: "newPage", body: 7})
+p.pushEvent({connId: 0, type: "newMoment", body: 732.0})
+p.pushEvent({connId: 4, type: "write", body: "one"})
+p.pushEvent({connId: 0, type: "newPage", body: 8})
+p.pushEvent({connId: 0, type: "newMoment", body: 1024.0})
+p.pushEvent({connId: 4, type: "write", body: "two"})
+v = p.getViewModel()
+for (let e of v) for (let e2 of e.moments) e2.time = 'times erased'
+test.assertEqual("maxPages 1, 2 pages, got last",
+                 [{moments: [exp[1]]}],
+                 v)
+test.assertEqual("pages > max, not at top", false, p.getTouchesTop())
 
 export default test
