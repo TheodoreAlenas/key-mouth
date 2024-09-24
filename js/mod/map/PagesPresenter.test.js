@@ -1,6 +1,6 @@
 import PagesPresenter from './PagesPresenter.js'
 import ViewModelMapper from './ViewModelMapper.js'
-import TestCase from './TestCase.js'
+import TestCase from '../TestCase.js'
 
 const test = new TestCase('PagesPresenter')
 let p = null

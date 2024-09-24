@@ -1,10 +1,10 @@
 
 // License at the bottom
 
-import Io from './Io.js'
-import Presenter from './Presenter.js'
-import ViewModelMapper from './ViewModelMapper.js'
-import PagesPresenter from './PagesPresenter.js'
+import Io from './io/Io.js'
+import Presenter from './map/Presenter.js'
+import ViewModelMapper from './map/ViewModelMapper.js'
+import PagesPresenter from './map/PagesPresenter.js'
 
 export default class Controller {
     setMoments(v) {this._sayUnset('setMoments', v)}

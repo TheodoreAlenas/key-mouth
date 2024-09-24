@@ -1,4 +1,4 @@
-import UriHome from '../mod/UriHome.js'
+import UriHome from '../mod/io/UriHome.js'
 import Link from 'next/link'
 import { useEffect } from "react"
 

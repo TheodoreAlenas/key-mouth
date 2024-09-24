@@ -1,5 +1,5 @@
-import UriHome from '../mod/UriHome.js'
-import uriFirstArg from '../mod/uriFirstArg.js'
+import UriHome from '../mod/io/UriHome.js'
+import uriFirstArg from '../mod/io/uriFirstArg.js'
 import RoomList from '../components/roomList.jsx'
 import Layout from '../components/layout.jsx'
 import styles from '../components/styles.module.css'

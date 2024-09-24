@@ -1,5 +1,5 @@
-import t1 from './accumulateDiffs.test.js'
-import t2 from './PagesPresenter.test.js'
+import t1 from './map/accumulateDiffs.test.js'
+import t2 from './map/PagesPresenter.test.js'
 
 t1.printResults()
 t2.printResults()

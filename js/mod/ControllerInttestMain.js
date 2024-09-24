@@ -1,6 +1,6 @@
 import Controller from './Controller.js'
-import UriRoom from './UriRoom.js'
-import uriFirstArg from './uriFirstArg.js'
+import UriRoom from './io/UriRoom.js'
+import uriFirstArg from './io/uriFirstArg.js'
 import TestCase from './TestCase.js'
 
 const test = new TestCase('integration test')

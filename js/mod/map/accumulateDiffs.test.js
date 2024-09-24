@@ -1,5 +1,5 @@
 import accumulateDiffs from './accumulateDiffs.js'
-import TestCase from './TestCase.js'
+import TestCase from '../TestCase.js'
 
 const test = new TestCase('accumulateDiffs')
 
