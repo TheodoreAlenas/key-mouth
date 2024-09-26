@@ -3,20 +3,22 @@
 
 export default class TestCase {
     constructor(name) {
-        this.line = name + ': '
-        this.fails = []  // yes it's public
+        this.name = name
+        this.line = ''
+        this.fails = []
+    }
+    wrap(f) {
+        try {f(); this.line += '.'}
+        catch (err) {this.fails.push(err); this.line += 'F'}
     }
     assertEqual(name, a, b) {
-        if (isSubset(a, b) && isSubset(b, a)) {
-            this.line += '.'
-        }
-        else {
-            this.line += 'F'
-            this.fails.push({failed: name, a, b})
+        if (!this.equal(a, b)) {
+            const e = {testCase: this.name, name, a, b}
+            throw new Error(JSON.stringify(e, null, 2))
         }
     }
-    printResults() {
-        console.log(this.line + JSON.stringify(this.fails, null, 2))
+    equal(a, b) {
+        return isSubset(a, b) && isSubset(b, a)
     }
 }
 

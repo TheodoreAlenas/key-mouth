@@ -5,6 +5,7 @@ import Io from './io/Io.js'
 import Presenter from './map/Presenter.js'
 import ViewModelMapper from './map/ViewModelMapper.js'
 import PagesPresenter from './map/PagesPresenter.js'
+import Splitter from './map/Splitter.js'
 
 export default class Controller {
     setMoments(v) {this._sayUnset('setMoments', v)}
@@ -37,8 +38,9 @@ export default class Controller {
         this.io = new Io({uri, onReadySocket, onSocketError})
         const nameMapper = {mapName: conn => "Visitor#" + conn}
         const viewModelMapper = new ViewModelMapper({nameMapper})
+        const splitter = new Splitter()
         const pagesPresenter =
-              new PagesPresenter({maxPages, viewModelMapper})
+              new PagesPresenter({maxPages, viewModelMapper, splitter})
         this.presenter = new Presenter({pagesPresenter})
         this.io.onEvent(function(event) {
             if (eavesdropper) eavesdropper(event)

@@ -4,6 +4,9 @@ import uriFirstArg from './io/uriFirstArg.js'
 import TestCase from './TestCase.js'
 
 const test = new TestCase('integration test')
+function wrapAssertEq(name, a, b) {
+    test.wrap(function() {test.assertEqual(name, a, b)})
+}
 
 const uriRestarted = new UriRoom(uriFirstArg.room, "pre\nmade")
 const uriMissing = new UriRoom(uriFirstArg.room, "doesn't exist")
@@ -11,20 +14,20 @@ const uriNew = new UriRoom(uriFirstArg.room, "new\n room")
 let res = null
 
 res = await uriNew.fetchPutRoom()
-test.assertEqual("inttest widget injected a 500", 500, res.status)
+wrapAssertEq("inttest widget injected a 500", 500, res.status)
 
 res = await uriNew.fetchPutRoom()
-test.assertEqual("server mutex released and got 200", 200, res.status)
+wrapAssertEq("server mutex released and got 200", 200, res.status)
 
 res = await uriNew.fetchPutRoom()
-test.assertEqual("creating room twice throws error", 409, res.status)
+wrapAssertEq("creating room twice throws error", 409, res.status)
 
 let shouldThrow = new Controller({uri: uriMissing, maxPages: 10})
 let threw = false
 shouldThrow.onSocketError = function() {threw = true}
 shouldThrow.onReadySocket = function() {}
 setTimeout(function() {
-    test.assertEqual("missing room returns error", true, threw)
+    wrapAssertEq("missing room returns error", true, threw)
 }, 100)
 
 function withController(uri, ret, callback, eavesdropper) {
@@ -65,7 +68,7 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
     setTimeout(function() {
         close()
         for (let i = 0; i < expShutdownMsg.length; i++) {
-            test.assertEqual("seeing shutdown, moment #" + i,
+            wrapAssertEq("seeing shutdown, moment #" + i,
                              expShutdownMsg[i],
                              realShutdownMsg.v.pages[0].moments[i])
         }
@@ -73,7 +76,7 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
 }, function(event) {
     const ed = forEavesDropper
     if (ed.i === 0) {
-        test.assertEqual(
+        wrapAssertEq(
             "expected shutdown init event types",
             [
                 "newPage",
@@ -86,13 +89,13 @@ withController(uriRestarted, realShutdownMsg, function(_, close) {
         )
     }
     else if (ed.i === 1) {
-        test.assertEqual("shutdown event #1", "newMoment", event.type)
+        wrapAssertEq("shutdown event #1", "newMoment", event.type)
     }
     else if (ed.i === 2) {
-        test.assertEqual("shutdown event #2", "connect", event.type)
+        wrapAssertEq("shutdown event #2", "connect", event.type)
     }
     else {
-        test.assertEqual("no excess events on shutdown", true, false)
+        wrapAssertEq("no excess events on shutdown", true, false)
     }
     ed.i += 1
 })
@@ -121,13 +124,12 @@ async function speakLate(i) {
         setTimeout(function() {
             close()
             const t = new TestCase()
-            t.assertEqual('2 moments', expTwoMoments,
-                          real.v.pages[0].moments)
-            twoMomentRes += t.fails.length ? 'F' : '.'
-            if (twoMomentNooneReported && t.fails.length) {
+            const eq = t.equal(expTwoMoments, real.v.pages[0].moments)
+            twoMomentRes += eq ? '.' : 'F'
+            if (twoMomentNooneReported && eq) {
                 twoMomentNooneReported = false
-                test.assertEqual('2 moments', expTwoMoments,
-                                 real.v.pages[0].moments)
+                wrapAssertEq('2 moments', expTwoMoments,
+                             real.v.pages[0].moments)
             }
         }, 200)
     }
@@ -146,10 +148,8 @@ Promise.all(promises)
 setTimeout(function() {
     let hope = ""
     for (let i = 0; i < n; i++) hope += '.'
-    test.assertEqual("all twoMoment tests", hope, twoMomentRes)
-}, 800)
-
-setTimeout(function() {
-    test.printResults()
+    wrapAssertEq("all twoMoment tests", hope, twoMomentRes)
+    console.log(test.line)
+    for (let e of test.fails) console.error(e)
     if (test.fails.length > 0) process.exit(1)
-}, 820)
+}, 800)

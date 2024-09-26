@@ -15,7 +15,15 @@ export default class Presenter {
         }
         if (this.pagesPresenter.getTouchesTop() === false) {
             r.moreTopButton = {
-                label: "Load previous messages",
+                label: "Load previous moments",
+                onClick: function() {
+                    alert("not implemented yet")
+                }
+            }
+        }
+        if (this.pagesPresenter.getIsDetached()) {
+            r.moreBottomButton = {
+                label: "Load later moments",
                 onClick: function() {
                     alert("not implemented yet")
                 }

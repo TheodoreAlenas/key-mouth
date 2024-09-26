@@ -3,38 +3,42 @@ import TestCase from '../TestCase.js'
 
 const test = new TestCase('accumulateDiffs')
 
-test.assertEqual(
+function wrapAndAssertEqual(name, a, b) {
+    test.wrap(function() { test.assertEqual(name, a, b) })
+}
+
+wrapAndAssertEqual(
     "none is none",
     [],
     accumulateDiffs([]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "one writing",
     [{connId: 4, message: [{type: "write", body: "hello"}]}],
     accumulateDiffs(
         [{connId: 4, type: "write", body: "hello"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "one deletion",
     [{connId: 4, message: [{type: "delete", body: "hello"}]}],
     accumulateDiffs(
         [{connId: 4, type: "delete", body: "hello"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "two writings",
     [{connId: 4, message: [{type: "write", body: "hello"}]}],
     accumulateDiffs(
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "write", body: "llo"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "two deletions",
     [{connId: 4, message: [{type: "delete", body: "hello"}]}],
     accumulateDiffs(
         [{connId: 4, type: "delete", body: "llo"},
          {connId: 4, type: "delete", body: "he"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 2 delete 1",
     [{connId: 4, message: [{type: "write", body: "h"},
                                  {type: "erase", body: "e"}]}],
@@ -42,14 +46,14 @@ test.assertEqual(
         [{connId: 4, type: "write", body: "he"},
          {connId: 4, type: "delete", body: "e"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 1 delete 1",
     [{connId: 4, message: [{type: "erase", body: "h"}]}],
     accumulateDiffs(
         [{connId: 4, type: "write", body: "h"},
          {connId: 4, type: "delete", body: "h"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 2 delete 1 delete 1",
     [{connId: 4, message: [{type: "erase", body: "he"}]}],
     accumulateDiffs(
@@ -57,7 +61,7 @@ test.assertEqual(
          {connId: 4, type: "delete", body: "e"},
          {connId: 4, type: "delete", body: "h"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 1 delete 1 delete 1",
     [{connId: 4, message: [{type: "delete", body: "h"},
                                  {type: "erase", body: "e"}]}],
@@ -66,7 +70,7 @@ test.assertEqual(
          {connId: 4, type: "delete", body: "e"},
          {connId: 4, type: "delete", body: "h"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 2 delete 1 delete 1 delete 1",
     [{connId: 4, message: [{type: "delete", body: "he"},
                                  {type: "erase", body: "llo"}]}],
@@ -76,7 +80,7 @@ test.assertEqual(
          {connId: 4, type: "delete", body: "e"},
          {connId: 4, type: "delete", body: "h"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 1 delete 1 write 1 delete 1",
     [{connId: 4, message: [{type: "erase", body: "he"},
                                  {type: "erase", body: "llo"}]}],
@@ -86,7 +90,7 @@ test.assertEqual(
          {connId: 4, type: "write", body: "llo"},
          {connId: 4, type: "delete", body: "llo"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "write 2 delete 1 delete 1 delete 1 odd event",
     [{connId: 4, message: [
         {type: "delete", body: "he"},
@@ -101,7 +105,7 @@ test.assertEqual(
         ]))
 
 
-test.assertEqual(
+wrapAndAssertEqual(
     "a writes, b writes",
     [{connId: 4, message: [{type: "write", body: "hi"}]},
      {connId: 5, message: [{type: "write", body: "HELLO"}]}],
@@ -109,7 +113,7 @@ test.assertEqual(
         [{connId: 4, type: "write", body: "hi"},
          {connId: 5, type: "write", body: "HELLO"}]))
 
-test.assertEqual(
+wrapAndAssertEqual(
     "a writes, b writes, a writes",
     [{connId: 4, message: [{type: "write", body: "hi"}]},
      {connId: 5, message: [{type: "write", body: "HELLO"}]}],
