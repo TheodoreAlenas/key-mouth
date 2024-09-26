@@ -115,7 +115,7 @@ async def room_delete(room: str):
 
 @app.get("/{room}")
 async def room_get(room: str, start: int, end: int):
-    return await wrap(logic.get_moments_range, (room, start, end))
+    return await wrap(logic.get_pages_range, (room, start, end))
 
 
 @app.websocket("/{room}")

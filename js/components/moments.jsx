@@ -5,7 +5,7 @@ import Moment from './moment.jsx'
 export default function Moments({o, styles}) {
     const [state, setState] = useState({
         atBottom: true,
-        fromO: {moreTopButton: null, moments: []}
+        fromO: {moreTopButton: null, pages: [], moreBottomButton: null}
     })
     const ref = useRef(null)
     useEffect(function() {
@@ -38,6 +38,17 @@ export default function Moments({o, styles}) {
             for (let moment of page.moments) {
                 pres.push(Moment({moment, styles}))
             }
+        }
+        const mb = state.fromO.moreBottomButton
+        if (state.fromO !== null && mb !== null) {
+            pres.push(
+                <button
+                    key="moreBottomButton"
+                    onClick={mb.onClick}
+                    className={styles.button + ' ' +
+                               styles.moreBottomButton}
+                >{mb.label}</button>
+            )
         }
         finalPres = pres
     }

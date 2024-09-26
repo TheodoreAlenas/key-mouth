@@ -15,6 +15,12 @@ export default class PageIndexTracker {
     getLength() {
         return this.screen.length
     }
+    getPreviousPageIdx() {
+        return this.firstPageIdx - 1
+    }
+    getNextPageIdx() {
+        return this.firstPageIdx + this.screen.length
+    }
     initPageIdx(idx) {
         this.firstPageIdx = idx
         this.lastPageIdx = idx

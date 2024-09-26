@@ -66,6 +66,12 @@ export default class PagesPresenter {
     getIsDetached() {
         return this.pageIndexTracker.getIsDetached()
     }
+    getPreviousPageIdx() {
+        return this.pageIndexTracker.getPreviousPageIdx()
+    }
+    getNextPageIdx() {
+        return this.pageIndexTracker.getNextPageIdx()
+    }
     prependPage(page) {
         const p = this.pageIndexTracker
         if (p.getLength() >= this.maxViewLength) p.pop()

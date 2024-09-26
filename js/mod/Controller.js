@@ -41,7 +41,15 @@ export default class Controller {
         const splitter = new Splitter()
         const pagesPresenter =
               new PagesPresenter({maxPages, viewModelMapper, splitter})
-        this.presenter = new Presenter({pagesPresenter})
+        function withPage(i, f) {
+            self.io.withPagesRange(i, i+1, function(events) {
+                const splitter = new Splitter()
+                for (let event of events) splitter.pushEvent(event)
+                f(splitter.lastPage)
+                self.setMoments(self.presenter.getViewModel())
+            })
+        }
+        this.presenter = new Presenter({pagesPresenter, withPage})
         this.io.onEvent(function(event) {
             if (eavesdropper) eavesdropper(event)
             self.presenter.pushEvent(event)

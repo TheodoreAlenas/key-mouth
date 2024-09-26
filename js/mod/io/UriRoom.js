@@ -11,7 +11,7 @@ export default class UriRoom {
     lastMoments() {
         return this.api
     }
-    momentsRange(start, end) {
+    pagesRange(start, end) {
         return this.api + "?start=" + start + "&end=" + end
     }
     fetchPutRoom() {

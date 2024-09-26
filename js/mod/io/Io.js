@@ -34,14 +34,14 @@ export default class Io {
             }
         }
     }
-    withMomentsRange(start, end, callback) {
-        const u = this.uri.momentsRange(start, end)
+    withPagesRange(start, end, callback) {
+        const u = this.uri.pagesRange(start, end)
         withJsonFetched(u, function(res) {
             try {
                 callback(res)
             }
             catch (err) {
-                console.error("Error on moment range callback, res = " +
+                console.error("Error on pages range callback, res = " +
                               JSON.stringify(res))
                 throw err
             }
