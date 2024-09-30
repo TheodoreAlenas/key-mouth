@@ -8,63 +8,67 @@ from pymongo.errors import DuplicateKeyError
 from dataclasses import dataclass
 
 
-class RoomMoments:
+@dataclass
+class LastPages:
+    pages: list
+    first_page_idx: int
+    first_moment_idx: int
 
-    def __init__(self, room_id, n, last_moment_time, name, db):
-        self.last_moment_time = last_moment_time
-        self.n = n
+
+class DbRoom:
+
+    def __init__(self, room_id, db):
         self.room_id = room_id
-        self.name = name
         self._db = db
 
     def rename(self, name):
-        self._db['rooms'].update_one(
+        self._db.update_one(
             {'_id': self.room_id},
             {'$set': {'name': name}}
         )
-        self.name = name
 
-    def add_moment(self, moment):
-        self._db['rooms'].update_one(
+    def push_page(self, page):
+        self._db.update_one(
             {"_id": self.room_id},
-            {"$push": {"moments": moment}}
+            {"$push": {"pages": page}}
         )
-        self.n += 1
-        self.last_moment_time = moment['time']
 
-    def get_last_few(self):
-        ms = self._db['rooms'].find_one(
+    def get_last_pages(self, n):
+        r = self._db.find_one(
             {"_id": self.room_id},
-            {"moments": {"$slice": [-30, 30]}}
+            {
+                "pages": {"$slice": [-n, n]},
+                "n": {"$size": "$pages"},
+            }
         )
-        m = ms['moments']
-        return {
-            "start": self.n - len(m),
-            "end": self.n,
-            "moments": m
-        }
+        return LastPages(
+            pages=r['pages'],
+            first_page_idx=r['n'] - len(r['pages'])
+        )
 
     def get_len(self):
-        return self.n
+        return self.pages_n
 
     def get_range(self, start, end):
-        ms = self._db['rooms'].find_one(
+        ms = self._db.find_one(
             {"_id": self.room_id},
-            {"moments": {"$slice": [start, end - start]}}
+            {"pages": {"$slice": [start, end - start]}}
         )
-        return ms['moments']
+        return ms['pages']
 
 
 @dataclass
 class RoomRestartData:
     room_id: any
     name: str
-    last_moment_time: float
+    last_page_first_moment_idx: int
+    pages_n: int
 
 
 @dataclass
 class ReloadableState:
     last_id: any
+    unsaved_pages: dict | None
 
 
 def delete_test_db():
@@ -81,22 +85,12 @@ class Db:
         self._client = MongoClient(db.server_only_gitig.db_uri)
         self._db = self._client[db_name]
         self._rooms = {}
-        projection = {
-            'n': {'$size': '$moments'},
-            'last': {'$arrayElemAt': ['$moments', -1]}
-        }
-        n_last = self._db['rooms'].aggregate([{'$project': projection}])
-        names = self._db['rooms'].find({}, ['name'])
-        for nl, nm in zip(n_last, names):
-            name = None
-            if 'name' in nm:
-                name = nm['name']
-            self._rooms[nl['_id']] = RoomMoments(
-                room_id=nl['_id'],
-                n=nl['n'],
-                last_moment_time=nl['last']['time'],
-                name=name,
-                db=self._db
+        results = self._db['rooms'].find_many({}, ['name'])
+        for r in results:
+            self._rooms[r['_id']] = DbRoom(
+                room_id=r['_id'],
+                name=r['name'] if 'name' in r else None,
+                db=self._db['rooms'],
             )
 
     def drop_keymouth_test(self):
@@ -107,16 +101,13 @@ class Db:
 
     def create_room(self, time, room_id):
         try:
-            room = RoomMoments(
+            room = DbRoom(
                 room_id=room_id,
-                n=0,
-                last_moment_time=time,
-                name=None,
-                db=self._db
+                db=self._db['rooms'],
             )
             self._db['rooms'].insert_one({
                 "_id": room_id,
-                "moments": []
+                "pages": []
             })
             self._rooms[room_id] = room
         except DuplicateKeyError:
@@ -126,7 +117,7 @@ class Db:
     def delete_room(self, room_id):
         try:
             if not room_id in self._rooms:
-                raise RoomDoesntExistException("")
+                raise RoomDoesntExistException("not found in RAM")
             self._db['rooms'].delete_one({'_id': room_id})
             self._rooms.pop(room_id)
         except Exception as e:
@@ -135,35 +126,43 @@ class Db:
                 e.message
             )
 
-    def get_room(self, name) -> RoomMoments:
+    def get_room(self, name) -> DbRoom:
         if not name in self._rooms:
-            raise RoomDoesntExistException("[DbMock] room '" + name +
-                                           "' doesn't exist")
+            raise RoomDoesntExistException("[Db] room '" + name +
+                                           "' not found in RAM")
         return self._rooms[name]
 
     def get_restart_data(self):
         res = []
-        for room_id in self._rooms:
-            r = self._rooms[room_id]
+        names = self._db['rooms'].find_many({}, ['name'])
+        ns = self._db['rooms'].aggregate([{
+            '$project': {'n': {'$size': '$moments'}}
+        }])
+        for name, n in zip(names, ns):
             res.append(RoomRestartData(
-                room_id=room_id,
-                name=r.name,
-                last_moment_time=r.last_moment_time
+                room_id=name['_id'],
+                name=name['name'],
+                pages_n=n['n'],
             ))
         return res
 
-    def save_state(self, last_id):
-        r = self._db['reloadableState'].update_one(
-            {}, {"$set": {'lastId': last_id}})
+    def set_reloadable_state(self, last_id, unsaved_pages):
+        d = {
+            'lastId': last_id,
+            'unsavedPages': unsaved_pages,
+        }
+        r = self._db['reloadableState'].update_one({}, {"$set": d})
         if r.modified_count != 1:
-            self._db['reloadableState'].insert_one(
-                {'lastId': last_id})
+            self._db['reloadableState'].insert_one(d)
 
-    def reload_state(self):
+    def get_reloadable_state(self):
         s = self._db['reloadableState'].find_one({})
         if s is None:
             return None
-        return ReloadableState(last_id=s['lastId'])
+        return ReloadableState(
+            last_id=s['lastId'],
+            unsaved_pages=s['unsavedPages'],
+        )
 
 
 """

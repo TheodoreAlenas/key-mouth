@@ -9,20 +9,14 @@ from dataclasses import dataclass
 class LastPages:
     pages: list
     first_page_idx: int
-    first_moment_idx: int
 
 
-class RoomMoments:
+class DbRoom:
 
     def __init__(self, room_id):
         self.room_id = room_id
         self.name = None
         self.pages = []
-
-    def get_last_page_first_moment_idx(self):
-        if self.pages == []:
-            return 0
-        return self.pages[-1]['firstMomentIdx']
 
     def rename(self, name):
         self.name = name
@@ -30,15 +24,16 @@ class RoomMoments:
     def push_page(self, page):
         self.pages.append(page)
 
-    def get_last_pages(self):
+    def get_last_pages(self, n):
+        if len(self.pages) < n:
+            return LastPages(
+                pages=self.pages,
+                first_page_idx=0,
+            )
         return LastPages(
-            pages=self.pages,
-            first_page_idx=0,
-            first_moment_idx=0
+            pages=self.pages[-n:],
+            first_page_idx=len(self.pages) - n,
         )
-
-    def get_len(self):
-        return len(self.pages)
 
     def get_range(self, start, end):
         return self.pages[start:end]
@@ -48,7 +43,6 @@ class RoomMoments:
 class RoomRestartData:
     room_id: any
     name: str
-    last_page_first_moment_idx: int
     pages_n: int
 
 
@@ -71,7 +65,7 @@ class Db:
         if room_id in self.rooms:
             raise RoomExistsException("[DbMock] room '" + room_id +
                                       "' already exists")
-        self.rooms[room_id] = RoomMoments(room_id)
+        self.rooms[room_id] = DbRoom(room_id)
 
     def delete_room(self, room_id):
         if not room_id in self.rooms:
@@ -79,7 +73,7 @@ class Db:
                                            "' doesnt exist")
         self.rooms.pop(room_id)
 
-    def get_room(self, room_id) -> RoomMoments:
+    def get_room(self, room_id) -> DbRoom:
         if not room_id in self.rooms:
             raise RoomDoesntExistException("[DbMock] room '" + room_id +
                                            "' doesn't exist")
@@ -92,9 +86,7 @@ class Db:
             res.append(RoomRestartData(
                 room_id=room_id,
                 name=r.name,
-                last_page_first_moment_idx=
-                r.get_last_page_first_moment_idx(),
-                pages_n=len(r.pages)
+                pages_n=len(r.pages),
             ))
         return res
 

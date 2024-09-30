@@ -14,7 +14,9 @@ cd "$secret_uploaded"/python
 python run_unit_tests.py
 python db_test.py
 
-secret_kill_old_with kill -s TERM
-secret_wrapper uvicorn main:app
+if ! [ "x$*" = "xn" ]; then
+    secret_kill_old_with kill -s TERM
+    secret_wrapper uvicorn main:app
+fi
 
 echo "done"

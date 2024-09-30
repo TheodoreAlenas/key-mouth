@@ -22,7 +22,9 @@ class A(unittest.TestCase):
 
     def test_push_store_get(self):
         self.o.save_last_page()
-        b = self.o.get_last_pages()['events']
+        b = self.o.get_last_pages(n=1)['events']
+        self.assertEqual(self.a, b)
+        b = self.o.get_last_pages(n=2)['events']
         self.assertEqual(self.a, b)
 
     def test_push_store_push_store_get(self):
@@ -31,13 +33,18 @@ class A(unittest.TestCase):
         self.a.append(self.o.push(0, 'newMoment', 10.0))
         self.a.append(self.o.push(1, 'write', 'b'))
         self.o.save_last_page()
-        b = self.o.get_last_pages()['events']
+        b = self.o.get_last_pages(n=2)['events']
         self.assertEqual(self.a, b)
+        b = self.o.get_last_pages(n=1)['events']
+        self.assertNotEqual(self.a, b)
+        self.assertEqual(self.a[-len(b):], b)
 
     def test_push_push_store_get(self):
         self.a.append(self.o.push(1, 'write', 'b'))
         self.o.save_last_page()
-        b = self.o.get_last_pages()['events']
+        b = self.o.get_last_pages(n=1)['events']
+        self.assertEqual(self.a, b)
+        b = self.o.get_last_pages(n=2)['events']
         self.assertEqual(self.a, b)
 
     def test_push_store_push_store_get_ranges(self):

@@ -1,35 +1,31 @@
 #!/bin/sh
+# stands for `synchronize.' Doesn't deploy as-is.
+
+main() {
+    case "$*" in
+        ('') package_for_sending && send_all && echo "done" ;;
+        (p) package_for_sending ;;
+        (*) sed '/^# end of help/q' >&2 && exit 1 ;;
+    esac
+}
+# end of help
 
 set -e
-
-if ! [ $# = 0 ]; then
-    echo "no args, stands for 'synchronize' and DOESN'T DEPLOY" >&2
-    exit 1
-fi
-
 cd ..
-
-(
-    cd git-ignores
-    mkdir -p deploy.gitig
-    cd deploy.gitig
-    if [ -e tmp-py ]; then rm -rf tmp-py; fi
-    mkdir -p tmp-py/db python static sys
-)
-
 d=git-ignores/deploy.gitig
 
-rsync python/*.py $d/tmp-py/
-rsync python/*.ini $d/tmp-py/
-rsync python/db/*.py $d/tmp-py/db/
-rsync -r --delete $d/tmp-py/ $d/python/
-rm -r $d/tmp-py
-rsync -r --delete git-ignores/front-static-serve.gitig/ $d/static/
-rsync -r --delete server-scripts/ $d/sys/
+package_for_sending() {
+    mkdir -p $d
+    mkdir -p $d/python $d/static $d/sys
+    (cd python && git ls-files) \
+        | rsync --archive --delete --files-from=- python $d/python
+    rsync --archive --delete git-ignores/front-static-serve.gitig/ $d/static/
+    rsync --archive --delete server-scripts/ $d/sys/
+}
+send_all() {
+    . sys/secrets.gitig.sh
+    echo "rsync to remote..."
+    rsync --archive --compress --delete $d/ "$secret_upload"/
+}
 
-. sys/secrets.gitig.sh
-
-echo "rsync to remote..."
-rsync -rz --delete $d/ "$secret_upload"/
-
-echo "done"
+main "$@"

@@ -13,7 +13,7 @@ class Connection:
 
     def connect(self, time, _):
         self.room.conns.append(self.conn_id)
-        last_few = self.room.pers_out_map.get_last_pages()
+        last_few = self.room.pers_out_map.get_last_pages(n=1)
         conn_msg = self._handle_parsed(time, "connect")
         return ([(self.conn_id, last_few)] + conn_msg, self)
 

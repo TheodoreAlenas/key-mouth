@@ -1,4 +1,5 @@
-from db.event_adapter import DbMapper, db_model_to_events
+from db.event_adapter import \
+    DbMapper, db_model_to_events, get_first_moment_idx
 from lib.OutputMapper import OutputMapper
 from dataclasses import dataclass
 
@@ -40,16 +41,17 @@ class PersistentOutputMapper:
         self.db_mapper.push_event(event)
         return self.output_mapper.push(event)
 
-    def get_last_pages(self):
-        l = self.db.get_last_pages()
+    def get_last_pages(self, n):
+        l = self.db.get_last_pages(n=n)
         events = db_model_to_events(l.pages)
-        a = OutputMapper(first_moment_idx=l.first_moment_idx)
+        first_moment_idx = get_first_moment_idx(l.pages)
+        a = OutputMapper(first_moment_idx=first_moment_idx)
         for e in events:
             a.push(e)
         from_db = a.get()
         not_yet_in_db = self.output_mapper.get()
         return {
-            "firstMomentIdx": l.first_moment_idx,
+            "firstMomentIdx": first_moment_idx,
             "firstPageIdx": l.first_page_idx,
             "events": from_db + not_yet_in_db
         }

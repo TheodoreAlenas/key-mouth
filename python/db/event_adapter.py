@@ -57,3 +57,8 @@ def db_model_to_events(pages):
 
     return events
 
+
+def get_first_moment_idx(pages):
+    if len(pages) == 0:
+        return 0
+    return pages[0]['firstMomentIdx']
