@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+if ! [ $# = 0 ]; then
+    echo "no args, only test" >&2
+    exit 1
+fi
+
+. ./secrets.gitig.sh
+
+cd "$secret_uploaded"/python
+. "$secret_venv"/bin/activate
+python run_unit_tests.py
+python db_test.py
+
+echo "done"

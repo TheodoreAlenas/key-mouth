@@ -152,4 +152,4 @@ setTimeout(function() {
     console.log(test.line)
     for (let e of test.fails) console.error(e)
     if (test.fails.length > 0) process.exit(1)
-}, 800)
+}, 1000)

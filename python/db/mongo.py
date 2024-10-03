@@ -85,7 +85,7 @@ class Db:
         self._client = MongoClient(db.server_only_gitig.db_uri)
         self._db = self._client[db_name]
         self._rooms = {}
-        results = self._db['rooms'].find_many({}, ['name'])
+        results = self._db['rooms'].find({}, ['name'])
         for r in results:
             self._rooms[r['_id']] = DbRoom(
                 room_id=r['_id'],
@@ -134,7 +134,7 @@ class Db:
 
     def get_restart_data(self):
         res = []
-        names = self._db['rooms'].find_many({}, ['name'])
+        names = self._db['rooms'].find({}, ['name'])
         ns = self._db['rooms'].aggregate([{
             '$project': {'n': {'$size': '$moments'}}
         }])

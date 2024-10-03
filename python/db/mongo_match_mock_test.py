@@ -4,31 +4,26 @@ import unittest
 from dataclasses import dataclass
 
 
-class NoException:
-    args = None
-
-
-@dataclass
-class RetAndExc:
-    return_value: any = None
-    exception_type: any = NoException
-
-
 def both(a, b, f, args, kwargs):
-    ar = RetAndExc()
-    br = RetAndExc()
+    aret = bret = aexc = bexc = None
 
     try:
-        ar.return_value = a.__getattribute__(f)(*args, **kwargs)
+        aret = a.__getattribute__(f)(*args, **kwargs)
     except Exception as e:
-        ar.exception_type = type(e)
+        aexc = e
 
     try:
-        br.return_value = b.__getattribute__(f)(*args, **kwargs)
+        bret = b.__getattribute__(f)(*args, **kwargs)
     except Exception as e:
-        br.exception_type = type(e)
+        bexc = e
 
-    return (ar, br)
+    if aexc is not None or bexc is not None:
+        if type(aexc) == type(bexc):
+            raise aexc
+        raise Exception('type(aexc) = ' + type(aexc) + ' but ' +
+                        'type(bexc) = ' + type(bexc))
+    else:
+        return (aret, bret)
 
 
 class BothRooms:
@@ -71,7 +66,6 @@ class A(unittest.TestCase):
     def dbs_get_room(self, name):
         real, mock = self.dbs.get_room(room_id=name)
         self.assertEqual(real.exception_type, mock.exception_type)
-        self.assertEqual(real.exception_args, mock.exception_args)
         rooms = BothRooms(
             real=real.return_value,
             mock=mock.return_value
@@ -81,10 +75,15 @@ class A(unittest.TestCase):
     def test_empty(self):
         self.assertEqual(*self.dbs.get_restart_data())
         self.assertEqual(*self.dbs.delete_room('doesntexist'))
-        self.dbs_get_room("doesntexist")
+        self.assertRaises(RoomDoesntExistException,
+                          self.dbs_get_room("doesntexist"))
 
     def test_create_delete(self):
         self.assertEqual(*self.dbs.create_room(time=10.0,
+                                               room_id="thana sis"))
+        self.assertEqual(*self.dbs.get_restart_data())
+        self.assertRaises(RoomExistsException,
+                          self.dbs.create_room(time=11.0,
                                                room_id="thana sis"))
         self.assertEqual(*self.dbs.get_restart_data())
         self.assertEqual(*self.dbs.delete_room(room_id="thana sis"))

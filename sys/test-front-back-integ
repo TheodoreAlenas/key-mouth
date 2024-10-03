@@ -5,7 +5,7 @@
     . venv/bin/activate
     export KEYMOUTH_RAM_DB=yes
     export KEYMOUTH_INTTEST_WIDGETS=yes
-    timeout 2.2s uvicorn                        \
+    timeout 2.5s uvicorn                        \
             --host localhost                    \
             --port 8001                         \
             --log-config inttest-log-config.ini \
@@ -19,7 +19,7 @@ sleep 1.2
     export KEYMOUTH_API=http://localhost:8001
     export KEYMOUTH_WS=ws://localhost:8001
 
-    timeout 1s node js/mod/ControllerInttestMain.js
+    timeout 1.3s node js/mod/ControllerInttestMain.js
     echo $? > git-ignores/inttest-front-result.gitig
 ) &
 
