@@ -2,42 +2,86 @@
 
 set -e
 
-bspc rule --add '*:emacs:*'   --one-shot desktop=^1
-bspc rule --add 'firefox:*:*' --one-shot desktop=^2
+usage="Usage: $0 ARGS
 
-tmux new-session -d -t key-mouth
+ARGS:
+  -t  start the tmux session
+  -i  use the IP address instead of localhost, for mobile tests
+  -d  start server and client in watch mode
+  -e  open emacs configured
+  -a  attach tmux session
 
-if [ "o$1" = o-l ]
-then ip=localhost
-else ip="$(ip addr | sed -n 's|.*inet \(.*\)/24.*|\1|p')"
-fi
+Examples:
+  $0 -tidea  at home
+  $0 -tdea   in the library
+  $0 -tiea   at times
+"
 
-tmux new-window -t key-mouth:1
-tmux send-keys  -t key-mouth:1 "export KEYMOUTH_UI=http://$ip:3000" C-m
-tmux send-keys  -t key-mouth:1 "export KEYMOUTH_API=http://$ip:8000" C-m
-tmux send-keys  -t key-mouth:1 "export KEYMOUTH_WS=ws://$ip:8000" C-m
-tmux send-keys  -t key-mouth:1 "export KEYMOUTH_MAX_PAGES=3" C-m
-tmux send-keys  -t key-mouth:1 "cd js" C-m
-tmux send-keys  -t key-mouth:1 "npm run dev" C-m
+usage_and_exit() {
+    printf "%s\n" "$usage" >& 2
+    exit 1
+}
 
+if [ $# = 0 ]; then usage_and_exit; fi
+getopt_res="$(getopt -o tidea -- "$@")" || usage_and_exit
+eval set -- "$getopt_res"
 
-tmux new-window -t key-mouth:2
-tmux send-keys  -t key-mouth:2 "cd python" C-m
-tmux send-keys  -t key-mouth:2 ". venv/bin/activate" C-m
-tmux send-keys  -t key-mouth:2 "export KEYMOUTH_RAM_DB=yes" C-m
-tmux send-keys  -t key-mouth:2 "export KEYMOUTH_CORS_ALL=yes" C-m
-tmux send-keys  -t key-mouth:2 "export KEYMOUTH_ADD_A_ROOM=yes" C-m
-tmux send-keys  -t key-mouth:2 "export KEYMOUTH_MOMENTS_PER_PAGE=3" C-m
-cmd="uvicorn main:app --host $ip --port 8000 --reload"
-tmux send-keys  -t key-mouth:2 "$cmd" C-m
+ip=localhost
 
-tmux new-window -t key-mouth:3
-tmux send-keys  -t key-mouth:3 ". python/venv/bin/activate" C-m
-tmux send-keys  -t key-mouth:3 "emacs" C-m
+main() {
+    while ! [ "x$1" = x-- ]; do
+        case "$1" in
+            -t) tmux new-session -d -t key-mouth ;;
+            -i) ip="$(ip addr | sed -n 's|.*inet \(.*\)/24.*|\1|p')" ;;
+            -d) start_front && start_back && start_firefox ;;
+            -e) start_emacs ;;
+            -a) attach_tmux ;;
+        esac
+        shift
+    done
+}
 
-(firefox $ip:3000 2>&1 \
-     | grep --line-buffered -v mesa_glthread \
-            > git-ignores/logs-firefox.gitig) &
+_tsk1() { tmux send-keys -t key-mouth:1 "$@" C-m; }
+_tsk2() { tmux send-keys -t key-mouth:2 "$@" C-m; }
 
-tmux select-window -t key-mouth:0
-tmux attach-session -t key-mouth
+start_front() {
+    tmux new-window -t key-mouth:1
+    _tsk1 "export KEYMOUTH_UI=http://$ip:3000"
+    _tsk1 "export KEYMOUTH_API=http://$ip:8000"
+    _tsk1 "export KEYMOUTH_WS=ws://$ip:8000"
+    _tsk1 "export KEYMOUTH_MAX_PAGES=3"
+    _tsk1 "cd js"
+    _tsk1 "npm run dev"
+}
+
+start_back() {
+    tmux new-window -t key-mouth:2
+    _tsk2 "cd python"
+    _tsk2 ". venv/bin/activate"
+    _tsk2 "export KEYMOUTH_RAM_DB=yes"
+    _tsk2 "export KEYMOUTH_CORS_ALL=yes"
+    _tsk2 "export KEYMOUTH_ADD_A_ROOM=yes"
+    _tsk2 "export KEYMOUTH_MOMENTS_PER_PAGE=3"
+    _tsk2 "uvicorn main:app --host $ip --port 8000 --reload"
+}
+
+start_firefox() {
+    bspc rule --add 'firefox:*:*' --one-shot desktop=^2
+    (firefox $ip:3000 2>&1 \
+         | grep --line-buffered -v mesa_glthread \
+                > git-ignores/logs-firefox.gitig) &
+}
+
+start_emacs() {
+    bspc rule --add '*:emacs:*' --one-shot desktop=^1
+    tmux new-window -t key-mouth:3
+    tmux send-keys  -t key-mouth:3 ". python/venv/bin/activate" C-m
+    tmux send-keys  -t key-mouth:3 "emacs" C-m
+}
+
+attach_tmux() {
+    tmux select-window -t key-mouth:0
+    tmux attach-session -t key-mouth
+}
+
+main "$@"
