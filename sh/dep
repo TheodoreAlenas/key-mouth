@@ -1,0 +1,135 @@
+#!/bin/sh
+# License at the bottom
+
+set -e
+
+cd ..
+: ${KEYMOUTH_SECRETS_DIR:=../${PWD##*/}-deploy}
+usage="Usage: $0 ARGS
+
+ARGS:
+  -t  test locally
+  -b  build NextJS app
+  -p  package to send using rsync
+  -r  rsync to remote
+  -s  ssh to server, to run the rest
+
+Examples:
+  $0 -tbprs
+  $0 -prs
+  $0 -tb
+
+Environment Variables:
+  KEYMOUTH_SECRETS_DIR=$KEYMOUTH_SECRETS_DIR
+"
+
+usage_and_exit() {
+    printf "%s\n" "$usage" >& 2
+    exit 1
+}
+
+if [ $# = 0 ]; then usage_and_exit; fi
+. "$KEYMOUTH_SECRETS_DIR/secrets-local.sh"
+getopt_res="$(getopt -o tbprs -- "$@")" || usage_and_exit
+eval set -- "$getopt_res"
+
+main() {
+    while ! [ "x$1" = x-- ]; do
+        case "$1" in
+            -t) test_locally ;;
+            -b) build_nextjs_app ;;
+            -p) package_to_send ;;
+            -r) send_using_rsync ;;
+            -s) ssh_to_server ;;
+        esac
+        shift
+    done
+}
+
+test_locally() {
+    f=git-ignores/test-result-expect-all-0.gitig
+    : > $f
+
+    echo
+    echo " ===  front end tests  ==="
+    echo
+    node js/mod/unitTestMain.js
+    echo $? >> $f
+    echo
+    echo " ===  back end tests  ==="
+    echo
+    python python/run_unit_tests.py
+    echo $? >> $f
+    echo
+    echo " ===  non-db integration tests  ==="
+    echo
+    sh sh/test-front-back-integ
+    echo $? >> $f
+
+    test 0 = "$(awk '{s += $0} END {print s}' $f)" || exit 1
+}
+
+build_nextjs_app() {
+    export KEYMOUTH_DEPLOY=yes
+    export KEYMOUTH_UI="$secret_kmui"
+    export KEYMOUTH_API="$secret_kmapi"
+    export KEYMOUTH_WS="$secret_kmws"
+    (cd js && node_modules/.bin/next build)
+}
+
+d=git-ignores/deploy.gitig
+
+package_to_send() {
+    echo "packaging files to send"
+    mkdir -p $d
+
+    f=git-ignores/ls.gitig
+    (cd python && git ls-files > ../$f)
+    rsync -a --delete --files-from=$f python $d/python
+
+    f=git-ignores/front-static-serve.gitig/
+    rsync -a --delete $f $d/static/
+
+    f="$KEYMOUTH_SECRETS_DIR/$secret_remote_secrets"
+    rm -rf $d/sh/
+    mkdir $d/sh/
+    cp sh/on-server.sh $d/sh/dep
+    cp "$KEYMOUTH_SECRETS_DIR/$secret_remote_secrets" $d/sh/secrets.sh
+}
+
+send_using_rsync() {
+    echo "rsync to remote..."
+    rsync -a --compress --delete $d/ "$secret_upload"/
+    echo "rsync done"
+}
+
+ssh_to_server() {
+    ssh "$secret_ssh_addr"
+}
+
+main "$@"
+
+: <<EOLICENSE
+
+Copyright 2024 <dimakopt732@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files
+(the “Software”), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+EOLICENSE

@@ -1,7 +1,6 @@
 import db.mock
 import db.mongo
 import unittest
-from dataclasses import dataclass
 
 
 def both(a, b, f, args, kwargs):
@@ -65,12 +64,7 @@ class A(unittest.TestCase):
 
     def dbs_get_room(self, name):
         real, mock = self.dbs.get_room(room_id=name)
-        self.assertEqual(real.exception_type, mock.exception_type)
-        rooms = BothRooms(
-            real=real.return_value,
-            mock=mock.return_value
-        )
-        return rooms
+        return BothRooms(real=real, mock=mock)
 
     def test_empty(self):
         self.assertEqual(*self.dbs.get_restart_data())
