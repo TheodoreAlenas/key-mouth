@@ -2,10 +2,13 @@
 # License at the bottom
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
-import db.server_only_gitig
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from dataclasses import dataclass
+from os import environ
+
+
+DB_URI = environ['KEYMOUTH_DB']
 
 
 @dataclass
@@ -72,7 +75,7 @@ class ReloadableState:
 
 
 def delete_test_db():
-    client = MongoClient(db.server_only_gitig.db_uri)
+    client = MongoClient(DB_URI)
     client.drop_database('keymouthTest')
 
 
@@ -82,7 +85,7 @@ class Db:
         db_name = 'keymouth'
         if is_test:
             db_name += 'Test'
-        self._client = MongoClient(db.server_only_gitig.db_uri)
+        self._client = MongoClient(DB_URI)
         self._db = self._client[db_name]
         self._rooms = {}
         results = self._db['rooms'].find({}, ['name'])

@@ -19,8 +19,8 @@ def both(a, b, f, args, kwargs):
     if aexc is not None or bexc is not None:
         if type(aexc) == type(bexc):
             raise aexc
-        raise Exception('type(aexc) = ' + type(aexc) + ' but ' +
-                        'type(bexc) = ' + type(bexc))
+        raise Exception(f'type(aexc) = {type(aexc)} but ' +
+                        f'type(bexc) = {type(bexc)}')
     else:
         return (aret, bret)
 
