@@ -32,18 +32,16 @@ class DbRoom:
     def get_last_pages(self, n):
         r = self._db.find_one(
             {"_id": self.room_id},
-            {
-                "pages": {"$slice": [-n, n]},
-                "n": {"$size": "$pages"},
-            }
+            {"pages": {"$slice": [-n, n]}},
         )
+        n = self._db.aggregate([
+            {'$match': {'_id': self.room_id}},
+            {'$project': {'n': {'$size': '$pages'}}},
+        ])
         return LastPages(
             pages=r['pages'],
-            first_page_idx=r['n'] - len(r['pages'])
+            first_page_idx=list(n)[0]['n'] - len(r['pages'])
         )
-
-    def get_len(self):
-        return self.pages_n
 
     def get_range(self, start, end):
         ms = self._db.find_one(
@@ -140,7 +138,7 @@ class Db:
     def get_reloadable_state(self):
         s = self._db['reloadableState'].find_one({})
         if s is None:
-            return Reloadablestate(last_id=None, unsaved_pages=None)
+            return ReloadableState(last_id=None, unsaved_pages=None)
         return ReloadableState(
             last_id=s['lastId'],
             unsaved_pages=s['unsavedPages'],

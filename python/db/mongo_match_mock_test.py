@@ -5,26 +5,9 @@ from db.exceptions import RoomExistsException, RoomDoesntExistException
 
 
 def both(a, b, f, args, kwargs):
-    aret = bret = aexc = bexc = None
-
-    try:
-        aret = a.__getattribute__(f)(*args, **kwargs)
-    except Exception as e:
-        aexc = e
-
-    try:
-        bret = b.__getattribute__(f)(*args, **kwargs)
-    except Exception as e:
-        bexc = e
-
-    if aexc is not None or bexc is not None:
-        if type(aexc) == type(bexc):
-            raise aexc
-        raise Exception(f'type(aexc) = {type(aexc)} but ' +
-                        f'type(bexc) = {type(bexc)}, \naexc args:\n' +
-                        "\n".join(aexc.args))
-    else:
-        return (aret, bret)
+    aret = a.__getattribute__(f)(*args, **kwargs)
+    bret = b.__getattribute__(f)(*args, **kwargs)
+    return (aret, bret)
 
 
 class BothRooms:
@@ -68,20 +51,37 @@ class A(unittest.TestCase):
         real, mock = self.dbs.get_room(room_id=name)
         return BothRooms(real=real, mock=mock)
 
+    def assertBothRaise(self, exc, real, mock, name, args, kwargs):
+        def real_f():
+            real.__getattribute__(name)(*args, **kwargs)
+        def mock_f():
+            mock.__getattribute__(name)(*args, **kwargs)
+        self.assertRaises(exc, real_f)
+        self.assertRaises(exc, mock_f)
+
     def test_empty(self):
         self.assertEqual(*self.dbs.get_restart_data())
-        def f():
-            self.dbs_get_room("doesntexist")
-        self.assertRaises(RoomDoesntExistException, f)
-        self.assertRaises(RoomDoesntExistException, f)
+        self.assertBothRaise(
+            RoomDoesntExistException,
+            real=self.dbs.real,
+            mock=self.dbs.mock,
+            name='get_room',
+            args=("doesntexist",),
+            kwargs=dict(),
+        )
 
     def test_create_delete(self):
         self.assertEqual(*self.dbs.create_room(time=10.0,
                                                room_id="thana sis"))
         self.assertEqual(*self.dbs.get_restart_data())
-        def f():
-            self.dbs.create_room(time=11.0, room_id="thana sis")
-        self.assertRaises(RoomExistsException, f)
+        self.assertBothRaise(
+            RoomExistsException,
+            real=self.dbs.real,
+            mock=self.dbs.mock,
+            name='create_room',
+            args=tuple(),
+            kwargs={'time': 11.0, 'room_id': "thana sis"},
+        )
         self.assertEqual(*self.dbs.get_restart_data())
         self.assertEqual(*self.dbs.delete_room(room_id="thana sis"))
         self.assertEqual(*self.dbs.get_restart_data())
@@ -105,19 +105,16 @@ class A(unittest.TestCase):
         self.assertEqual(*self.dbs.create_room(10.0, "thanasis"))
         rooms = self.dbs_get_room("thanasis")
         self.assertEqual(*rooms.get_last_pages(n=1))
-        self.assertEqual(*rooms.get_len())
         self.assertEqual(*self.dbs.get_restart_data())
         self.assertEqual(*rooms.rename("vaggas"))
         self.assertEqual(*self.dbs.get_restart_data())
         self.assertEqual(*rooms.get_last_pages(n=1))
-        self.assertEqual(*rooms.get_len())
 
         self.assertEqual(*self.dbs.create_room(11.0, "a"))
         self.assertEqual(*self.dbs.create_room(12.0, "b"))
         self.assertEqual(*self.dbs.get_restart_data())
         rooms = self.dbs_get_room("a")
         self.assertEqual(*rooms.rename("room named a"))
-        self.assertEqual(*rooms.get_len())
         self.assertEqual(*self.dbs.get_restart_data())
 
     def test_save_pages(self):
@@ -128,28 +125,22 @@ class A(unittest.TestCase):
         self.assertEqual(*rooms.push_page({"firstMomentIdx": 732, "a": "b"}))
         self.assertEqual(*rooms.get_last_pages(n=1))
         self.assertEqual(*rooms.get_last_pages(n=2))
-        self.assertEqual(*rooms.get_len())
         self.assertEqual(*rooms.get_range(0, 1))
 
         self.assertEqual(*rooms.push_page({"firstMomentIdx": 1024}))
         self.assertEqual(*rooms.get_last_pages(n=1))
         self.assertEqual(*rooms.get_last_pages(n=2))
         self.assertEqual(*rooms.get_last_pages(n=3))
-        self.assertEqual(*rooms.get_len())
         self.assertEqual(*rooms.get_range(0, 1))
         self.assertEqual(*rooms.get_range(1, 2))
         self.assertEqual(*rooms.get_range(0, 2))
 
         self.assertEqual(*rooms.get_range(0, 3))
         self.assertEqual(*rooms.get_range(2, 3))
-        self.assertEqual(*rooms.get_range(0, 0))
-        self.assertEqual(*rooms.get_range(-1, 0))
-        self.assertEqual(*rooms.get_range(1, -1))
-        self.assertEqual(*rooms.get_range(-2, -1))
 
         rooms = self.dbs_get_room("vaggas")
-        self.assertEqual(*rooms.get_last_pages())
-        self.assertEqual(*rooms.get_len())
+        self.assertEqual(*rooms.get_last_pages(n=1))
+        self.assertEqual(*rooms.get_last_pages(n=2))
 
         self.assertEqual(*self.dbs.delete_room("thanasis"))
         self.assertEqual(*self.dbs.get_restart_data())

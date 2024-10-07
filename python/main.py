@@ -3,8 +3,9 @@
 
 from wiring.Main import Main
 from lib.exceptions import LogicHttpException
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+import fastapi
 from fastapi.middleware.cors import CORSMiddleware
+import typing
 from time import time
 import threading
 from os import environ
@@ -30,7 +31,7 @@ if a in environ and environ[a] == 'yes':
     from IntTestWidgets import IntTestWidgets
     inttest = IntTestWidgets()
 
-app = FastAPI()
+app = fastapi.FastAPI()
 a = 'KEYMOUTH_CORS_ALL'
 if a in environ and environ[a] == 'yes':
     app.add_middleware(
@@ -67,13 +68,11 @@ def do_nothing(_):
 
 async def wrap(f, args, before_sending=do_nothing):
     mutex.acquire()
-    released_the_mutex = False
     try:
         if inttest is not None:
             inttest.raise_exception_once('before releasing mutex')
         to_send, to_return = f(time(), args)
         mutex.release()
-        released_the_mutex = True
         before_sending(to_return)
         for conn, json in to_send:
             try:
@@ -82,14 +81,17 @@ async def wrap(f, args, before_sending=do_nothing):
                 pass
         return to_return
     except LogicHttpException as e:
-        if not released_the_mutex:
+        if mutex.locked():
             mutex.release()
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+        raise fastapi.HTTPException(
+            status_code=e.status_code,
+            detail=e.detail
+        )
     except Exception as e:
-        if not released_the_mutex:
+        if mutex.locked():
             mutex.release()
         raise e
-    if not released_the_mutex:
+    if mutex.locked():
         mutex.release()
 
 
@@ -103,9 +105,9 @@ async def room_put(room: str):
     await wrap(logic.create_room, room)
 
 
-@app.put("/{room_id}/name/{name}")
-async def room_name_post(room_id: str, name: str):
-    await wrap(logic.rename_room, (room_id, name))
+@app.put("/{room}/name/{name}")
+async def room_name_put(room: str, name: str):
+    await wrap(logic.rename_room, (room, name))
 
 
 @app.delete("/{room}")
@@ -114,12 +116,22 @@ async def room_delete(room: str):
 
 
 @app.get("/{room}")
-async def room_get(room: str, start: int, end: int):
+async def room_get(
+        room: str,
+        start: typing.Annotated[
+            int,
+            fastapi.Path(title="inclusive", ge=0)
+        ],
+        end: typing.Annotated[
+            int,
+            fastapi.Path(title="exclusive and not guaranteed")
+        ]
+):
     return await wrap(logic.get_pages_range, (room, start, end))
 
 
 @app.websocket("/{room}")
-async def root(websocket: WebSocket, room: str):
+async def root(websocket: fastapi.WebSocket, room: str):
     logic.if_room_is_missing_throw(room)
     conn = None
     try:
@@ -137,7 +149,7 @@ async def root(websocket: WebSocket, room: str):
         while True:
             data = await websocket.receive_text()
             await wrap(conn.handle_input, data)
-    except WebSocketDisconnect as e:
+    except fastapi.WebSocketDisconnect as e:
         if conn is not None:
             id_to_sock.pop(conn.conn_id)
             await wrap(conn.disconnect, None)
