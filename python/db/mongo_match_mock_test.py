@@ -1,6 +1,7 @@
 import db.mock
 import db.mongo
 import unittest
+from db.exceptions import RoomExistsException, RoomDoesntExistException
 
 
 def both(a, b, f, args, kwargs):
@@ -20,7 +21,8 @@ def both(a, b, f, args, kwargs):
         if type(aexc) == type(bexc):
             raise aexc
         raise Exception(f'type(aexc) = {type(aexc)} but ' +
-                        f'type(bexc) = {type(bexc)}')
+                        f'type(bexc) = {type(bexc)}, \naexc args:\n' +
+                        "\n".join(aexc.args))
     else:
         return (aret, bret)
 
@@ -68,17 +70,18 @@ class A(unittest.TestCase):
 
     def test_empty(self):
         self.assertEqual(*self.dbs.get_restart_data())
-        self.assertEqual(*self.dbs.delete_room('doesntexist'))
-        self.assertRaises(RoomDoesntExistException,
-                          self.dbs_get_room("doesntexist"))
+        def f():
+            self.dbs_get_room("doesntexist")
+        self.assertRaises(RoomDoesntExistException, f)
+        self.assertRaises(RoomDoesntExistException, f)
 
     def test_create_delete(self):
         self.assertEqual(*self.dbs.create_room(time=10.0,
                                                room_id="thana sis"))
         self.assertEqual(*self.dbs.get_restart_data())
-        self.assertRaises(RoomExistsException,
-                          self.dbs.create_room(time=11.0,
-                                               room_id="thana sis"))
+        def f():
+            self.dbs.create_room(time=11.0, room_id="thana sis")
+        self.assertRaises(RoomExistsException, f)
         self.assertEqual(*self.dbs.get_restart_data())
         self.assertEqual(*self.dbs.delete_room(room_id="thana sis"))
         self.assertEqual(*self.dbs.get_restart_data())

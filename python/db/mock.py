@@ -2,13 +2,7 @@
 # License at the bottom
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
-from dataclasses import dataclass
-
-
-@dataclass
-class LastPages:
-    pages: list
-    first_page_idx: int
+from db.mock_and_mongo import *
 
 
 class DbRoom:
@@ -37,19 +31,6 @@ class DbRoom:
 
     def get_range(self, start, end):
         return self.pages[start:end]
-
-
-@dataclass
-class RoomRestartData:
-    room_id: any
-    name: str
-    pages_n: int
-
-
-@dataclass
-class ReloadableState:
-    last_id: any
-    unsaved_pages: dict | None
 
 
 class Db:

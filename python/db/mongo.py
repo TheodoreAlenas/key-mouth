@@ -2,20 +2,13 @@
 # License at the bottom
 
 from db.exceptions import RoomExistsException, RoomDoesntExistException
+from db.mock_and_mongo import *
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from dataclasses import dataclass
 from os import environ
 
 
 DB_URI = environ['KEYMOUTH_DB']
-
-
-@dataclass
-class LastPages:
-    pages: list
-    first_page_idx: int
-    first_moment_idx: int
 
 
 class DbRoom:
@@ -60,20 +53,6 @@ class DbRoom:
         return ms['pages']
 
 
-@dataclass
-class RoomRestartData:
-    room_id: any
-    name: str
-    last_page_first_moment_idx: int
-    pages_n: int
-
-
-@dataclass
-class ReloadableState:
-    last_id: any
-    unsaved_pages: dict | None
-
-
 def delete_test_db():
     client = MongoClient(DB_URI)
     client.drop_database('keymouthTest')
@@ -88,11 +67,10 @@ class Db:
         self._client = MongoClient(DB_URI)
         self._db = self._client[db_name]
         self._rooms = {}
-        results = self._db['rooms'].find({}, ['name'])
-        for r in results:
+        room_ids = self._db['rooms'].find({}, ['_id'])
+        for r in room_ids:
             self._rooms[r['_id']] = DbRoom(
                 room_id=r['_id'],
-                name=r['name'] if 'name' in r else None,
                 db=self._db['rooms'],
             )
 
@@ -110,11 +88,12 @@ class Db:
             )
             self._db['rooms'].insert_one({
                 "_id": room_id,
-                "pages": []
+                "name": None,
+                "pages": [],
             })
             self._rooms[room_id] = room
         except DuplicateKeyError:
-            raise RoomExistsException("[Db] room '" + name +
+            raise RoomExistsException("[Db] room '" + room_id +
                                       "' already exists")
 
     def delete_room(self, room_id):
@@ -126,20 +105,20 @@ class Db:
         except Exception as e:
             raise RoomDoesntExistException(
                 "[Db] room '" + room_id + "' doesn't exist,\n" +
-                e.message
+                "\n".join(e.args)
             )
 
-    def get_room(self, name) -> DbRoom:
-        if not name in self._rooms:
-            raise RoomDoesntExistException("[Db] room '" + name +
+    def get_room(self, room_id) -> DbRoom:
+        if not room_id in self._rooms:
+            raise RoomDoesntExistException("[Db] room '" + room_id +
                                            "' not found in RAM")
-        return self._rooms[name]
+        return self._rooms[room_id]
 
     def get_restart_data(self):
         res = []
         names = self._db['rooms'].find({}, ['name'])
         ns = self._db['rooms'].aggregate([{
-            '$project': {'n': {'$size': '$moments'}}
+            '$project': {'n': {'$size': '$pages'}}
         }])
         for name, n in zip(names, ns):
             res.append(RoomRestartData(
@@ -161,7 +140,7 @@ class Db:
     def get_reloadable_state(self):
         s = self._db['reloadableState'].find_one({})
         if s is None:
-            return None
+            return Reloadablestate(last_id=None, unsaved_pages=None)
         return ReloadableState(
             last_id=s['lastId'],
             unsaved_pages=s['unsavedPages'],
