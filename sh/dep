@@ -95,6 +95,7 @@ package_to_send() {
     mkdir $d/sh/
     cp sh/on-server.sh $d/sh/dep
     cp "$KEYMOUTH_SECRETS_DIR/$secret_remote_secrets" $d/sh/secrets.sh
+    secret_cp "$KEYMOUTH_SECRETS_DIR" $d/sh/
 }
 
 send_using_rsync() {

@@ -140,8 +140,8 @@ class Db:
         if s is None:
             return ReloadableState(last_id=None, unsaved_pages=None)
         return ReloadableState(
-            last_id=s['lastId'],
-            unsaved_pages=s['unsavedPages'],
+            last_id=s['lastId'] if 'lastId' in s else None,
+            unsaved_pages=s['unsavedPages'] if 'unsavedPages' in s else None,
         )
 
 
