@@ -1,6 +1,7 @@
 
 export function getIsAtBottom(element) {
-    if (window.innerWidth <= 400) {
+    const mm = window.matchMedia('@media screen and (max-width: 25cm)')
+    if (mm.matches) {
         return getIsAtBottom_window()
     }
     return getIsAtBottom_element(element)
@@ -21,7 +22,8 @@ function getIsAtBottom_element(element) {
 }
 
 export function scrollToBottom(element) {
-    if (window.innerWidth <= 400) {
+    const mm = window.matchMedia('@media screen and (max-width: 25cm)')
+    if (mm.matches) {
         scrollToBottom_window()
     }
     else {
