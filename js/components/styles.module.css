@@ -146,6 +146,8 @@
     .barContainer {
         position: sticky;
         top: 0;
+        max-height: 5cm;
+        overflow-y: scroll;
     }
     .inputForm {
         position: sticky;

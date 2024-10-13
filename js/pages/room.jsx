@@ -24,7 +24,7 @@ export default function PageRoom({uriFirstArg, maxPages}) {
         }
     }, [router.isReady])
     const io = new IoHome({uri: new UriHome(uriFirstArg.home)})
-    return <Layout env={uriFirstArg} io={io} styles={styles}>
+    return <Layout io={io} styles={styles}>
                <Room o={o} styles={styles} />
            </Layout>
 }

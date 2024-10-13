@@ -2,7 +2,7 @@ import UriHome from '../mod/io/UriHome.js'
 import Link from 'next/link'
 import { useEffect, useState } from "react"
 
-export default function Layout({env, io, styles, children}) {
+export default function Layout({io, styles, children}) {
     const [rooms, setRooms] = useState(null)
     useEffect(function() {
         io.withRooms(setRooms)
