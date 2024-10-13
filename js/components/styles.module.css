@@ -120,9 +120,10 @@
 .bar li {list-style: none;}
 .bar {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3em;
+    gap: 0.5em;
 }
 .bubble {
     display: inline-block;
@@ -141,7 +142,7 @@
 }
 .chat {padding: 1px}
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 25cm) {
     .barContainer {
         position: sticky;
         top: 0;
@@ -151,13 +152,13 @@
         bottom: 0;
     }
 }
-@media screen and (min-width: 401px) {
+@media screen and (min-width: 25cm) {
     .layout {
         display: grid;
-        grid-auto-rows: max-content auto;
-        grid-auto-columns: 1fr;
+        grid-auto-columns: 8cm auto;
+        grid-auto-flow: column;
 
-        max-width: 20cm;
+        max-width: 30cm;
         margin: 0 auto;
         height: 100vh;
     }
