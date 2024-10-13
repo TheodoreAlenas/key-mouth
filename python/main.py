@@ -58,8 +58,13 @@ if inttest is not None:
     logic = inttest.add_room_and_restart(logic, create_logic)
 a = 'KEYMOUTH_ADD_A_ROOM'
 if a in environ and environ[a] == 'yes':
-    logic.create_room(time(), 'test-room')
-    logic.rename_room(time(), ('test-room', 'Test Room'))
+    logic.create_room(time(), 'empty-room')
+    logic.rename_room(time(), ('empty-room', 'Empty Room'))
+    logic.create_room(0.0, 'filled-room')
+    logic.rename_room(0.1, ('filled-room', 'Filled Room'))
+    _, conn = logic.connect(0.2, 'filled-room')
+    for i in range(1, 20):
+        conn.handle_input(10.0 * i, f'+{i}')
 
 
 def do_nothing(_):
