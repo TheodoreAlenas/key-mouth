@@ -2,23 +2,16 @@ import UriHome from '../mod/io/UriHome.js'
 import Link from 'next/link'
 import { useEffect } from "react"
 
-export default function Layout({env, styles, showHome, children}) {
+export default function Layout({env, styles, children}) {
     const uri = new UriHome(env.home, 'ERROR, LAYOUT HAS NO ROOM')
-    if (showHome) {
-        return <div className={styles.layout}>
-                   <Wrapper styles={styles}>
-                       <li><HomeLink uri={uri} styles={styles} /></li>
-                   </Wrapper>
-                   <main className={styles.main}>
-                       {children}
-                   </main>
-               </div>
-    }
-    return <>
-               <Wrapper styles={styles} />
-               {children}
-           </>
-
+    return <div className={styles.layout}>
+               <Wrapper styles={styles}>
+                   <li><HomeLink uri={uri} styles={styles} /></li>
+               </Wrapper>
+               <main className={styles.main}>
+                   {children}
+               </main>
+           </div>
 }
 
 function Wrapper({styles, children}) {

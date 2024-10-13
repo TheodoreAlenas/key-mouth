@@ -20,7 +20,7 @@ export default function PageRoom({uriFirstArg, maxPages}) {
             return function() { newO.close() }
         }
     }, [router.isReady])
-    return <Layout env={uriFirstArg} styles={styles} showHome>
+    return <Layout env={uriFirstArg} styles={styles}>
                <Room o={o} styles={styles} />
            </Layout>
 }
