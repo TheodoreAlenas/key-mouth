@@ -10,36 +10,40 @@ export default function Layout({io, styles, children}) {
     const uri = io.uri
 
     return <div className={styles.layout}>
-               <nav className={styles.barContainer}>
-                   {List({styles, rooms})}
+               <a id="ham" href="#menu" className={styles.hamburger}
+               >Menu</a>
+               <nav className={styles.bar + ' ' + styles.links}>
+                   <h2 className={styles.barTitle}>Resume</h2>
+                   <ul className={styles.barList}>
+                       <li><a id="menu" href="#ham">Back to chat</a></li>
+                       <li><a href="#chat-input">Stream typing</a></li>
+                   </ul>
+                   <h2 className={styles.barTitle}>App</h2>
+                   <ul className={styles.barList}>
+                       <li><a href="https://github.com/TheodoreAlenas/key-mouth">GitHub</a></li>
+                       <li><ThemeToggle styles={styles} /></li>
+                   </ul>
+                   <h2 className={styles.barTitle}>Chat rooms</h2>
+                   <ul className={styles.barList}>
+                       {RoomList({styles, rooms})}
+                   </ul>
                </nav>
-               <main className={styles.main}>
+               <main className={styles.main}>                   
                    {children}
                </main>
            </div>
 }
 
-function List({styles, rooms}) {
+function RoomList({styles, rooms}) {
     let inside = <code>Error</code>
     if (rooms === null) inside = <code>Loading...</code>
     else if (rooms === 'error') inside = <code>Error</code>
     else inside = rooms.map((s, i) => RoomToLiLink({s, i, styles}))
-
-    return (
-        <ul className={styles.bar}>
-            {inside}
-            <li><a href="https://github.com/TheodoreAlenas/key-mouth">GitHub</a></li>
-            <li><ThemeToggle styles={styles} /></li>
-        </ul>
-    )
+    return <>{inside}</>
 }
 
 function RoomToLiLink({s, i, styles}) {
-    return <li key={i}>
-               <Link className={styles.bubble}
-                     href={s.href}
-               >{s.text}</Link>
-           </li>
+    return <li key={i}><Link href={s.href}>{s.text}</Link></li>
 }
 
 function HomeLink({uri, styles}) {

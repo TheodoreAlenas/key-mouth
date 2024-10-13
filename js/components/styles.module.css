@@ -84,10 +84,6 @@
 .moreTopButton, .moreBottomButton {
     margin: 0.8em;
 }
-.bar {
-    margin: 0;
-    padding: 0.8em;
-}
 .inputForm {
     gap: 0.8em;
     padding: 0.8em;
@@ -99,6 +95,21 @@
 .bubbleGroup li:only-child .bubble {
     padding-top: 0.4em;
     padding-bottom: 0.4em;
+}
+.bar {
+    padding: 0 0.8em;
+}
+.barList {
+    margin: 0;
+    padding: 0.8em;
+}
+.barList a {
+    padding: 0.8em 1.2em;
+    display: block;
+}
+.barTitle {
+    margin: 0;
+    padding: 1em 0 0.2em 0;
 }
 .erase, .delete {
     padding: 0;
@@ -117,14 +128,7 @@
     text-decoration-thickness: 2px;
 }
 .noBullets li {list-style: none;}
-.bar li {list-style: none;}
-.bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5em;
-}
+.barList li {list-style: none;}
 .bubble {
     display: inline-block;
     font-family: inherit;
@@ -143,11 +147,26 @@
 .chat {padding: 1px}
 
 @media screen and (max-width: 25cm) {
-    .barContainer {
-        position: sticky;
+    .bar {
+        position: absolute;
+        z-index: 1;
         top: 0;
-        max-height: 5cm;
-        overflow-y: scroll;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: scroll;
+        transform: translateX(-100%);
+        transition: transform 0.2s;
+    }
+    .hamburger {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+        padding: 1em;
+    }
+    .hamburger:checked + .bar,
+    .bar:focus-within {
+        transform: translateX(0);
     }
     .inputForm {
         position: sticky;
@@ -172,6 +191,9 @@
     .chat {
         height: 100%;
         overflow: scroll;
+    }
+    .hamburger {
+        display: none;
     }
 }
 .inputForm {
