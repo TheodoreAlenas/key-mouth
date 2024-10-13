@@ -120,11 +120,11 @@ async def room_get(
         room: str,
         start: typing.Annotated[
             int,
-            fastapi.Path(title="inclusive", ge=0)
+            fastapi.Query(title="inclusive", ge=0)
         ],
         end: typing.Annotated[
             int,
-            fastapi.Path(title="exclusive and not guaranteed")
+            fastapi.Query(title="exclusive and not guaranteed", ge=1)
         ]
 ):
     return await wrap(logic.get_pages_range, (room, start, end))
