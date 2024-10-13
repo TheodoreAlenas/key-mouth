@@ -1,26 +1,45 @@
 import UriHome from '../mod/io/UriHome.js'
 import Link from 'next/link'
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
-export default function Layout({env, styles, children}) {
-    const uri = new UriHome(env.home, 'ERROR, LAYOUT HAS NO ROOM')
+export default function Layout({env, io, styles, children}) {
+    const [rooms, setRooms] = useState(null)
+    useEffect(function() {
+        io.withRooms(setRooms)
+    }, [])
+    const uri = io.uri
+
     return <div className={styles.layout}>
-               <Wrapper styles={styles}>
-                   <li><HomeLink uri={uri} styles={styles} /></li>
-               </Wrapper>
+               <nav className={styles.barContainer}>
+                   {List({styles, rooms})}
+               </nav>
                <main className={styles.main}>
                    {children}
                </main>
            </div>
 }
 
-function Wrapper({styles, children}) {
-    return <nav className={styles.barContainer}>
-               <ul className={styles.bar}>
-                   {children}
-                   <li><ThemeToggle styles={styles} /></li>
-               </ul>
-           </nav>
+function List({styles, rooms}) {
+    let inside = <code>Error</code>
+    if (rooms === null) inside = <code>Loading...</code>
+    else if (rooms === 'error') inside = <code>Error</code>
+    else inside = rooms.map((s, i) => RoomToLiLink({s, i, styles}))
+
+    return (
+        <ul className={styles.bar}>
+            {inside}
+            <li><a href="https://github.com/TheodoreAlenas/key-mouth">GitHub</a></li>
+            <li><ThemeToggle styles={styles} /></li>
+        </ul>
+    )
+}
+
+function RoomToLiLink({s, i, styles}) {
+    return <li key={i}>
+               <Link className={styles.bubble}
+                     href={s.href}
+               >{s.text}</Link>
+           </li>
 }
 
 function HomeLink({uri, styles}) {
