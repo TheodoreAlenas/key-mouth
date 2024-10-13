@@ -1,7 +1,7 @@
 
 // License at the bottom
 
-import Io from './io/Io.js'
+import IoRoom from './io/IoRoom.js'
 import Presenter from './map/Presenter.js'
 import ViewModelMapper from './map/ViewModelMapper.js'
 import PagesPresenter from './map/PagesPresenter.js'
@@ -35,7 +35,7 @@ export default class Controller {
         function onSocketError(arg) {
             self.onSocketError(arg)
         }
-        this.io = new Io({uri, onReadySocket, onSocketError})
+        this.io = new IoRoom({uri, onReadySocket, onSocketError})
         const nameMapper = {mapName: conn => "Visitor#" + conn}
         const viewModelMapper = new ViewModelMapper({nameMapper})
         const splitter = new Splitter()
