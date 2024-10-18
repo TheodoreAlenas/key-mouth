@@ -153,17 +153,27 @@ async def connect_bot(room):
             await asyncio.sleep(t)
             await wrap(conn.handle_input, '+' + c)
 
-    await spell("Hello.", 0.1)
     await asyncio.sleep(1)
-    await spell(" You can try typing at the same time as I.", 0.02)
+    await spell("Hello.", 0.2)
     await asyncio.sleep(1)
-    await spell(" I demonstrate the app when it's silent.", 0.02)
+    await spell(" You can try typing at the same time as I.", 0.05)
+    await asyncio.sleep(1)
+    await spell(" I demonstrate the app while it kinda rots.", 0.03)
+
+    await asyncio.sleep(0.2)
+    await wrap(conn.handle_input, '-rots.')
+    await asyncio.sleep(0.2)
+    await wrap(conn.handle_input, '-kinda ')
+    await asyncio.sleep(0.2)
+    await wrap(conn.handle_input, '-it ')
+    await spell("it's silent.", 0.1)
+
     await asyncio.sleep(2)
     await spell(" With enough delay, if you don't interrupt, " + \
-                "my text will split into 2 moments.", 0.02)
+                "my text will split into 2 moments.", 0.05)
     await asyncio.sleep(4)
-    await spell("If you're on desktop, " + \
-                "you may try opening another tab.", 0.02)
+    await spell("You may try clicking or tapping on " + \
+                "a moment with deleted text.", 0.05)
 
     await wrap(conn.disconnect, None)
     theres_a_bot = False
