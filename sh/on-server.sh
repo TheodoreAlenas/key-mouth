@@ -24,10 +24,11 @@ if [ $# = 0 ]; then usage_and_exit; fi
 getopt_res="$(getopt -o tks -- "$@")" || usage_and_exit
 eval set -- "$getopt_res"
 
+. "$secret_venv"/bin/activate
+
 while ! [ "x$1" = x-- ]; do
     case "$1" in
         -t)
-            . "$secret_venv"/bin/activate
             python "$secret_uploaded"/python/run_unit_tests.py
             export KEYMOUTH_DB="$secret_db"
             python "$secret_uploaded"/python/db_test.py
