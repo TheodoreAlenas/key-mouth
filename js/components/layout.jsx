@@ -1,4 +1,3 @@
-import UriHome from '../mod/io/UriHome.js'
 import Link from 'next/link'
 import { useEffect, useState } from "react"
 
@@ -7,49 +6,44 @@ export default function Layout({io, styles, children}) {
     useEffect(function() {
         io.withRooms(setRooms)
     }, [])
-    const uri = io.uri
+
+    const anchors = {
+        ham: <a id="ham" href="#menu"
+                className={styles.hamburger + ' ' + styles.link}
+             >Menu</a>,
+        back: <a id="menu" href="#ham">Back to chat</a>,
+        str: <a href="#chat-input">Stream typing</a>,
+    }
+    const github = "https://github.com/TheodoreAlenas/key-mouth"
+
+    const f = (title, lis) => (
+        <>
+            <h2 className={styles.barTitle}>{title}</h2>
+            <ul className={styles.barList}>
+                {lis.map((e, i) => <li key={i}>{e}</li>)}
+            </ul>
+        </>
+    )
 
     return <div className={styles.layout}>
-               <a id="ham" href="#menu" className={styles.hamburger}
-               >Menu</a>
+               {anchors.ham}
                <nav className={styles.bar + ' ' + styles.links}>
-                   <h2 className={styles.barTitle}>Resume</h2>
-                   <ul className={styles.barList}>
-                       <li><a id="menu" href="#ham">Back to chat</a></li>
-                       <li><a href="#chat-input">Stream typing</a></li>
-                   </ul>
-                   <h2 className={styles.barTitle}>App</h2>
-                   <ul className={styles.barList}>
-                       <li><a href="https://github.com/TheodoreAlenas/key-mouth">GitHub</a></li>
-                       <li><ThemeToggle styles={styles} /></li>
-                   </ul>
-                   <h2 className={styles.barTitle}>Chat rooms</h2>
-                   <ul className={styles.barList}>
-                       {RoomList({styles, rooms})}
-                   </ul>
+                   {f("Resume", [anchors.back, anchors.str])}
+                   {f("App", [<a href={github}>GitHub</a>,
+                              <ThemeToggle styles={styles} />])}
+                   {f("Chat rooms", getRoomLinks(rooms))}
                </nav>
-               <main className={styles.main}>                   
+               <main className={styles.main}>
                    {children}
                </main>
            </div>
 }
 
-function RoomList({styles, rooms}) {
-    let inside = <code>Error</code>
-    if (rooms === null) inside = <code>Loading...</code>
-    else if (rooms === 'error') inside = <code>Error</code>
-    else inside = rooms.map((s, i) => RoomToLiLink({s, i, styles}))
-    return <>{inside}</>
-}
 
-function RoomToLiLink({s, i, styles}) {
-    return <li key={i}><Link href={s.href}>{s.text}</Link></li>
-}
-
-function HomeLink({uri, styles}) {
-    return <Link href={uri.home()}
-                 className={styles.link}
-    >Home</Link>
+function getRoomLinks(rooms) {
+    if (rooms === null) return [<code>Loading...</code>]
+    if (rooms === 'error') return [<code>Error</code>]
+    return rooms.map(s => <Link href={s.href}>{s.text}</Link>)
 }
 
 function ThemeToggle({styles}) {
@@ -61,20 +55,25 @@ function ThemeToggle({styles}) {
            >Switch light/dark theme</button>
 }
 
+const lsKey = {
+    pref: "keyMouth_colorScheme_lastPreferred",
+    last: "keyMouth_colorScheme_last"
+}
+
 function initColorScheme() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const preferred = prefersDark ? "dark" : "light";
-    const lastPreferred = localStorage.getItem("lastPreferredColorScheme");
-    localStorage.setItem("lastPreferredColorScheme", preferred);
+    const lastPreferred = localStorage.getItem(lsKey.pref);
+    localStorage.setItem(lsKey.pref, preferred);
 
-    if (lastPreferred === preferred && localStorage.getItem("lastColorScheme"))
-        setColorScheme(localStorage.getItem("lastColorScheme"));
+    if (lastPreferred === preferred && localStorage.getItem(lsKey.last))
+        setColorScheme(localStorage.getItem(lsKey.last));
     else
         setColorScheme(preferred);
 }
 
 function switchColorScheme() {
-    if (localStorage.getItem("lastColorScheme") === "dark")
+    if (localStorage.getItem(lsKey.last) === "dark")
         setColorScheme("light");
     else
         setColorScheme("dark");
@@ -82,5 +81,5 @@ function switchColorScheme() {
 function setColorScheme(value) {
     document.querySelector("html").style.colorScheme = value;
     document.querySelector("html").setAttribute("data-sch", value);
-    localStorage.setItem("lastColorScheme", value);
+    localStorage.setItem(lsKey.last, value);
 }

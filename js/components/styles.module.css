@@ -101,15 +101,15 @@
 }
 .barList {
     margin: 0;
-    padding: 0.8em;
+    padding: 0;
 }
 .barList a {
-    padding: 0.8em 1.2em;
-    display: block;
+    padding: 0.6em 1.2em;
+    display: inline-block;
 }
 .barTitle {
     margin: 0;
-    padding: 1em 0 0.2em 0;
+    padding: 2em 0 1em 0.8em;
 }
 .erase, .delete {
     padding: 0;
@@ -217,6 +217,9 @@
 .bubbleTop {
     font-size: 0.9em;
     font-weight: normal;
+}
+.barTitle {
+    font-size: 1.4em;
 }
 
 .input {
