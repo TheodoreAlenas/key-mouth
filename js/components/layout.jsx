@@ -11,8 +11,7 @@ export default function Layout({io, styles, children}) {
         ham: <a id="ham" href="#menu"
                 className={styles.hamburger + ' ' + styles.link}
              >Menu</a>,
-        back: <a id="menu" href="#ham">Back to chat</a>,
-        str: <a href="#chat-input">Stream typing</a>,
+        chat: <a id="menu" href="#chat-input">Back to chat</a>,
     }
     const github = "https://github.com/TheodoreAlenas/key-mouth"
 
@@ -28,8 +27,8 @@ export default function Layout({io, styles, children}) {
     return <div className={styles.layout}>
                {anchors.ham}
                <nav className={styles.bar + ' ' + styles.links}>
-                   {f("Resume", [anchors.back, anchors.str])}
-                   {f("App", [<a href={github}>GitHub</a>,
+                   {f("App", [anchors.chat,
+                              <a href={github}>GitHub</a>,
                               <ThemeToggle styles={styles} />])}
                    {f("Chat rooms", getRoomLinks(rooms))}
                </nav>

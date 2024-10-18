@@ -19,6 +19,7 @@ export default function PageRoom({uriFirstArg, maxPages}) {
             const uri = new UriRoom(uriFirstArg.room, roomName)
             const newO = new Controller({uri, maxPages})
             setO(newO)
+            document.getElementById('ham').focus()
             return function() { newO.close() }
         }
     }, [router.isReady, router.query])
