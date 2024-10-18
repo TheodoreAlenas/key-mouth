@@ -14,6 +14,7 @@ export default function Layout({io, styles, children}) {
         chat: <a id="menu" href="#chat-input">Back to chat</a>,
     }
     const github = "https://github.com/TheodoreAlenas/key-mouth"
+    const author = "https://theodoros-d-alenas.site"
 
     const f = (title, lis) => (
         <>
@@ -29,6 +30,7 @@ export default function Layout({io, styles, children}) {
                <nav className={styles.bar + ' ' + styles.links}>
                    {f("App", [anchors.chat,
                               <a href={github}>GitHub</a>,
+                              <a href={author}>Author</a>,
                               <ThemeToggle styles={styles} />])}
                    {f("Chat rooms", getRoomLinks(rooms))}
                </nav>
