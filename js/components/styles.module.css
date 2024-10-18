@@ -62,10 +62,9 @@
 [data-sch=dark] .link,
 [data-sch=dark] .links a {text-decoration-color: #68a; color: #acf;}
 
-.input,
-.button {background-color: #f0f4f8;}
-.button {color: #026;}
-.link, .links a {color: #028;}
+.input {background-color: #f0f4f8;}
+.button {background-color: #fff;}
+.button, .link, .links a {color: #028;}
 .input,
 .button {border: 2px solid #248;}
 
@@ -147,14 +146,14 @@
 .chat {padding: 1px}
 
 .hamburger {
-    position: absolute;
+    position: fixed;
     top: 1em;
     right: 1em;
     padding: 1em;
 }
-@media screen and (max-width: 25cm) {
+@media screen and (max-width: 1000px) {
     .bar {
-        position: absolute;
+        position: fixed;
         z-index: 1;
         top: 0;
         left: 0;
@@ -173,13 +172,13 @@
         bottom: 0;
     }
 }
-@media screen and (min-width: 25cm) {
+@media screen and (min-width: 1001px) {
     .layout {
         display: grid;
         grid-auto-columns: 8cm auto;
         grid-auto-flow: column;
 
-        max-width: 30cm;
+        max-width: 1200px;
         margin: 0 auto;
         height: 100vh;
     }
@@ -229,4 +228,9 @@
     box-sizing: border-box;
     width: 100%;
     resize: none;
+}
+
+.centeredMessage {
+    text-align: center;
+    padding-top: 30vh;
 }
