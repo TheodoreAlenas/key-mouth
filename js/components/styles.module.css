@@ -167,6 +167,9 @@
     .bar:focus-within {
         transform: translateX(0);
     }
+    .main {
+        min-height: 100vh;
+    }
 }
 @media screen and (min-width: 1001px) {
     .layout {
