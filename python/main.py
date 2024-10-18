@@ -135,16 +135,8 @@ async def room_get(
     return await wrap(logic.get_pages_range, (room, start, end))
 
 
-async def connect_bot(room):
-    conn = await wrap(logic.connect, room)
-    await wrap(conn.handle_input, "+hello")
-    await wrap(conn.disconnect, None)
-
-
 @app.websocket("/{room}")
-async def root(websocket: fastapi.WebSocket,
-               room: str,
-               bot_demo: bool = False):
+async def root(websocket: fastapi.WebSocket, room: str):
     logic.if_room_is_missing_throw(room)
     conn = None
     try:
