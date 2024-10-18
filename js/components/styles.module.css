@@ -52,7 +52,7 @@
 .moment:focus .bubble {background-color: #fff;}
 .moment:focus .bubbleTop {color: #000;}
 .input:hover,
-.button:hover {background-color: #fff;}
+.button:hover {background-color: #e0e4e8;}
 
 [data-sch=dark] .button,
 [data-sch=dark] .input {background-color: #123;}
