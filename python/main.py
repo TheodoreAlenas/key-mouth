@@ -9,6 +9,7 @@ import typing
 from time import time
 import threading
 from os import environ
+import asyncio
 
 moments_per_page = 50
 min_silence = 3.0
@@ -56,12 +57,14 @@ def create_logic(min_silence, min_moment):
 logic = create_logic(min_silence=min_silence, min_moment=min_moment)
 if inttest is not None:
     logic = inttest.add_room_and_restart(logic, create_logic)
+logic.create_room(time(), 'bot')
+logic.rename_room(time(), ('bot', 'Type 1 to summon bot'))
+logic.create_room(time(), 'regular')
+logic.rename_room(time(), ('regular', 'Regular room'))
 a = 'KEYMOUTH_ADD_A_ROOM'
 if a in environ and environ[a] == 'yes':
-    logic.create_room(time(), 'empty-room')
-    logic.rename_room(time(), ('empty-room', 'Empty Room'))
     logic.create_room(0.0, 'filled-room')
-    logic.rename_room(0.1, ('filled-room', 'Filled Room'))
+    logic.rename_room(0.1, ('filled-room', '(dev-mode) Filled Room'))
     _, conn = logic.connect(0.2, 'filled-room')
     for i in range(1, 20):
         conn.handle_input(10.0 * i, f'+{i}')
@@ -135,6 +138,37 @@ async def room_get(
     return await wrap(logic.get_pages_range, (room, start, end))
 
 
+theres_a_bot = False
+
+
+async def connect_bot(room):
+    global theres_a_bot
+    if theres_a_bot:
+        return
+    theres_a_bot = True
+    conn = await wrap(logic.connect, room)
+
+    async def spell(s, t):
+        for c in s:
+            await asyncio.sleep(t)
+            await wrap(conn.handle_input, '+' + c)
+
+    await spell("Hello.", 0.1)
+    await asyncio.sleep(1)
+    await spell(" You can try typing at the same time as I.", 0.02)
+    await asyncio.sleep(1)
+    await spell(" I demonstrate the app when it's silent.", 0.02)
+    await asyncio.sleep(2)
+    await spell(" With enough delay, if you don't interrupt, " + \
+                "my text will split into 2 moments.", 0.02)
+    await asyncio.sleep(4)
+    await spell("If you're on desktop, " + \
+                "you may try opening another tab.", 0.02)
+
+    await wrap(conn.disconnect, None)
+    theres_a_bot = False
+
+
 @app.websocket("/{room}")
 async def root(websocket: fastapi.WebSocket, room: str):
     logic.if_room_is_missing_throw(room)
@@ -153,6 +187,8 @@ async def root(websocket: fastapi.WebSocket, room: str):
                           before_sending=assign_the_socket)
         while True:
             data = await websocket.receive_text()
+            if room == 'bot' and data == '+1':
+                task = asyncio.create_task(connect_bot(room))
             await wrap(conn.handle_input, data)
     except fastapi.WebSocketDisconnect as e:
         if conn is not None:
