@@ -57,14 +57,14 @@ def create_logic(min_silence, min_moment):
 logic = create_logic(min_silence=min_silence, min_moment=min_moment)
 if inttest is not None:
     logic = inttest.add_room_and_restart(logic, create_logic)
-logic.create_room(time(), 'bot')
-logic.rename_room(time(), ('bot', 'Type 1 to summon bot'))
-logic.create_room(time(), 'regular')
-logic.rename_room(time(), ('regular', 'Regular room'))
 a = 'KEYMOUTH_ADD_A_ROOM'
 if a in environ and environ[a] == 'yes':
+    logic.create_room(time(), 'bot')
+    logic.rename_room(time(), ('bot', 'Type 1 to summon bot'))
+    logic.create_room(time(), 'regular')
+    logic.rename_room(time(), ('regular', 'Regular room'))
     logic.create_room(0.0, 'filled-room')
-    logic.rename_room(0.1, ('filled-room', '(dev-mode) Filled Room'))
+    logic.rename_room(0.1, ('filled-room', 'Filled Room'))
     _, conn = logic.connect(0.2, 'filled-room')
     for i in range(1, 20):
         conn.handle_input(10.0 * i, f'+{i}')
