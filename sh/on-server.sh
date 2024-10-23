@@ -21,6 +21,7 @@ usage_and_exit() {
 
 if [ $# = 0 ]; then usage_and_exit; fi
 . ./secrets.sh || usage_and_exit
+export KEYMOUTH_DB="$secret_db"
 getopt_res="$(getopt -o tks -- "$@")" || usage_and_exit
 eval set -- "$getopt_res"
 
