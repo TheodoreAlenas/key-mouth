@@ -1,36 +1,50 @@
 
-# Key Mouth, the persistent, per-key instant messenger
+# Key Mouth, the chat app that streams keys
 
-[It's served.](https://theodoros-d-alenas.site/key-mouth/)
+[You may try it out.](https://theodoros-d-alenas.site/key-mouth/)
 
-Web app that reminds of instant messengers,
-except each key press shows up in real time,
-and deletions appear as erased text persistently.
+Chat apps work like command lines,
+the user types a message and sends it by pressing a button.
+This approach is popular, but is it popular specifically because
+other approaches were tried and failed?
+Or is there just a lineage of user interfaces that date back to sending emails
+and entering commands in a command prompt?
 
-In a typical messenger there are bubbles per sent message,
-and this app has a bubble per significant moment,
-such as someone interrupting a conversation or people pausing.
+Imagine two people, A and B, in a typical messenger.
+A says "are you in for a walk" and B types,
+stops typing, types again, stops typing and replies "sorry I'm not hungry."
+There may be a good reason why B misunderstood A but this doesn't happen
+in face to face conversations because B wouldn't have the time to overthink.
+If A could see every key press, A could suspect there's a
+misunderstanding and say "you know in the park" to see B's reaction.
+
+This inspired me to try to make a chat app that streams keys.
+But what about deleted text? If A can see B delete some text,
+it only makes sense that A can scroll up to the older messages and
+see the text that B deleted back then. A should also be able to see when
+there was a pause and when one interrupted the other.
 
 ## Code structure
 
-Since I lacked the skills for the app, I had to go incrementally.
-This meant I needed a fast way to prove the code is roughly correct.
+This is my first web application and there's no step by step guide for it.
+It's chaotic for me and for that reason,
+I want to avoid the bugs I can understand.
 
-- Limiting the `import` shows what code may be responsible for a bug.
-- A dev mode shows that there is some way for the system to run right.
-- Tests show when there is some way for the system to run wrong.
-- Some tests mimic debugging, making "debugging" re-runnable.
+- I limit what's possible by restricting objects' access to other objects.
+- There are tests to catch some cases where the system fails.
+- Dev mode shows that there is some way for the system to run right.
+- Some tests mimic debugging.
 
-I have bad experiences from hierarchies
-such as subdirectories, deep indentation and deep call stacks.
-There are multiple directories and some short files in the codebase
-but I dislike both directories and short files.
-The project started as very few big files
-and eventually code got extracted,
-days after I started wanting to extract it.
-Most extractions were done because it was hard to track down
+I try to go for flat hierarchies and long files.
+Hierarchies would be directories, indentation, dependencies,
+function call stacks and so on.
+You may notice however that the files aren't very long
+and there are deep hierarchies, that's because there are opposite priorities
+at the same time.
+Generally, I extract code days or weeks after I first wanted to.
+The main reason why I do extract it is to track down
 how the different abilities of the system
-related to variables and functions.
+relate to variables and functions.
 
 ### Web
 
